@@ -41,6 +41,7 @@ import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.PointerArea;
 import com.watabou.utils.Point;
 import com.watabou.utils.Signal;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -73,27 +74,37 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 	private Hero ownerHero;
 	//Each window CURRENTLY open for ownerHero has a unique id. Two windows can have the same id only with different ownerHero.
 	private int id;
+
+	@Contract(pure = true)
 	public final int getId() {
 		return id;
 	}
 
+	@Contract(mutates = "this")
 	private void setId(int id) {
 		this.id = id;
 	}
+
+	@Contract(pure = true)
 	public final Hero getOwnerHero() {
 		return ownerHero;
 	}
 
+	@Contract(mutates = "this")
 	protected void setOwnerHero(Hero ownerHero) {
 		this.ownerHero = ownerHero;
 	}
 	public Window(Hero hero) {
 		attachToHero(hero);
 	}
+
+	@Contract(pure = true)
 	public static boolean hasWindow(Hero hero) {
 		Map<Integer, Window> heroWindows = windows.getOrDefault(HeroHelp.getHeroID(hero), null);
 		return (heroWindows != null) && !heroWindows.isEmpty();
 	}
+
+	@Contract(pure = true)
 	public static Window getWindow(Class<? extends Window> wndClass, Hero hero) {
 		Map<Integer, Window> heroWindows = windows.getOrDefault(HeroHelp.getHeroID(hero), null);
 		if (heroWindows != null) {
@@ -105,9 +116,13 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 		}
 		return null;
 	}
+
+	@Contract(pure = true)
 	public static boolean hasWindow(Class<? extends Window> wndClass, Hero hero){
 		return getWindow(wndClass, hero) != null;
 	}
+
+	@Contract(mutates = "this")
 	protected synchronized final void attachToHero(Hero hero) {
 		if (getId() > 0) {
 			if (hero != getOwnerHero()) {

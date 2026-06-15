@@ -1169,6 +1169,7 @@ public class GameScene extends PixelScene {
 		if (scene != null) {
 			if (wnd.getOwnerHero() != null) {
 				cancel(wnd.getOwnerHero());
+				SendData.forceFlush(wnd.getOwnerHero());
 			} else {
 				scene.addToFront(wnd);
 			}

@@ -25,7 +25,6 @@ public class SerializationContext {
 
     @CheckReturnValue
     @Nullable
-    @Contract("null,_->_")
     public Object serialize(@Nullable Object obj, @NotNull String profile) {
         if (obj == null) return JSONObject.NULL;
         return serializeAs(obj, obj.getClass(), profile);

@@ -43,7 +43,15 @@ public class WndOptionsSerializer extends WindowSerializer<WndOptions> {
         args.put("options", options);
 
         args.put("title_icon", titleIcon(params));
+        args.put("layout", layout());
         return args;
+    }
+
+    private @NotNull JSONObject layout() {
+        JSONObject layout = new JSONObject();
+        layout.put("expand_in_landscape", false);
+        layout.put("highlighting", true);
+        return layout;
     }
 
     private @NotNull JSONObject titleIcon(@NotNull WndOptions.WndOptionsParams params) {

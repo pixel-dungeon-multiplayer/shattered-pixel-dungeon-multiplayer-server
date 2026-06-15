@@ -15,7 +15,7 @@ public class ChatMessagesActionSerializer extends NetworkActionSerializer<ChatMe
         JSONArray messages = new JSONArray();
         for (LocalizedString text : obj.messages()) {
             JSONObject messageObj = new JSONObject();
-            messageObj.put("text", text);
+            messageObj.put("text", ctx.serialize(text, profile));
             messages.put(messageObj);
         }
         actionObj.put("messages", messages);

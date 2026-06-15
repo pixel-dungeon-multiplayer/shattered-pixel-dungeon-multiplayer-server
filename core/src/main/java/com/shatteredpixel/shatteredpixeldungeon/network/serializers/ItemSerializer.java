@@ -19,10 +19,6 @@ public class ItemSerializer implements Serializer<Item> {
         Hero hero = ctx.observer;
 
         try {
-            boolean isGround = "ground".equals(profile);
-
-            // On the ground, we typically don't send actions or UI.
-            // When in inventory/window, and if we know the observer, we send them.
             if (hero != null) {
                 JSONArray actionsArr = new JSONArray();
                 for (String action : item.actions(hero)) {
@@ -33,19 +29,19 @@ public class ItemSerializer implements Serializer<Item> {
                 JSONObject actionNames = new JSONObject();
                 for (int i = 0; i < actionsArr.length(); i++) {
                     String action = actionsArr.getString(i);
-                    actionNames.put(action, item.actionName(action, hero));
+                    actionNames.put(action, ctx.serialize(item.actionName(action, hero), profile));
                 }
                 itemObj.put("action_names", actionNames);
 
                 itemObj.put("default_action", item.defaultAction == null ? "null" : item.defaultAction);
-                itemObj.put("info", item.info(hero));
+                itemObj.put("info", ctx.serialize(item.info(hero), profile));
                 itemObj.put("ui", item.itemUI(hero));
             }
 
             itemObj.put("sprite_sheet", item.spriteSheet());
             itemObj.put("image", item.image());
             itemObj.put("icon", item.icon);
-            itemObj.put("name", item.name());
+            itemObj.put("name", ctx.serialize(item.name(), profile));
             itemObj.put("stackable", item.stackable);
             itemObj.put("quantity", item.quantity());
             itemObj.put("known", item.isIdentified());

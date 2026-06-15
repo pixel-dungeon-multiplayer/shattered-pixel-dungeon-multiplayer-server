@@ -15,8 +15,8 @@ public class PlantUpdateActionSerializer extends NetworkActionSerializer<PlantUp
 
         JSONObject plantInfoObj = new JSONObject();
         plantInfoObj.put("sprite_id", obj.plant.image);
-        plantInfoObj.put("name", obj.plant.name());
-        plantInfoObj.put("desc", obj.plant.desc());
+        plantInfoObj.put("name", ctx.serialize(obj.plant.name(), profile));
+        plantInfoObj.put("desc", ctx.serialize(obj.plant.desc(), profile));
         plantObj.put("plant_info", plantInfoObj);
 
         return plantObj;

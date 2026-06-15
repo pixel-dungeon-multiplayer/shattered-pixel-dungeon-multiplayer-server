@@ -45,7 +45,7 @@ public class CharSerializer implements Serializer<Char> {
             object.put("hp", character.getHP());
             object.put("max_hp", character.getHT());
             object.put("position", character.pos);
-            object.put("name", character.name());
+            object.put("name", ctx.serialize(character.name(), profile));
 
             int shield = character.shielding();
             if (shield > 0 || character.needsShieldUpdate()) {
@@ -57,7 +57,7 @@ public class CharSerializer implements Serializer<Char> {
                 object.put("states", states);
             }
             if (character instanceof Mob) {
-                object.put("description", ((Mob) character).description());
+                object.put("description", ctx.serialize(((Mob) character).description(), profile));
             }
         } catch (JSONException e) {
             e.printStackTrace();

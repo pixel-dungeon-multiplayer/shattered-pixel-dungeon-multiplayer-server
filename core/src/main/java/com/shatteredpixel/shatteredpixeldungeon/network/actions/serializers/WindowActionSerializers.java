@@ -79,7 +79,7 @@ public final class WindowActionSerializers {
         @Override
         protected @Nullable JSONObject serializeWindowArgs(@NotNull WindowAction.Bag obj, @NotNull SerializationContext ctx, @NotNull String profile) {
             JSONObject args = new JSONObject();
-            args.put("title", obj.title);
+            args.put("title", ctx.serialize(obj.title, profile));
             
             JSONArray allowedArr = new JSONArray();
             for (List<Integer> list : obj.allowedItems) {
@@ -118,8 +118,8 @@ public final class WindowActionSerializers {
                 btnObj.put("tier", button.tier);
                 btnObj.put("icon", button.icon);
                 btnObj.put("spell_id", button.spellId);
-                btnObj.put("spell_short_desc", button.spellShortDesc);
-                btnObj.put("spell_name", button.spellName);
+                btnObj.put("spell_short_desc", ctx.serialize(button.spellShortDesc, profile));
+                btnObj.put("spell_name", ctx.serialize(button.spellName, profile));
                 buttons.put(btnObj);
             }
             args.put("buttons", buttons);
@@ -131,7 +131,7 @@ public final class WindowActionSerializers {
         @Override
         protected @Nullable JSONObject serializeWindowArgs(@NotNull WindowAction.InfoCell obj, @NotNull SerializationContext ctx, @NotNull String profile) {
             JSONObject args = new JSONObject();
-            args.put("desc", obj.desc);
+            args.put("desc", ctx.serialize(obj.desc, profile));
             args.put("title_bar", obj.titlebar.toJson());
             return args;
         }
@@ -141,9 +141,9 @@ public final class WindowActionSerializers {
         @Override
         protected @Nullable JSONObject serializeWindowArgs(@NotNull WindowAction.Options obj, @NotNull SerializationContext ctx, @NotNull String profile) {
             JSONObject args = new JSONObject();
-            args.put("title", obj.params.title);
+            args.put("title", ctx.serialize(obj.params.title, profile));
             args.put("title_color", obj.params.titleColor);
-            args.put("message", obj.params.message);
+            args.put("message", ctx.serialize(obj.params.message, profile));
             JSONArray optionsArr = new JSONArray();
             for (LocalizedString option : obj.params.options) {
                 optionsArr.put(option);
@@ -171,8 +171,8 @@ public final class WindowActionSerializers {
         protected @Nullable JSONObject serializeWindowArgs(@NotNull WindowAction.Quest obj, @NotNull SerializationContext ctx, @NotNull String profile) {
             JSONObject args = new JSONObject();
             args.put("sprite_name", obj.spriteName);
-            args.put("char_name", obj.charName);
-            args.put("text", obj.text);
+            args.put("char_name", ctx.serialize(obj.charName, profile));
+            args.put("text", ctx.serialize(obj.text, profile));
             return args;
         }
     }
@@ -245,8 +245,8 @@ public final class WindowActionSerializers {
             args.put("weapon", ctx.serialize(obj.weapon, "inventory"));
             args.put("armor", ctx.serialize(obj.armor, "inventory"));
             args.put("rose", ctx.serialize(obj.rose, "inventory"));
-            args.put("title", obj.title);
-            args.put("message", obj.message);
+            args.put("title", ctx.serialize(obj.title, profile));
+            args.put("message", ctx.serialize(obj.message, profile));
             return args;
         }
     }

@@ -10,7 +10,7 @@ public class ChatMessageActionSerializer extends NetworkActionSerializer<ChatMes
     @Override
     protected @Nullable JSONObject serializeInternal(@NotNull ChatMessageAction obj, @NotNull SerializationContext ctx, @NotNull String profile) {
         JSONObject actionObj = new JSONObject();
-        actionObj.put("text", obj.text);
+        actionObj.put("text", ctx.serialize(obj.text, profile));
         return actionObj;
     }
 }

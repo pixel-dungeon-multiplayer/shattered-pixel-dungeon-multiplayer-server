@@ -29,7 +29,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.ClericSpell;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.GuidingLight;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HolyTome;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.HeroIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
@@ -37,7 +36,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.WindowAction;
 
 import java.util.ArrayList;
 
@@ -47,10 +45,14 @@ public class WndClericSpells extends Window {
 
 	public static int BTN_SIZE = 20;
 	public ArrayList<SpellButton> spellBtns = new ArrayList<>();
+	private final HolyTome tome;
+	private final boolean infoMode;
 
 
 	public WndClericSpells(HolyTome tome, Hero cleric, boolean info) {
 		super(cleric);
+		this.tome = tome;
+		this.infoMode = info;
 		for (int i = 1; i <= Talent.MAX_TALENT_TIERS; i++) {
 
 			ArrayList<ClericSpell> spells = ClericSpell.getSpellList(cleric, i);
@@ -61,20 +63,14 @@ public class WndClericSpells extends Window {
 				spellBtns.add(spellBtn);
 			}
 		}
-		
-		java.util.List<WindowAction.SpellButtonInfo> buttonInfos = new java.util.ArrayList<>();
-		for (SpellButton btn : spellBtns) {
-			buttonInfos.add(new WindowAction.SpellButtonInfo(
-				btn.info,
-				tome.canCast(getOwnerHero(), btn.spell) ? 1.0 : 0.3,
-				btn.tier,
-				btn.spell.icon(),
-				btn.spellID,
-				btn.spell.shortDesc(getOwnerHero()),
-				btn.spell.name()
-			));
-		}
-		SendData.packAndSendAction(getOwnerHero(), new WindowAction.ClericSpells(getId(), info, buttonInfos));
+	}
+
+	public HolyTome tome() {
+		return tome;
+	}
+
+	public boolean infoMode() {
+		return infoMode;
 	}
 
 	@Override
@@ -96,10 +92,10 @@ public class WndClericSpells extends Window {
 
 	public class SpellButton extends IconButton {
 
-		ClericSpell spell;
-		HolyTome tome;
+		public ClericSpell spell;
+		public HolyTome tome;
 		public boolean info;
-		int tier;
+		public int tier;
 		public int spellID;
 		public SpellButton(ClericSpell spell, HolyTome tome, boolean info, int tier, int spellID){
 			super(new HeroIcon(spell));

@@ -29,11 +29,9 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.WindowAction;
 
 public class WndSadGhost extends Window {
 
@@ -43,16 +41,16 @@ public class WndSadGhost extends Window {
 	private static final int GAP		= 2;
 
 	Ghost ghost;
+	private final int questType;
 	
 	public WndSadGhost( final Ghost ghost, final int type, Hero hero ) {
 		super(hero);
 		this.ghost = ghost;
-		SendData.packAndSendAction(hero, new WindowAction.SadGhost(
-			getId(),
-			type,
-			Ghost.Quest.weapon,
-			Ghost.Quest.armor
-		));
+		this.questType = type;
+	}
+
+	public int questType() {
+		return questType;
 	}
 	
 	private void selectReward( Item reward ) {

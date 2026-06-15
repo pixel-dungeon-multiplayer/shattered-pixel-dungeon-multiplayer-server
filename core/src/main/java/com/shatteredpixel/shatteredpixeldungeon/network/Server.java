@@ -7,11 +7,14 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
 import com.shatteredpixel.shatteredpixeldungeon.network.actions.*;
 import com.shatteredpixel.shatteredpixeldungeon.network.actions.serializers.*;
 import com.shatteredpixel.shatteredpixeldungeon.network.NetworkPacket.SerializedAction;
 import com.shatteredpixel.shatteredpixeldungeon.plugins.PluginLoader;
 import com.shatteredpixel.shatteredpixeldungeon.plugins.PluginManager;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.AlchemyScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.texturepack.TexturePackManager;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -64,6 +67,8 @@ import com.watabou.utils.Rect;
 import com.watabou.utils.RectF;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.RectSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.RectFSerializer;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.*;
+import com.shatteredpixel.shatteredpixeldungeon.windows.*;
 
 public class Server extends Thread {
     public static final SerializerRegistry SERIALIZERS = new SerializerRegistry();
@@ -164,18 +169,19 @@ public class Server extends Thread {
         SERIALIZERS.register(ItemAction.Update.class, new ItemActionSerializers.Update());
         SERIALIZERS.register(ItemAction.Replace.class, new ItemActionSerializers.Replace());
         SERIALIZERS.register(HeapUpdateAction.class, new HeapUpdateActionSerializer());
-        SERIALIZERS.register(WindowAction.Alchemy.class, new WindowActionSerializers.Alchemy());
-        SERIALIZERS.register(WindowAction.Bag.class, new WindowActionSerializers.Bag());
-        SERIALIZERS.register(WindowAction.ChooseSubclass.class, new WindowActionSerializers.ChooseSubclass());
-        SERIALIZERS.register(WindowAction.ClericSpells.class, new WindowActionSerializers.ClericSpells());
-        SERIALIZERS.register(WindowAction.InfoCell.class, new WindowActionSerializers.InfoCell());
-        SERIALIZERS.register(WindowAction.Options.class, new WindowActionSerializers.Options());
-        SERIALIZERS.register(WindowAction.Quest.class, new WindowActionSerializers.Quest());
-        SERIALIZERS.register(WindowAction.SadGhost.class, new WindowActionSerializers.SadGhost());
-        SERIALIZERS.register(WindowAction.TradeItem.class, new WindowActionSerializers.TradeItem());
-        SERIALIZERS.register(WindowAction.Wandmaker.class, new WindowActionSerializers.Wandmaker());
-        SERIALIZERS.register(WindowAction.Guess.class, new WindowActionSerializers.Guess());
-        SERIALIZERS.register(WindowAction.GhostHero.class, new WindowActionSerializers.GhostHero());
+        SERIALIZERS.register(UpdateWindowAction.class, new UpdateWindowActionSerializer());
+        SERIALIZERS.register(AlchemyScene.class, new AlchemySceneSerializer());
+        SERIALIZERS.register(WndBag.class, new WndBagSerializer());
+        SERIALIZERS.register(WndChooseSubclass.class, new WndChooseSubclassSerializer());
+        SERIALIZERS.register(WndClericSpells.class, new WndClericSpellsSerializer());
+        SERIALIZERS.register(WndInfoCell.class, new WndInfoCellSerializer());
+        SERIALIZERS.register(WndOptions.class, new WndOptionsSerializer());
+        SERIALIZERS.register(WndQuest.class, new WndQuestSerializer());
+        SERIALIZERS.register(WndSadGhost.class, new WndSadGhostSerializer());
+        SERIALIZERS.register(WndTradeItem.class, new WndTradeItemSerializer());
+        SERIALIZERS.register(WndWandmaker.class, new WndWandmakerSerializer());
+        SERIALIZERS.register(StoneOfIntuition.WndGuess.class, new WndGuessSerializer());
+        SERIALIZERS.register(DriedRose.WndGhostHero.class, new WndGhostHeroSerializer());
         SERIALIZERS.register(RedirectServerAction.class, new RedirectServerActionSerializer());
     }
 

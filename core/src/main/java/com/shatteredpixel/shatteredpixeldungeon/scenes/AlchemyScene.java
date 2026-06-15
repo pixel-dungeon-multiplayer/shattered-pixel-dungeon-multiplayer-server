@@ -39,7 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.WindowAction;
+import com.shatteredpixel.shatteredpixeldungeon.network.actions.UpdateWindowAction;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import java.util.ArrayList;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
@@ -112,7 +112,6 @@ public class AlchemyScene extends Window {
 			lastIngredients = new ArrayList<>();
 		}
 		this.create();
-		sendSelf();
 	}
 
 	@Override
@@ -534,33 +533,60 @@ public class AlchemyScene extends Window {
 
 	}
 	public void sendSelf() {
-		java.util.List<Item> inputItems = new ArrayList<>(inputs.length);
-		for (InputButton input : inputs) {
-			inputItems.add(input != null ? input.item : null);
-		}
-
-		java.util.List<Integer> combineCosts = new ArrayList<>(combines.length);
-		java.util.List<Boolean> combineEnabled = new ArrayList<>(combines.length);
-		for (CombineButton combine : combines) {
-			combineCosts.add(combine != null ? combine.cost : 0);
-			combineEnabled.add(combine != null ? combine.enabled : false);
-		}
-
-		SendData.packAndSendAction(getOwnerHero(), new WindowAction.Alchemy(
-		    getId(),
-		    Dungeon.energy,
-		    toolkit != null,
-		    toolkit != null ? toolkit.availableEnergy() : 0,
-		    inputItems,
-		    combineCosts,
-		    combineEnabled,
-		    java.util.List.of(outputs),
-		    energyAddBlinking,
-		    repeat_enabled,
-		    createEnergy,
-		    craftedItem
-		));
+		SendData.packAndSendAction(getOwnerHero(), new UpdateWindowAction(this));
 		createEnergy = false;
 		craftedItem = false;
+	}
+
+	public List<Item> inputItems() {
+		List<Item> result = new ArrayList<>(inputs.length);
+		for (InputButton input : inputs) {
+			result.add(input != null ? input.item : null);
+		}
+		return result;
+	}
+
+	public List<Integer> combineCosts() {
+		List<Integer> result = new ArrayList<>(combines.length);
+		for (CombineButton combine : combines) {
+			result.add(combine != null ? combine.cost : 0);
+		}
+		return result;
+	}
+
+	public List<Boolean> combineEnabled() {
+		List<Boolean> result = new ArrayList<>(combines.length);
+		for (CombineButton combine : combines) {
+			result.add(combine != null ? combine.enabled : false);
+		}
+		return result;
+	}
+
+	public List<Item> outputItems() {
+		return java.util.List.of(outputs);
+	}
+
+	public boolean hasToolkit() {
+		return toolkit != null;
+	}
+
+	public int toolkitEnergy() {
+		return toolkit != null ? toolkit.availableEnergy() : 0;
+	}
+
+	public boolean energyAddBlinking() {
+		return energyAddBlinking;
+	}
+
+	public boolean repeatEnabled() {
+		return repeat_enabled;
+	}
+
+	public boolean shouldCreateEnergy() {
+		return createEnergy;
+	}
+
+	public boolean craftedItem() {
+		return craftedItem;
 	}
 }

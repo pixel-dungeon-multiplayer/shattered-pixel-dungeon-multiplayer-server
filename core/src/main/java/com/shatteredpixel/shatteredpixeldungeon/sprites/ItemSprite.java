@@ -59,6 +59,7 @@ public class ItemSprite extends MovieClip {
 	public Heap heap;
 	
 	private Glowing glowing;
+	private int image = ItemSpriteSheet.SOMETHING;
 	//FIXME: a lot of this emitter functionality isn't very well implemented.
 	//right now I want to ship 0.3.0, but should refactor in the future.
 	protected Emitter emitter;
@@ -235,9 +236,18 @@ public class ItemSprite extends MovieClip {
 	public ItemSprite view( int image, Glowing glowing ) {
 		if (this.emitter != null) this.emitter.killAndErase();
 		emitter = null;
+		this.image = image;
 		frame( image );
 		glow( glowing );
 		return this;
+	}
+
+	public int image() {
+		return image;
+	}
+
+	public Glowing glowing() {
+		return glowing;
 	}
 
 	public void frame( int image ){

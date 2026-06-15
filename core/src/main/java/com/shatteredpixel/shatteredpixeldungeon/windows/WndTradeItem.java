@@ -36,7 +36,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MasterThievesArm
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
@@ -49,7 +48,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import org.jetbrains.annotations.NotNull;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.WindowAction;
 import java.lang.reflect.Method;
 
 public class WndTradeItem extends WndInfoItem {
@@ -62,6 +60,10 @@ public class WndTradeItem extends WndInfoItem {
 	private boolean selling = false;
 	Item item;
 	Shopkeeper shop;
+	private int price;
+	private boolean steal;
+	private int stealChance;
+	private int stealCharges;
 
 	//selling
 	public WndTradeItem( final Item item, @NotNull WndBag owner ) {
@@ -71,6 +73,10 @@ public class WndTradeItem extends WndInfoItem {
 
 		this.owner = owner;
 		this.item = item;
+		price = item.value();
+		steal = false;
+		stealChance = 0;
+		stealCharges = 0;
 
 		//find the shopkeeper in the current level
 		for (Char ch : Actor.chars()){
@@ -79,15 +85,6 @@ public class WndTradeItem extends WndInfoItem {
 				break;
 			}
 		}
-		SendData.packAndSendAction(getOwnerHero(), new WindowAction.TradeItem(
-			getId(),
-			true,
-			item,
-			item.value(),
-			false,
-			0,
-			0
-		));
 	}
 	RedButton btnSteal = null;
 	Heap heap;
@@ -105,6 +102,7 @@ public class WndTradeItem extends WndInfoItem {
 		float pos = height;
 
 		final int price = Shopkeeper.sellPrice( item );
+		this.price = price;
 
 		RedButton btnBuy = new RedButton( Messages.get(this, "buy", price) ) {
 			@Override
@@ -177,15 +175,33 @@ public class WndTradeItem extends WndInfoItem {
 				}
 			};
 		}
-		SendData.packAndSendAction(hero, new WindowAction.TradeItem(
-			getId(),
-			false,
-			item,
-			price,
-			steal,
-			chanceVal,
-			chargesToUseVal
-		));
+		this.steal = steal;
+		this.stealChance = chanceVal;
+		this.stealCharges = chargesToUseVal;
+	}
+
+	public boolean selling() {
+		return selling;
+	}
+
+	public Item tradeItem() {
+		return item;
+	}
+
+	public int price() {
+		return price;
+	}
+
+	public boolean stealAvailable() {
+		return steal;
+	}
+
+	public int stealChance() {
+		return stealChance;
+	}
+
+	public int stealCharges() {
+		return stealCharges;
 	}
 
 	@Override

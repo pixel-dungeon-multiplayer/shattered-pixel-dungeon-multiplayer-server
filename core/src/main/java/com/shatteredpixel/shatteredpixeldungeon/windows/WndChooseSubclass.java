@@ -23,9 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.WindowAction;
 
 public class WndChooseSubclass extends Window {
 	
@@ -36,11 +34,6 @@ public class WndChooseSubclass extends Window {
 	public WndChooseSubclass(final TengusMask tome, final Hero hero ) {
 		super(hero);
 		this.tome = tome;
-		SendData.packAndSendAction(hero, new WindowAction.ChooseSubclass(
-			getId(),
-			hero.heroClass.subClasses()[0].name(),
-			hero.heroClass.subClasses()[1].name()
-		));
 	}
 
 	@Override

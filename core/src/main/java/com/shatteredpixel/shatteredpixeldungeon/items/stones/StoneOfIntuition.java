@@ -35,7 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -49,7 +49,6 @@ import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.WindowAction;
 
 import java.util.ArrayList;
 
@@ -76,12 +75,7 @@ public class StoneOfIntuition extends InventoryStone {
 
 		//GameScene.show( new WndGuess(item));
 		WndGuess wndGuess = new WndGuess(item, hero);
-		SendData.packAndSendAction(hero, new WindowAction.Guess(
-			wndGuess.getId(),
-			item,
-			wndGuess.icons,
-			wndGuess.guessOptions
-		));
+		GameScene.show(wndGuess);
 	}
 
 	@Override
@@ -210,6 +204,18 @@ public class StoneOfIntuition extends InventoryStone {
 			
 			resize(WIDTH, 100);
 			
+		}
+
+		public Item item() {
+			return item;
+		}
+
+		public ArrayList<Integer> icons() {
+			return icons;
+		}
+
+		public ArrayList<Class<? extends Item>> guessOptions() {
+			return guessOptions;
 		}
 
 		@Override

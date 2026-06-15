@@ -27,13 +27,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTerrainTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.Image;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.WindowAction;
 
 public class WndInfoCell extends Window {
 
@@ -42,8 +40,8 @@ public class WndInfoCell extends Window {
 	
 	private static final int WIDTH = 120;
 	//used for toJson
-	LocalizedString desc;
-	IconTitle titlebar;
+	private LocalizedString desc;
+	private IconTitle titlebar;
 
 	public static Image cellImage( int cell ){
 		int tile = Dungeon.level.map[cell];
@@ -155,7 +153,14 @@ public class WndInfoCell extends Window {
 		}
 
 		this.desc = desc.equals(LocalizedString.EMPTY) ? Messages.get(this, "nothing") : desc;
-		SendData.packAndSendAction(hero, new WindowAction.InfoCell(getId(), desc, titlebar));
 
+	}
+
+	public LocalizedString desc() {
+		return desc;
+	}
+
+	public IconTitle titlebar() {
+		return titlebar;
 	}
 }

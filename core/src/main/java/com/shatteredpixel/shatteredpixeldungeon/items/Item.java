@@ -916,7 +916,7 @@ public class Item implements Bundlable {
 		topRight.put("visible", true);
 		bottomRight.put("visible", true);
 
-		topLeft.put("text", ctx.serialize(item.status(), profile));
+		topLeft.put("text", item.status());
 
 		boolean isArmor = item instanceof Armor;
 		boolean isWeapon = item instanceof Weapon;

@@ -26,10 +26,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.WindowAction;
 
 import java.util.ArrayList;
 
@@ -44,13 +42,10 @@ public class WndWandmaker extends Window {
 
 		this.wandmaker = wandmaker;
 		this.questItem = item;
-		SendData.packAndSendAction(hero, new WindowAction.Wandmaker(
-			getId(),
-			Wandmaker.Quest.wand1,
-			Wandmaker.Quest.wand2,
-			questItem,
-			questItem.getClass().getName()
-		));
+	}
+
+	public Item questItem() {
+		return questItem;
 	}
 	private void selectReward(Item reward ) {
 

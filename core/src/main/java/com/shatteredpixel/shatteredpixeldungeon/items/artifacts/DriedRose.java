@@ -57,6 +57,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
+import com.shatteredpixel.shatteredpixeldungeon.network.actions.UpdateWindowAction;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
@@ -78,7 +79,6 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import org.jetbrains.annotations.NotNull;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.WindowAction;
 
 import java.util.ArrayList;
 
@@ -878,7 +878,7 @@ public class DriedRose extends Artifact {
 
 	}
 	
-	private static class WndGhostHero extends Window{
+	public static class WndGhostHero extends Window{
 
 		private static final String TYPE = "ghost_hero";
 
@@ -1054,17 +1054,29 @@ public class DriedRose extends Artifact {
 			add( btnArmor );
 			
 			resize(WIDTH, (int)(btnArmor.bottom() + GAP));
-			sendSelf();
 		}
 		private void sendSelf() {
-			SendData.packAndSendAction(getOwnerHero(), new WindowAction.GhostHero(
-				getId(),
-				btnWeapon.item(),
-				btnArmor.item(),
-				rose,
-				title,
-				message
-			));
+			SendData.packAndSendAction(getOwnerHero(), new UpdateWindowAction(this));
+		}
+
+		public Item weaponItem() {
+			return btnWeapon.item();
+		}
+
+		public Item armorItem() {
+			return btnArmor.item();
+		}
+
+		public DriedRose rose() {
+			return rose;
+		}
+
+		public LocalizedString title() {
+			return title;
+		}
+
+		public LocalizedString message() {
+			return message;
 		}
 
 		@Override

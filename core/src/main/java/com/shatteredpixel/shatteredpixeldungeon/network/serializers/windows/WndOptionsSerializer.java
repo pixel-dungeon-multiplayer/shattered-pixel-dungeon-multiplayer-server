@@ -5,7 +5,6 @@ import com.shatteredpixel.shatteredpixeldungeon.network.serializers.Serializatio
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class WndOptionsSerializer extends WindowSerializer<WndOptions> {
@@ -22,61 +21,32 @@ public class WndOptionsSerializer extends WindowSerializer<WndOptions> {
             return null;
         }
 
-        JSONObject args = new JSONObject();
-
-        JSONObject title = new JSONObject();
-        title.put("text", ctx.serialize(params.title, profile));
-        title.put("color", params.titleColor == null ? JSONObject.NULL : params.titleColor);
-        args.put("title", title);
-
-        args.put("message", ctx.serialize(params.message, profile));
-
-        JSONArray options = new JSONArray();
+        WndOptionContract contract = new WndOptionContract();
+        contract.titleText = params.title;
+        contract.titleColor = params.titleColor;
+        contract.message = params.message;
+        contract.layout = WndOptionContract.Layout.options();
+        contract.titleIcon = titleIcon(params);
         for (int i = 0; i < params.options.size(); i++) {
             LocalizedString option = params.options.get(i);
-            JSONObject optionObj = new JSONObject();
-            optionObj.put("text", ctx.serialize(option, profile));
-            optionObj.put("has_info", obj.hasInfoForNetwork(i));
-            optionObj.put("enabled", obj.enabledForNetwork(i));
-            options.put(optionObj);
+            contract.options.add(new WndOptionContract.Option(
+                    option,
+                    obj.hasInfoForNetwork(i),
+                    obj.enabledForNetwork(i)));
         }
-        args.put("options", options);
 
-        args.put("title_icon", titleIcon(params));
-        args.put("layout", layout());
-        return args;
+        return contract.toJson(ctx, profile);
     }
 
-    private @NotNull JSONObject layout() {
-        JSONObject layout = new JSONObject();
-        layout.put("expand_in_landscape", false);
-        layout.put("highlighting", true);
-        return layout;
-    }
-
-    private @NotNull JSONObject titleIcon(@NotNull WndOptions.WndOptionsParams params) {
-        JSONObject icon = new JSONObject();
-        JSONObject iconArgs = new JSONObject();
-
+    private @NotNull WndOptionContract.TitleIcon titleIcon(@NotNull WndOptions.WndOptionsParams params) {
         if (params.itemSpriteImage != null) {
-            icon.put("type", "item_sprite");
-            iconArgs.put("image", params.itemSpriteImage);
-            if (params.itemSpriteGlowing != null) {
-                iconArgs.put("glowing", params.itemSpriteGlowing.toJsonObject());
-            }
-        } else if (params.charSprite != null) {
-            icon.put("type", "char_sprite");
-            String spriteAsset = params.charSprite.getSpriteAsset();
-            if (spriteAsset != null) {
-                iconArgs.put("sprite_asset", spriteAsset);
-            } else {
-                iconArgs.put("sprite_class", params.charSprite.spriteName());
-            }
-        } else {
-            icon.put("type", "none");
+            return WndOptionContract.TitleIcon.itemSprite(params.itemSpriteImage, params.itemSpriteGlowing);
         }
-
-        icon.put("args", iconArgs);
-        return icon;
+        if (params.charSprite != null) {
+            return WndOptionContract.TitleIcon.charSprite(
+                    params.charSprite.getSpriteAsset(),
+                    params.charSprite.spriteName());
+        }
+        return WndOptionContract.TitleIcon.none();
     }
 }

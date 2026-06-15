@@ -40,11 +40,13 @@ public class IconTitle extends Component {
 
 	private static final float GAP = 2;
 
-	protected Image imIcon;
+	public Image imIcon;
 	protected RenderedTextBlock tfLabel;
 	protected HealthBar health;
 
 	private float healthLvl = Float.NaN;
+	public LocalizedString text = null;
+	public Integer color = null;
 
 	public IconTitle() {
 		super();
@@ -66,10 +68,7 @@ public class IconTitle extends Component {
 		layout();
 	}
 
-	public IconTitle( Image icon, LocalizedString label ) {
-		this(icon, label.toString());
-	}
-	public IconTitle( Image icon, String label ) {
+	public IconTitle( ItemSprite icon, LocalizedString label ) {
 		icon( icon );
 		label( label );
 		layout();
@@ -127,22 +126,19 @@ public class IconTitle extends Component {
 
 
 	public void label( LocalizedString label ) {
+		text = label;
 		tfLabel.text( label.toString() );
 	}
 
-	public void label( String label ) {
-		tfLabel.text( label );
-	}
-
 	public void label(LocalizedString label, int color ) {
-		label(label.toString(), color);
-	}
-	public void label( String label, int color ) {
+		text = label;
+		this.color = color;
 		tfLabel.text( label );
 		tfLabel.hardlight( color );
 	}
 
 	public void color( int color ) {
+		this.color = color;
 		tfLabel.hardlight( color );
 	}
 
@@ -159,6 +155,7 @@ public class IconTitle extends Component {
 		health.level( healthLvl = value );
 		layout();
 	}
+
 	public JSONObject toJson(){
 		JSONObject object = new JSONObject();
 		if (!Float.isNaN(healthLvl)) {

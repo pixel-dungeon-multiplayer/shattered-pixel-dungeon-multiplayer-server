@@ -229,9 +229,9 @@ public class MiningLevel extends CavesLevel {
 				Game.runOnRenderThread(new Callback() {
 					@Override
 					public void call() {
-						GameScene.show(new WndTitledMessage( new BlacksmithSprite(),
+						GameScene.show(new WndTitledMessage(hero, new BlacksmithSprite(),
 								Messages.titleCase(Messages.get(Blacksmith.class, "name")),
-								Messages.get(Blacksmith.class, "lost_pick"), hero));
+								Messages.get(Blacksmith.class, "lost_pick")));
 					}
 				});
 				return false;

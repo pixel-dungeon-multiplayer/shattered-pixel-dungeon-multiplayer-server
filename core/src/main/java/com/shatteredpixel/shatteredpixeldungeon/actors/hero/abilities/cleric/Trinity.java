@@ -108,9 +108,9 @@ public class Trinity extends ArmorAbility {
 	public class WndUseTrinity extends WndTitledMessage {
 
 		public WndUseTrinity(ClassArmor armor, Hero hero) {
-			super(new HeroIcon(Trinity.this),
+			super(hero, new HeroIcon(Trinity.this),
 					Messages.titleCase(Trinity.this.name()),
-					Messages.get(WndUseTrinity.class, "text"), hero);
+					Messages.get(WndUseTrinity.class, "text"));
 
 			int top = height;
 
@@ -308,7 +308,7 @@ public class Trinity extends ArmorAbility {
 
 		//probably want a callback here?
 		public WndItemtypeSelect(HolyTome tome, ClericSpell spell, Hero hero) {
-			super(new HeroIcon(spell), Messages.titleCase(spell.name()), Messages.get(WndItemtypeSelect.class, "text"), hero);
+			super(hero, new HeroIcon(spell), Messages.titleCase(spell.name()), Messages.get(WndItemtypeSelect.class, "text"));
 
 			//start by filtering and sorting
 			ArrayList<Class<?>> discoveredClasses = new ArrayList<>();
@@ -425,7 +425,7 @@ public class Trinity extends ArmorAbility {
 	public static class WndItemConfirm extends WndTitledMessage {
 
 		public WndItemConfirm(Window parentWnd, Item item, HolyTome tome, ClericSpell spell, Hero hero){
-			super(new ItemSprite(item),  Messages.titleCase(getName(item)), getText(item, hero), hero);
+			super(hero, new ItemSprite(item),  Messages.titleCase(getName(item)), getText(item, hero));
 
 			LocalizedString text;
 			if (spell == BodyForm.INSTANCE){

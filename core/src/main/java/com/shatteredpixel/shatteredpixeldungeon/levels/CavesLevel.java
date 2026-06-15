@@ -131,9 +131,9 @@ public class CavesLevel extends RegularLevel {
 			} else  {
 				final Pickaxe pick = hero.belongings.getItem(Pickaxe.class);
 				if (pick == null) {
-					GameScene.show(new WndTitledMessage(new BlacksmithSprite(),
+					GameScene.show(new WndTitledMessage(hero, new BlacksmithSprite(),
 							Messages.titleCase(Messages.get(Blacksmith.class, "name")),
-							Messages.get(Blacksmith.class, "lost_pick"), hero)
+							Messages.get(Blacksmith.class, "lost_pick"))
 					);
 				} else {
 					GameScene.show(new WndOptions(hero, new BlacksmithSprite(),

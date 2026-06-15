@@ -1,13 +1,14 @@
-package com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows;
+package com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wndoptions;
 
 import com.nikita22007.multiplayer.utils.text.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializationContext;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.WindowSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
-public class WndOptionsSerializer extends WindowSerializer<WndOptions> {
+public class WndOptionsSerializer<T extends WndOptions> extends WindowSerializer<T> {
 
     @Override
     protected @NotNull String type() {
@@ -15,7 +16,7 @@ public class WndOptionsSerializer extends WindowSerializer<WndOptions> {
     }
 
     @Override
-    protected @Nullable JSONObject args(@NotNull WndOptions obj, @NotNull SerializationContext ctx, @NotNull String profile) {
+    protected @Nullable JSONObject args(@NotNull T obj, @NotNull SerializationContext ctx, @NotNull String profile) {
         WndOptions.WndOptionsParams params = obj.params();
         if (params == null) {
             return null;
@@ -50,3 +51,5 @@ public class WndOptionsSerializer extends WindowSerializer<WndOptions> {
         return WndOptionContract.TitleIcon.none();
     }
 }
+
+

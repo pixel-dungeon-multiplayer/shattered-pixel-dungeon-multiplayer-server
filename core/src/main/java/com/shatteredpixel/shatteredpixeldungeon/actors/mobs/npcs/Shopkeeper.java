@@ -262,7 +262,7 @@ public class Shopkeeper extends NPC {
 						if (index == 0){
 							sell(getOwnerHero());
 						} else if (index == 1){
-							GameScene.show(new WndTitledMessage(sprite(), Messages.titleCase(name()), chatText(getOwnerHero()), getOwnerHero()));
+							GameScene.show(new WndTitledMessage(getOwnerHero(), sprite(), Messages.titleCase(name()), chatText(getOwnerHero())));
 						} else if (index > 1){
 							GLog.i(Messages.get(Shopkeeper.this, "buyback"));
 							Item returned = buybackItems.remove(index-2);

@@ -48,26 +48,6 @@ public class WndOptions extends Window {
 
 	private WndOptionsParams params;
 
-	public WndOptions(Image icon, LocalizedString title, LocalizedString message, LocalizedString... options) {
-		this(icon, title.toString(), message.toString(), LocalizedString.resolveArray(options));
-	}
-	public WndOptions(Image icon, String title, String message, String... options) {
-		super();
-
-		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
-
-		float pos = 0;
-		if (title != null) {
-			IconTitle tfTitle = new IconTitle(icon, title);
-			tfTitle.setRect(0, pos, width, 0);
-			add(tfTitle);
-
-			pos = tfTitle.bottom() + 2*MARGIN;
-		}
-
-		layoutBody(pos, message, options);
-	}
-
 	public WndOptions(Hero hero, Image icon, String title, String message, String... options) {
 		this(hero, icon, LocalizedString.raw(title), LocalizedString.raw(message), LocalizedString.raw(options));
 	}
@@ -122,8 +102,8 @@ public class WndOptions extends Window {
 		return params;
 	}
 
-	public WndOptions( String title, String message, String... options ) {
-		super();
+	public WndOptions( Hero hero, String title, String message, String... options ) {
+		super(hero);
 
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 

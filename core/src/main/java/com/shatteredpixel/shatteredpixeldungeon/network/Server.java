@@ -186,12 +186,10 @@ public class Server extends Thread {
         SERIALIZERS.register(WndChooseSubclass.class, new WndChooseSubclassSerializer());
         SERIALIZERS.register(WndClericSpells.class, new WndClericSpellsSerializer());
         SERIALIZERS.register(WndCombo.class, new WndComboSerializer());
-        SERIALIZERS.register(WndDocument.class, new WndDocumentSerializer());
         SERIALIZERS.register(WndEnergizeItem.class, new WndEnergizeItemSerializer());
         SERIALIZERS.register(WndError.class, new WndErrorSerializer());
         SERIALIZERS.register(WndGame.class, new WndGameSerializer());
         SERIALIZERS.register(WndGameInProgress.class, new WndGameInProgressSerializer());
-        SERIALIZERS.register(WndHardNotification.class, new WndHardNotificationSerializer());
         SERIALIZERS.register(WndHero.class, new WndHeroSerializer());
         SERIALIZERS.register(WndHeroInfo.class, new WndHeroInfoSerializer());
         SERIALIZERS.register(WndImp.class, new WndImpSerializer());
@@ -205,7 +203,6 @@ public class Server extends Thread {
         SERIALIZERS.register(WndInfoTalent.class, new WndInfoTalentSerializer());
         SERIALIZERS.register(WndInfoTrap.class, new WndInfoTrapSerializer());
         SERIALIZERS.register(WndJournalItem.class, new WndJournalItemSerializer());
-        SERIALIZERS.register(WndKeyBindings.class, new WndKeyBindingsSerializer());
         SERIALIZERS.register(WndList.class, new WndListSerializer());
         SERIALIZERS.register(WndMessage.class, new WndMessageSerializer());
         SERIALIZERS.register(WndMonkAbilities.class, new WndMonkAbilitiesSerializer());
@@ -214,7 +211,6 @@ public class Server extends Thread {
         SERIALIZERS.register(WndResurrect.class, new WndResurrectSerializer());
         SERIALIZERS.register(WndSadGhost.class, new WndSadGhostSerializer());
         SERIALIZERS.register(WndSettings.class, new WndSettingsSerializer());
-        SERIALIZERS.register(WndStory.class, new WndStorySerializer());
         SERIALIZERS.register(WndSupportPrompt.class, new WndSupportPromptSerializer());
         SERIALIZERS.register(WndTextInput.class, new WndTextInputSerializer());
         SERIALIZERS.register(WndTabbed.class, new WndTabbedSerializer());

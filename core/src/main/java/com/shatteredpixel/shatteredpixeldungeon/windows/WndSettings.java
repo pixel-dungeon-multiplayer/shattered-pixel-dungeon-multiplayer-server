@@ -660,25 +660,13 @@ public class WndSettings extends WndTabbed {
 
 			if (DeviceCompat.hasHardKeyboard()){
 
-				btnKeyBindings = new RedButton(Messages.get(this, "key_bindings")){
-					@Override
-					protected void onClick() {
-						super.onClick();
-						ShatteredPixelDungeon.scene().addToFront(new WndKeyBindings(false));
-					}
-				};
+				btnKeyBindings = new RedButton(Messages.get(this, "key_bindings"));
 
 				add(btnKeyBindings);
 			}
 
 			if (ControllerHandler.isControllerConnected()){
-				btnControllerBindings = new RedButton(Messages.get(this, "controller_bindings")){
-					@Override
-					protected void onClick() {
-						super.onClick();
-						ShatteredPixelDungeon.scene().addToFront(new WndKeyBindings(true));
-					}
-				};
+				btnControllerBindings = new RedButton(Messages.get(this, "controller_bindings"));
 
 				add(btnControllerBindings);
 			}

@@ -31,8 +31,8 @@ public class WndInfoPlant extends WndTitledMessage {
 	
 	public WndInfoPlant(Plant plant, Hero hero) {
 		
-		super(TerrainFeaturesTilemap.tile( plant.pos, Dungeon.level.map[plant.pos]),
-				Messages.titleCase(plant.name()), plant.desc(), hero);
+		super(hero, TerrainFeaturesTilemap.tile( plant.pos, Dungeon.level.map[plant.pos]),
+				Messages.titleCase(plant.name()), plant.desc());
 
 	}
 }

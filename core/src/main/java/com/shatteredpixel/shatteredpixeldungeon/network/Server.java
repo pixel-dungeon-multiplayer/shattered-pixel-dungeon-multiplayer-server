@@ -203,7 +203,6 @@ public class Server extends Thread {
         SERIALIZERS.register(WndInfoTalent.class, new WndInfoTalentSerializer());
         SERIALIZERS.register(WndInfoTrap.class, new WndInfoTrapSerializer());
         SERIALIZERS.register(WndJournalItem.class, new WndJournalItemSerializer());
-        SERIALIZERS.register(WndList.class, new WndListSerializer());
         SERIALIZERS.register(WndMessage.class, new WndMessageSerializer());
         SERIALIZERS.register(WndMonkAbilities.class, new WndMonkAbilitiesSerializer());
         SERIALIZERS.register(WndOptions.class, new WndOptionsSerializer());

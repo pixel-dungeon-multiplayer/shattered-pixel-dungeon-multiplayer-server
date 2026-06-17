@@ -22,7 +22,7 @@ public class WndTitledMessageSerializer<T extends WndTitledMessage> extends Wind
         WndOptionContract contract = new WndOptionContract();
         contract.titleText = obj.title() == null ? LocalizedString.raw("") : Objects.requireNonNull(obj.title());
         contract.message = obj.message() == null ? LocalizedString.raw("") : Objects.requireNonNull(obj.message());
-        contract.titleIcon = WndOptionContract.TitleIcon.fromImage(obj.titleIcon());
+        contract.titleIcon = WndOptionContract.TitleIcon.fromImage(obj.titleIcon(), ctx, profile);
         contract.layout = WndOptionContract.Layout.titledMessage(obj.highlightingForNetwork());
         contract.fillFromTitlebar(obj.titlebar(), ctx, profile);
 

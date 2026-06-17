@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializationContext;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
 import com.watabou.noosa.Image;
@@ -65,7 +66,7 @@ final class WndOptionContract {
             this.titleColor = ((WndInfoMob.MobTitle) titlebar).color;
             this.titleText = ((WndInfoMob.MobTitle) titlebar).title;
         } else if (titlebar instanceof IconTitle) {
-            this.titleIcon = TitleIcon.fromImage(((IconTitle) titlebar).imIcon);
+            this.titleIcon = TitleIcon.fromImage(((IconTitle) titlebar).imIcon, ctx, profile);
             this.titleColor = ((IconTitle) titlebar).color;
             this.titleText = ((IconTitle) titlebar).text;
         } else {
@@ -128,7 +129,7 @@ final class WndOptionContract {
             this.json = args;
         }
 
-        static @NotNull TitleIcon fromImage(@Nullable Image image) {
+        static @NotNull TitleIcon fromImage(@Nullable Image image, SerializationContext ctx, String profile) {
             if (image == null) {
                 return none();
             }
@@ -136,6 +137,8 @@ final class WndOptionContract {
                 return charSprite(((CharSprite) image).getSpriteAsset(), ((CharSprite) image).spriteName());
             } else if (image instanceof ItemSprite) {
                 return itemSprite((ItemSprite) image);
+            } else if (image instanceof BuffIcon) {
+                return buffIcon((BuffIcon) image, ctx, profile);
             }
             throw new IllegalArgumentException("Unsupported image type: " + image.getClass().getName());
         }
@@ -184,6 +187,13 @@ final class WndOptionContract {
             args.put("buff", buffs);
             return new TitleIcon("mob_titlebar", args);
         }
+
+        private static @NotNull TitleIcon buffIcon(BuffIcon image, SerializationContext ctx, String profile) {
+            JSONObject args = new JSONObject();
+            args.put("buff", ctx.serialize(image.buff, profile));
+            return new TitleIcon("buff_titlebar", args);
+        }
+
 
         @NotNull JSONObject toJson() {
             return json;

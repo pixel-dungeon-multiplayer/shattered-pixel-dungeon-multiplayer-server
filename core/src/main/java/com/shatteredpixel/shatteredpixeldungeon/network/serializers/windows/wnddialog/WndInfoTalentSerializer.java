@@ -1,9 +1,7 @@
-package com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows;
+package com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wnddialog;
 
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializationContext;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.ui.ImageIcon;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wnddialog.WndDialogContract;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wnddialog.WndDialogSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoTalent;
 import org.jetbrains.annotations.NotNull;
 

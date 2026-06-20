@@ -180,6 +180,7 @@ public class Server extends Thread {
         SERIALIZERS.register(WndBadge.class, new WndBadgeSerializer());
         SERIALIZERS.register(WndBag.class, new WndBagSerializer());
         SERIALIZERS.register(WndBlacksmith.class, new WndBlacksmithSerializer());
+        SERIALIZERS.register(WndBlacksmith.WndReforge.class, new WndReforgeSerializer());
         SERIALIZERS.register(WndBlacksmith.WndSmith.class, new WndSmithSerializer());
         SERIALIZERS.register(WndChallenges.class, new WndChallengesSerializer());
         SERIALIZERS.register(WndChooseAbility.class, new WndChooseAbilitySerializer());
@@ -187,14 +188,12 @@ public class Server extends Thread {
         SERIALIZERS.register(WndClericSpells.class, new WndClericSpellsSerializer());
         SERIALIZERS.register(WndCombo.class, new WndComboSerializer());
         SERIALIZERS.register(WndEnergizeItem.class, new WndEnergizeItemSerializer());
-        SERIALIZERS.register(WndError.class, new WndErrorSerializer());
         SERIALIZERS.register(WndGame.class, new WndGameSerializer());
         SERIALIZERS.register(WndHero.class, new WndHeroSerializer());
         SERIALIZERS.register(WndHeroInfo.class, new WndHeroInfoSerializer());
         SERIALIZERS.register(WndImp.class, new WndImpSerializer());
         SERIALIZERS.register(WndInfoCell.class, new WndInfoCellSerializer());
         SERIALIZERS.register(WndInfoItem.class, new WndInfoItemSerializer<WndInfoItem>());
-        SERIALIZERS.register(WndInfoMob.class, new WndInfoMobSerializer());
         SERIALIZERS.register(WndInfoSubclass.class, new WndInfoSubclassSerializer());
         SERIALIZERS.register(WndInfoTalent.class, new WndInfoTalentSerializer());
         SERIALIZERS.register(WndJournalItem.class, new WndJournalItemSerializer());
@@ -217,7 +216,6 @@ public class Server extends Thread {
         SERIALIZERS.register(StoneOfIntuition.WndGuess.class, new WndGuessSerializer());
         SERIALIZERS.register(ScrollOfMetamorphosis.WndMetamorphChoose.class, new WndMetamorphChooseSerializer());
         SERIALIZERS.register(ScrollOfMetamorphosis.WndMetamorphReplace.class, new WndMetamorphReplaceSerializer());
-        SERIALIZERS.register(ScrollOfEnchantment.WndEnchantSelect.class, new WndEnchantSelectSerializer());
         SERIALIZERS.register(ScrollOfEnchantment.WndGlyphSelect.class, new WndGlyphSelectSerializer());
         SERIALIZERS.register(TrinketCatalyst.WndTrinket.class, new WndTrinketSerializer());
         SERIALIZERS.register(DriedRose.WndGhostHero.class, new WndGhostHeroSerializer());

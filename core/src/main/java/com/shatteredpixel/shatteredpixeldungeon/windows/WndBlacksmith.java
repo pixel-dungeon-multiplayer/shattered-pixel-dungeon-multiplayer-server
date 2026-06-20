@@ -58,9 +58,11 @@ public class WndBlacksmith extends Window {
 	private static final int WIDTH_L = 180;
 
 	private static final int GAP  = 2;
+	private final Blacksmith troll;
 
 	public WndBlacksmith( Blacksmith troll, Hero hero ) {
 		super(hero);
+		this.troll = troll;
 
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 
@@ -205,7 +207,11 @@ public class WndBlacksmith extends Window {
 
 	}
 
-	protected static class WndReforge extends Window {
+	public Blacksmith troll() {
+		return troll;
+	}
+
+	public static class WndReforge extends Window {
 
 		private static final int WIDTH		= 120;
 
@@ -215,20 +221,22 @@ public class WndBlacksmith extends Window {
 
 		private ItemButton btnPressed;
 
-		private ItemButton btnItem1;
-		private ItemButton btnItem2;
-		private RedButton btnReforge;
+		public IconTitle titlebar;
+		public RenderedTextBlock message;
+		public ItemButton btnItem1;
+		public ItemButton btnItem2;
+		public RedButton btnReforge;
 
 		public WndReforge( Blacksmith troll, Window wndParent ) {
-			super();
+			super(wndParent == null ? null : wndParent.getOwnerHero());
 
-			IconTitle titlebar = new IconTitle();
+			titlebar = new IconTitle();
 			titlebar.icon( troll.sprite() );
 			titlebar.label( Messages.titleCase( troll.name() ) );
 			titlebar.setRect( 0, 0, WIDTH, 0 );
 			add( titlebar );
 
-			RenderedTextBlock message = PixelScene.renderTextBlock( Messages.get(this, "message"), 6 );
+			message = PixelScene.renderTextBlock( Messages.get(this, "message"), 6 );
 			message.maxWidth( WIDTH);
 			message.setPos(0, titlebar.bottom() + GAP);
 			add( message );
@@ -458,9 +466,11 @@ public class WndBlacksmith extends Window {
 		private static final int BTN_SIZE	= 28;
 		private static final int BTN_GAP	= 4;
 		private static final int GAP		= 2;
+		private final Blacksmith troll;
 
 		public WndSmith( Blacksmith troll, Hero hero ){
 			super();
+			this.troll = troll;
 
 			IconTitle titlebar = new IconTitle();
 			titlebar.icon(troll.sprite());
@@ -505,10 +515,14 @@ public class WndBlacksmith extends Window {
 			//do nothing
 		}
 
+		public Blacksmith troll() {
+			return troll;
+		}
+
 		private class RewardWindow extends WndInfoItem {
 
 			public RewardWindow( Blacksmith troll, Hero hero, Item item ) {
-				super(item, hero);
+				super(hero, item);
 
 				RedButton btnConfirm = new RedButton(Messages.get(WndSadGhost.class, "confirm")){
 					@Override

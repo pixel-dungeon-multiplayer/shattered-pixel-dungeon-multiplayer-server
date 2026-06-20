@@ -55,20 +55,24 @@ public class WndResurrect extends Window {
 	private ItemButton btnPressed;
 
 	RedButton btnContinue;
+	public IconTitle titlebar;
+	public RenderedTextBlock message;
+	private final Ankh ankh;
 	
 	public WndResurrect(Hero hero, final Ankh ankh ) {
 		
 		super(hero);
+		this.ankh = ankh;
 		
 		instance = this;
 		
-		IconTitle titlebar = new IconTitle();
+		titlebar = new IconTitle();
 		titlebar.icon( new ItemSprite( ankh.image(), null ) );
 		titlebar.label( Messages.titleCase(Messages.get(this, "title")) );
 		titlebar.setRect( 0, 0, WIDTH, 0 );
 		add( titlebar );
 		
-		RenderedTextBlock message = PixelScene.renderTextBlock(Messages.get(this, "message"), 6 );
+		message = PixelScene.renderTextBlock(Messages.get(this, "message"), 6 );
 		message.maxWidth(WIDTH);
 		message.setPos(0, titlebar.bottom() + GAP);
 		add( message );
@@ -179,5 +183,21 @@ public class WndResurrect extends Window {
 	
 	@Override
 	public void onBackPressed() {
+	}
+
+	public Ankh ankh() {
+		return ankh;
+	}
+
+	public Item firstItem() {
+		return btnItem1.item();
+	}
+
+	public Item secondItem() {
+		return btnItem2.item();
+	}
+
+	public RedButton confirmButton() {
+		return btnContinue;
 	}
 }

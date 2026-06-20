@@ -2,12 +2,12 @@ package com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wnd
 
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializationContext;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.WindowSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndSadGhost;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndResurrect;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
-public class WndSadGhostSerializer extends WindowSerializer<WndSadGhost> {
+public class WndResurrectSerializer extends WindowSerializer<WndResurrect> {
 
     @Override
     protected @NotNull String type() {
@@ -15,13 +15,17 @@ public class WndSadGhostSerializer extends WindowSerializer<WndSadGhost> {
     }
 
     @Override
-    protected @Nullable JSONObject args(@NotNull WndSadGhost obj, @NotNull SerializationContext ctx, @NotNull String profile) {
+    protected @Nullable JSONObject args(@NotNull WndResurrect obj, @NotNull SerializationContext ctx, @NotNull String profile) {
         WndOptionContract contract = new WndOptionContract();
         contract.fillFromTitlebar(obj.titlebar, ctx, profile);
         contract.message = obj.message.LocalizedStringText();
         contract.layout = WndOptionContract.Layout.titledMessage();
-        contract.itemSlots.add(new WndOptionContract.ItemSlot("weapon", obj.btnWeapon.item(), true, "choose_weapon", false));
-        contract.itemSlots.add(new WndOptionContract.ItemSlot("armor", obj.btnArmor.item(), true, "choose_armor", false));
+        contract.itemSlots.add(new WndOptionContract.ItemSlot("first_item", obj.firstItem(), true, "select_first_item", true));
+        contract.itemSlots.add(new WndOptionContract.ItemSlot("second_item", obj.secondItem(), true, "select_second_item", true));
+        contract.actions.add(new WndOptionContract.Action("confirm", obj.confirmButton().LocalizedStringText(), obj.confirmButton().active));
         return contract.toJson(ctx, profile);
     }
 }
+
+
+

@@ -203,9 +203,9 @@ public class WndHero extends WndTabbed {
 				}
 				if (foundBuff != null) {
 					if (ShatteredPixelDungeon.scene() instanceof GameScene){
-						GameScene.show(new WndInfoBuff(foundBuff));
+						GameScene.show(new WndInfoBuff(hero, foundBuff));
 					} else {
-						ShatteredPixelDungeon.scene().addToFront(new WndInfoBuff(foundBuff));
+						ShatteredPixelDungeon.scene().addToFront(new WndInfoBuff(hero, foundBuff));
 					}
 				}
 			} else if ("click_talent".equals(action)) {
@@ -228,7 +228,7 @@ public class WndHero extends WndTabbed {
 				if (talent != null && hero.isAlive()) {
 					final Talent fTalent = talent;
 					if (hero.talentPointsAvailable(tier) > 0 && pointsInTalent < talent.maxPoints()) {
-						WndInfoTalent toAdd = new WndInfoTalent(talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback() {
+						WndInfoTalent toAdd = new WndInfoTalent(hero, talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback() {
 							@Override
 							public LocalizedString prompt() {
 								return Messages.titleCase(Messages.get(WndInfoTalent.class, "upgrade"));
@@ -241,7 +241,7 @@ public class WndHero extends WndTabbed {
 						});
 						ShatteredPixelDungeon.scene().addToFront(toAdd);
 					} else {
-						WndInfoTalent toAdd = new WndInfoTalent(talent, pointsInTalent, null);
+						WndInfoTalent toAdd = new WndInfoTalent(hero, talent, pointsInTalent, null);
 						ShatteredPixelDungeon.scene().addToFront(toAdd);
 					}
 				}
@@ -459,7 +459,7 @@ public class WndHero extends WndTabbed {
 			
 			protected boolean onClick ( float x, float y ) {
 				if (inside( x, y )) {
-					GameScene.show(new WndInfoBuff(buff));
+					GameScene.show(new WndInfoBuff(getOwnerHero(), buff));
 					return true;
 				} else {
 					return false;

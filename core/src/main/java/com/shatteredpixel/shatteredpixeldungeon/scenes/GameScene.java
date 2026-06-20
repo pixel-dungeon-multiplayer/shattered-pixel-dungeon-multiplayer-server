@@ -1424,7 +1424,7 @@ public class GameScene extends PixelScene {
 			//traps are often harmful to trigger, so let the player ID just by examine
 			Bestiary.setSeen(o.getClass());
 		} else {
-			GameScene.show(new WndMessage(Messages.get(GameScene.class, "dont_know")));
+			GameScene.show(new WndMessage(hero, Messages.get(GameScene.class, "dont_know")));
 		}
 	}
 

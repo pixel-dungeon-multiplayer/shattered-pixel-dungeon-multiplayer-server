@@ -356,11 +356,7 @@ public class BuffIndicator extends Component {
 			text.x = this.x + width() - text.width() - 1;
 			text.y = this.y + width() - text.baseLine() - 2;
 		}
-
-		@Override
-		protected void onClick() {
-			if (buff.icon() != NONE) GameScene.show(new WndInfoBuff(buff));
-		}
+		
 
 		@Override
 		protected void onPointerDown() {

@@ -185,6 +185,21 @@ public class WndResurrect extends Window {
 	public void onBackPressed() {
 	}
 
+	@Override
+	protected void onSelect(int button) {
+		switch (button) {
+			case 0:
+				btnItem1.onClickNetwork();
+				break;
+			case 1:
+				btnItem2.onClickNetwork();
+				break;
+			case 2:
+				btnContinue.onClickNetwork();
+				break;
+		}
+	}
+
 	public Ankh ankh() {
 		return ankh;
 	}

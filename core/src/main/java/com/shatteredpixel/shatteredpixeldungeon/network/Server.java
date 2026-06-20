@@ -17,6 +17,9 @@ import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.network.actions.*;
 import com.shatteredpixel.shatteredpixeldungeon.network.actions.serializers.*;
 import com.shatteredpixel.shatteredpixeldungeon.network.NetworkPacket.SerializedAction;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wnddialog.WndResurrectSerializer;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wnddialog.WndSadGhostSerializer;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wnddialog.wndoptions.*;
 import com.shatteredpixel.shatteredpixeldungeon.plugins.PluginLoader;
 import com.shatteredpixel.shatteredpixeldungeon.plugins.PluginManager;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.AlchemyScene;
@@ -73,7 +76,6 @@ import com.watabou.utils.RectF;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.RectSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.RectFSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.*;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wndoptions.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.*;
 
 public class Server extends Thread {

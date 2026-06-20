@@ -44,9 +44,23 @@ public class WndTextInput extends Window {
 
 	protected RedButton btnCopy;
 	protected RedButton btnPaste;
+	private final LocalizedString title;
+	private final LocalizedString body;
+	private final LocalizedString initialValue;
+	private final int maxLength;
+	private final boolean multiLine;
+	private final LocalizedString positiveText;
+	private final LocalizedString negativeText;
 
 	public WndTextInput(final LocalizedString title, final LocalizedString body, final LocalizedString initialValue, final int maxLength,
 						final boolean multiLine, final LocalizedString posTxt, final LocalizedString negTxt) {
+		this.title = title;
+		this.body = body;
+		this.initialValue = initialValue;
+		this.maxLength = maxLength;
+		this.multiLine = multiLine;
+		this.positiveText = posTxt;
+		this.negativeText = negTxt;
 
 		//need to offset to give space for the soft keyboard
 		if (PixelScene.landscape()) {
@@ -228,6 +242,34 @@ public class WndTextInput extends Window {
 	}
 
 	public void onSelect(boolean positive, String text){ }
+
+	public LocalizedString title() {
+		return title;
+	}
+
+	public LocalizedString body() {
+		return body;
+	}
+
+	public LocalizedString initialValue() {
+		return initialValue;
+	}
+
+	public int maxLength() {
+		return maxLength;
+	}
+
+	public boolean multiLine() {
+		return multiLine;
+	}
+
+	public LocalizedString positiveText() {
+		return positiveText;
+	}
+
+	public LocalizedString negativeText() {
+		return negativeText;
+	}
 
 	@Override
 	public void onBackPressed() {

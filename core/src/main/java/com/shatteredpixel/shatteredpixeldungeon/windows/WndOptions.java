@@ -203,4 +203,8 @@ public class WndOptions extends Window {
 	protected Image getIcon( int index ) {
 		return null;
 	}
+
+	public Image optionIcon(int index) {
+		return hasIcon(index) ? getIcon(index) : null;
+	}
 }

@@ -1,45 +1,38 @@
-package com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wndoptions;
+package com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wnddialog.wndoptions;
 
 import com.nikita22007.multiplayer.utils.text.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializationContext;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.ui.ImageIcon;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.WindowSerializer;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wnddialog.WndDialogContract;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wnddialog.WndDialogSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.Image;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.json.JSONObject;
 
-public class WndOptionsSerializer<T extends WndOptions> extends WindowSerializer<T> {
+import java.util.Objects;
 
-    @Override
-    protected @NotNull String type() {
-        return "wnd_option";
-    }
+public class WndOptionsSerializer<T extends WndOptions> extends WndDialogSerializer<T> {
 
     @Override
-    protected @Nullable JSONObject args(@NotNull T obj, @NotNull SerializationContext ctx, @NotNull String profile) {
-        WndOptions.WndOptionsParams params = obj.params();
-        if (params == null) {
-            return null;
-        }
+    protected @NotNull WndDialogContract getContract(@NotNull T obj, @NotNull SerializationContext ctx, @NotNull String profile) {
+        WndOptions.WndOptionsParams params = Objects.requireNonNull(obj.params());
 
-        WndOptionContract contract = new WndOptionContract();
+        WndDialogContract contract = new WndDialogContract();
         contract.titleText = params.title;
         contract.titleColor = params.titleColor;
         contract.message = params.message;
-        contract.layout = WndOptionContract.Layout.options();
+        contract.layout = WndDialogContract.Layout.options();
         contract.titleIcon = titleIcon(params);
         for (int i = 0; i < params.options.size(); i++) {
             LocalizedString option = params.options.get(i);
-            contract.options.add(new WndOptionContract.Option(
+            contract.actions.add(new WndDialogContract.Action(
                     option,
                     obj.hasInfoForNetwork(i),
                     obj.enabledForNetwork(i),
                     optionIcon(obj, i, ctx, profile)));
         }
 
-        return contract.toJson(ctx, profile);
+        return contract;
     }
 
     private @NotNull ImageIcon titleIcon(@NotNull WndOptions.WndOptionsParams params) {

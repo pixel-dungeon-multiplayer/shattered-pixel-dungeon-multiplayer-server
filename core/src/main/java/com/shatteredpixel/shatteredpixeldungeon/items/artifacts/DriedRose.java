@@ -963,7 +963,7 @@ public class DriedRose extends Artifact {
 				@Override
 				protected boolean onLongClick() {
 					if (item() != null && item().name() != null){
-						GameScene.show(new WndInfoItem(item(), curUser));
+						GameScene.show(new WndInfoItem(curUser, item()));
 						return true;
 					}
 					return false;
@@ -1039,7 +1039,7 @@ public class DriedRose extends Artifact {
 				@Override
 				protected boolean onLongClick() {
 					if (item() != null && item().name() != null){
-						GameScene.show(new WndInfoItem(item(), getOwnerHero()));
+						GameScene.show(new WndInfoItem(getOwnerHero(), item()));
 						return true;
 					}
 					return false;
@@ -1089,9 +1089,9 @@ public class DriedRose extends Artifact {
 		@Override
 		public void onSelect(int button) {
 			if (button == 0) {
-				btnWeapon.onClickPublicVersion();
+				btnWeapon.onClickNetwork();
 			} else if (button == 1) {
-				btnArmor.onClickPublicVersion();
+				btnArmor.onClickNetwork();
 			} else {
 				return;
 			}

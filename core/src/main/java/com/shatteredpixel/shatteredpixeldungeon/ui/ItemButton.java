@@ -21,11 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.ui;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.watabou.noosa.NinePatch;
-import com.nikita22007.multiplayer.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
 
 //essentially a RedButton version of ItemSlot
@@ -40,7 +37,7 @@ public class ItemButton extends Component {
 	}
 
 	protected void onClick() {}
-	public final void onClickPublicVersion() {onClick();}
+	public final void onClickNetwork() {onClick();}
 
 	protected boolean onLongClick(){
 		return false;

@@ -50,11 +50,9 @@ import com.nikita22007.multiplayer.noosa.audio.Sample;
 import com.watabou.pixeldungeon.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -173,7 +171,7 @@ public class AlchemyScene extends Window {
 				// nobody should call this but we add fallback for it
 				Item item = outputs[button - 300];
 				if (item != null && item.trueName() != null)
-					GameScene.show(new WndInfoItem(item, getOwnerHero()));
+					GameScene.show(new WndInfoItem(getOwnerHero(), item));
 			}
 			break;
 		}
@@ -490,7 +488,7 @@ public class AlchemyScene extends Window {
 		protected boolean onLongClick() {
 			Item item = InputButton.this.item;
 			if (item != null){
-				GameScene.show(new WndInfoItem(item, AlchemyScene.this.getOwnerHero()));
+				GameScene.show(new WndInfoItem(AlchemyScene.this.getOwnerHero(), item));
 				return true;
 			}
 			return false;

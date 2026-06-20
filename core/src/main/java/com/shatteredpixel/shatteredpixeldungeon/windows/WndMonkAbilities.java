@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.nikita22007.multiplayer.utils.text.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MonkEnergy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -31,21 +32,26 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 
+import java.util.ArrayList;
+
 public class WndMonkAbilities extends Window {
 
 	private static final int WIDTH_P = 120;
 	private static final int WIDTH_L = 180;
 
 	private static final int MARGIN  = 2;
+	private final MonkEnergy energyBuff;
+	public RenderedTextBlock title;
+	public ArrayList<RedButton> buttons;
 
-	public WndMonkAbilities( MonkEnergy energyBuff ){
-		//todo fix me
-		super();
+	public WndMonkAbilities(Hero hero, MonkEnergy energyBuff ){
+		super(hero);
+		this.energyBuff = energyBuff;
 
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 
 		float pos = MARGIN;
-		RenderedTextBlock title = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(this, "title")), 9);
+		title = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(this, "title")), 9);
 		title.hardlight(TITLE_COLOR);
 		title.setPos((width-title.width())/2, pos);
 		title.maxWidth(width - MARGIN * 2);
@@ -53,6 +59,7 @@ public class WndMonkAbilities extends Window {
 
 		pos = title.bottom() + 3*MARGIN;
 
+		buttons = new ArrayList<>();
 		for (MonkEnergy.MonkAbility abil : MonkEnergy.MonkAbility.abilities) {
 			LocalizedString text = LocalizedString.concat("_", Messages.titleCase(abil.name()), " ", Messages.get(this, "energycost", abil.energyCost()), ":_ " + abil.desc(getOwnerHero()));
 			RedButton moveBtn = new RedButton(text, 6){
@@ -74,11 +81,19 @@ public class WndMonkAbilities extends Window {
 			moveBtn.setRect(0, pos, width, moveBtn.reqHeight());
 			moveBtn.enable(abil.usable(energyBuff));
 			add(moveBtn);
+			buttons.add(moveBtn);
 			pos = moveBtn.bottom() + MARGIN;
 		}
 
 		resize(width, (int)pos);
 
+	}
+
+	@Override
+	protected void onSelect(int button) {
+		if (button >= 0 && button < buttons.size()) {
+			buttons.get(button).onClickNetwork();
+		}
 	}
 
 	MonkEnergy.MonkAbility abilityBeingUsed;
@@ -95,5 +110,9 @@ public class WndMonkAbilities extends Window {
 			return abilityBeingUsed.targetingPrompt();
 		}
 	};
+
+	public MonkEnergy energyBuff() {
+		return energyBuff;
+	}
 
 }

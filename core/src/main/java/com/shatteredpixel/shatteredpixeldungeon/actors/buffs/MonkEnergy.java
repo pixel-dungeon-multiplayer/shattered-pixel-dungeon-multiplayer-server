@@ -275,7 +275,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 	@Override
 	public void doAction(Hero hero) {
-		GameScene.show(new WndMonkAbilities(this));
+		GameScene.show(new WndMonkAbilities(hero, this));
 	}
 
 	public static abstract class MonkAbility {

@@ -189,7 +189,6 @@ public class Server extends Thread {
         SERIALIZERS.register(WndEnergizeItem.class, new WndEnergizeItemSerializer());
         SERIALIZERS.register(WndError.class, new WndErrorSerializer());
         SERIALIZERS.register(WndGame.class, new WndGameSerializer());
-        SERIALIZERS.register(WndGameInProgress.class, new WndGameInProgressSerializer());
         SERIALIZERS.register(WndHero.class, new WndHeroSerializer());
         SERIALIZERS.register(WndHeroInfo.class, new WndHeroInfoSerializer());
         SERIALIZERS.register(WndImp.class, new WndImpSerializer());

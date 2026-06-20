@@ -162,11 +162,12 @@ public class TrinketCatalyst extends Item {
 
 		private static final int NUM_TRINKETS = 4;
 		private final TrinketCatalyst catalyst;
+		public IconTitle titlebar;
 
 		public WndTrinket(TrinketCatalyst cata, Hero hero) {
 			super(hero);
 			this.catalyst = cata;
-			IconTitle titlebar = new IconTitle();
+			titlebar = new IconTitle();
 			titlebar.icon(new ItemSprite(cata));
 			titlebar.label(Messages.titleCase(Messages.get(TrinketCatalyst.class, "window_title")));
 			titlebar.setRect(0, 0, WIDTH, 0);

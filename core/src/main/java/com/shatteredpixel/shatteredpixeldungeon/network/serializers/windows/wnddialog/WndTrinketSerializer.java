@@ -12,9 +12,8 @@ public class WndTrinketSerializer extends WndDialogSerializer<TrinketCatalyst.Wn
     @Override
     protected @NotNull WndDialogContract getContract(@NotNull TrinketCatalyst.WndTrinket obj, @NotNull SerializationContext ctx, @NotNull String profile) {
         WndDialogContract contract = new WndDialogContract();
-        contract.titleText = Messages.titleCase(Messages.get(TrinketCatalyst.class, "window_title"));
+        contract.fillFromTitlebar(obj.titlebar, ctx, profile);
         contract.message = Messages.get(TrinketCatalyst.class, "window_text");
-        contract.titleIcon = ImageIcon.itemSprite(obj.catalyst().image(), null);
         contract.layout = WndDialogContract.Layout.titledMessage();
         for (Trinket trinket : obj.rolledTrinkets()) {
             contract.itemSlots.add(new WndDialogContract.ItemSlot(trinket, true, true));

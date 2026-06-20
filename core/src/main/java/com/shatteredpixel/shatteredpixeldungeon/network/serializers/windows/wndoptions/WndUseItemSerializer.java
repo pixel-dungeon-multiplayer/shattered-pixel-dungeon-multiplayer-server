@@ -14,10 +14,9 @@ public class WndUseItemSerializer extends WndInfoItemSerializer<WndUseItem> {
     }
 
     @Override
-    protected @NotNull WndOptionContract getContract(@NotNull WndInfoItem obj, @NotNull SerializationContext ctx, @NotNull String profile) {
+    protected @NotNull WndOptionContract getContract(@NotNull WndUseItem obj, @NotNull SerializationContext ctx, @NotNull String profile) {
         WndOptionContract contract = super.getContract(obj, ctx, profile);
-        WndUseItem wnd = (WndUseItem)obj;
-        for (RedButton button : wnd.buttons) {
+        for (RedButton button : obj.buttons) {
             contract.options.add(new WndOptionContract.Option(button.LocalizedStringText()));
         }
         return contract;

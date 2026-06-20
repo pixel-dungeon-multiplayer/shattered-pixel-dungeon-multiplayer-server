@@ -38,17 +38,22 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Game;
 
+import java.util.ArrayList;
+
 public class WndEnergizeItem extends WndInfoItem {
 
 	private static final float GAP = 2;
 	private static final int BTN_HEIGHT = 18;
 
 	private WndBag owner;
+	private final Item item;
+	public final ArrayList<RedButton> buttons = new ArrayList<>();
 
-	public WndEnergizeItem(Item item, WndBag owner) {
-		super(item, owner.getOwnerHero());
+	public WndEnergizeItem(Hero hero, Item item, WndBag ownerWnd) {
+		super(hero, item);
 
-		this.owner = owner;
+		this.owner = ownerWnd;
+		this.item = item;
 
 		float pos = height;
 
@@ -58,7 +63,7 @@ public class WndEnergizeItem extends WndInfoItem {
 				@Override
 				protected void onClick() {
 					if (item instanceof Trinket){
-						Game.scene().addToFront(new WndOptions(new ItemSprite(item), Messages.titleCase(item.name()),
+						Game.scene().addToFront(new WndOptions(hero, new ItemSprite(item), Messages.titleCase(item.name()),
 								Messages.get(WndEnergizeItem.class, "trinket_warn"),
 								Messages.get(WndEnergizeItem.class, "trinket_yes"),
 								Messages.get(WndEnergizeItem.class, "trinket_no")){
@@ -84,6 +89,7 @@ public class WndEnergizeItem extends WndInfoItem {
 			};
 			btnEnergize.setRect(0, pos + GAP, width, BTN_HEIGHT);
 			btnEnergize.icon(new ItemSprite(ItemSpriteSheet.ENERGY));
+			buttons.add(btnEnergize);
 			add(btnEnergize);
 
 			pos = btnEnergize.bottom();
@@ -100,6 +106,7 @@ public class WndEnergizeItem extends WndInfoItem {
 			};
 			btnEnergize1.setRect(0, pos + GAP, width, BTN_HEIGHT);
 			btnEnergize1.icon(new ItemSprite(ItemSpriteSheet.ENERGY));
+			buttons.add(btnEnergize1);
 			add(btnEnergize1);
 			RedButton btnEnergizeAll = new RedButton(Messages.get(this, "energize_all", energyAll)) {
 				@Override
@@ -110,6 +117,7 @@ public class WndEnergizeItem extends WndInfoItem {
 			};
 			btnEnergizeAll.setRect(0, btnEnergize1.bottom() + 1, width, BTN_HEIGHT);
 			btnEnergizeAll.icon(new ItemSprite(ItemSpriteSheet.ENERGY));
+			buttons.add(btnEnergizeAll);
 			add(btnEnergizeAll);
 
 			pos = btnEnergizeAll.bottom();
@@ -118,6 +126,10 @@ public class WndEnergizeItem extends WndInfoItem {
 
 		resize(width, (int) pos);
 
+	}
+
+	public Item item() {
+		return item;
 	}
 
 	@Override
@@ -223,13 +235,11 @@ public class WndEnergizeItem extends WndInfoItem {
 			if (item != null) {
 				WndBag parentWnd = openItemSelector(getOwner());
 				if (ShatteredPixelDungeon.scene() instanceof GameScene) {
-					GameScene.show(new WndEnergizeItem(item, parentWnd));
+					GameScene.show(new WndEnergizeItem(owner, item, parentWnd));
 				} else {
-					ShatteredPixelDungeon.scene().addToFront(new WndEnergizeItem(item, parentWnd));
+					ShatteredPixelDungeon.scene().addToFront(new WndEnergizeItem(owner, item, parentWnd));
 				}
 			}
 		}
 	};
 }
-
-

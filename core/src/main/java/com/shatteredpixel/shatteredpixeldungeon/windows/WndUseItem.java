@@ -32,7 +32,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class WndUseItem extends WndInfoItem {
 
@@ -46,7 +45,7 @@ public class WndUseItem extends WndInfoItem {
 
 	public WndUseItem(@Nullable final Window ownerWnd, final Item item, @NotNull Hero ownerHero ) {
 		
-		super(item, ownerHero);
+		super(ownerHero, item);
 
 		this.owner = ownerWnd;
 		this.item = item;

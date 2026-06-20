@@ -14,11 +14,11 @@ public class WndInfoItemSerializer<T extends WndInfoItem> extends WindowSerializ
     }
 
     @Override
-    protected @NotNull JSONObject args(@NotNull WndInfoItem obj, @NotNull SerializationContext ctx, @NotNull String profile) {
+    protected @NotNull JSONObject args(@NotNull T obj, @NotNull SerializationContext ctx, @NotNull String profile) {
         return getContract(obj, ctx, profile).toJson(ctx, profile);
     }
 
-    protected @NotNull WndOptionContract getContract(@NotNull WndInfoItem obj, @NotNull SerializationContext ctx, @NotNull String profile) {
+    protected @NotNull WndOptionContract getContract(@NotNull T obj, @NotNull SerializationContext ctx, @NotNull String profile) {
         WndOptionContract contract = new WndOptionContract();
         contract.fillFromTitlebar(obj.titlebar, ctx, profile);
         contract.message = obj.txtInfo.LocalizedStringText();

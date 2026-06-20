@@ -28,7 +28,6 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.watabou.noosa.ui.Component;
 import org.jetbrains.annotations.NotNull;
 
 public class WndInfoItem extends Window {
@@ -61,7 +60,7 @@ public class WndInfoItem extends Window {
 		}
 	}
 	
-	public WndInfoItem(Item item, @NotNull Hero hero) {
+	public WndInfoItem(@NotNull Hero hero, Item item) {
 		super(hero);
 
 		if (INSTANCE != null){

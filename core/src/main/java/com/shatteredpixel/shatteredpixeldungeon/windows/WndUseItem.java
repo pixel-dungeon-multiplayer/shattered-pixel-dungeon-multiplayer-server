@@ -28,9 +28,11 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ItemJournalButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class WndUseItem extends WndInfoItem {
 
@@ -40,19 +42,19 @@ public class WndUseItem extends WndInfoItem {
 
 	public Window owner;
 	public Item item;
+	public final ArrayList<RedButton> buttons = new ArrayList<>();
 
-	public WndUseItem(@Nullable final Window ownerWnd, final Item item, Hero ownerHero ) {
+	public WndUseItem(@Nullable final Window ownerWnd, final Item item, @NotNull Hero ownerHero ) {
 		
 		super(item, ownerHero);
 
-		this.owner = owner;
+		this.owner = ownerWnd;
 		this.item = item;
 
 		float y = height;
 		
 		if (ownerHero.isAlive() && getOwnerHero().belongings.contains(item)) {
 			y += GAP;
-			ArrayList<RedButton> buttons = new ArrayList<>();
 			for (final String action : item.actions(getOwnerHero())) {
 
 				RedButton btn = new RedButton(item.actionName(action, getOwnerHero()), 8) {
@@ -86,6 +88,13 @@ public class WndUseItem extends WndInfoItem {
 		}
 
 		resize( width, (int)(y) );
+	}
+
+	@Override
+	protected void onSelect(int button) {
+		if (button < buttons.size()) {
+			buttons.get(button).onClickNetwork();
+		}
 	}
 
 	private static float layoutButtons(ArrayList<RedButton> buttons, float width, float y){

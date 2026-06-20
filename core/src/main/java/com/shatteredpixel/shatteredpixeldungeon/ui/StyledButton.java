@@ -40,14 +40,14 @@ public class StyledButton extends Button {
 	public boolean multiline;
 
 	public StyledButton(Chrome.Type type, LocalizedString label ) {
-		this(type, label.toString());
+		this(type, label, 9);
 	}
 
 	public StyledButton(Chrome.Type type, String label ) {
-		this(type, label, 9);
+		this(type, LocalizedString.raw(label));
 	}
 	
-	public StyledButton(Chrome.Type type, String label, int size ){
+	public StyledButton(Chrome.Type type, LocalizedString label, int size ){
 		super();
 		
 		bg = Chrome.get( type );
@@ -131,6 +131,10 @@ public class StyledButton extends Button {
 
 	public String text(){
 		return text.text();
+	}
+
+	public LocalizedString LocalizedStringText() {
+		return text.LocalizedStringText();
 	}
 	
 	public void textColor( int value ) {

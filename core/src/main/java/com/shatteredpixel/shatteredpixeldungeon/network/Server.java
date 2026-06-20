@@ -193,15 +193,11 @@ public class Server extends Thread {
         SERIALIZERS.register(WndHero.class, new WndHeroSerializer());
         SERIALIZERS.register(WndHeroInfo.class, new WndHeroInfoSerializer());
         SERIALIZERS.register(WndImp.class, new WndImpSerializer());
-        SERIALIZERS.register(WndInfoArmorAbility.class, new WndInfoArmorAbilitySerializer());
-        SERIALIZERS.register(WndInfoBuff.class, new WndInfoBuffSerializer());
         SERIALIZERS.register(WndInfoCell.class, new WndInfoCellSerializer());
-        SERIALIZERS.register(WndInfoItem.class, new WndInfoItemSerializer());
+        SERIALIZERS.register(WndInfoItem.class, new WndInfoItemSerializer<WndInfoItem>());
         SERIALIZERS.register(WndInfoMob.class, new WndInfoMobSerializer());
-        SERIALIZERS.register(WndInfoPlant.class, new WndInfoPlantSerializer());
         SERIALIZERS.register(WndInfoSubclass.class, new WndInfoSubclassSerializer());
         SERIALIZERS.register(WndInfoTalent.class, new WndInfoTalentSerializer());
-        SERIALIZERS.register(WndInfoTrap.class, new WndInfoTrapSerializer());
         SERIALIZERS.register(WndJournalItem.class, new WndJournalItemSerializer());
         SERIALIZERS.register(WndMessage.class, new WndMessageSerializer());
         SERIALIZERS.register(WndMonkAbilities.class, new WndMonkAbilitiesSerializer());
@@ -209,8 +205,6 @@ public class Server extends Thread {
         SERIALIZERS.register(WndQuest.class, new WndQuestSerializer());
         SERIALIZERS.register(WndResurrect.class, new WndResurrectSerializer());
         SERIALIZERS.register(WndSadGhost.class, new WndSadGhostSerializer());
-        SERIALIZERS.register(WndSettings.class, new WndSettingsSerializer());
-        SERIALIZERS.register(WndSupportPrompt.class, new WndSupportPromptSerializer());
         SERIALIZERS.register(WndTextInput.class, new WndTextInputSerializer());
         SERIALIZERS.register(WndTabbed.class, new WndTabbedSerializer());
         SERIALIZERS.register(WndTitledMessage.class, new WndTitledMessageSerializer<>());

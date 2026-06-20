@@ -179,6 +179,8 @@ public class Button extends Component {
 		return false;
 	}
 
+	public void onClickNetwork(){this.onClick();}
+
 	protected LocalizedString hoverText() {
 		return null;
 	}

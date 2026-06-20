@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.nikita22007.multiplayer.utils.text.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BadgeBanner;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
@@ -35,10 +36,16 @@ public class WndBadge extends Window {
 	
 	private static final int MAX_WIDTH = 125;
 	private static final int MARGIN = 4;
+
+	private final Badges.Badge badge;
+	private final boolean unlocked;
+	private final LocalizedString desc;
 	
-	public WndBadge( Badges.Badge badge, boolean unlocked ) {
+	public WndBadge( Hero hero, Badges.Badge badge, boolean unlocked ) {
 		
-		super();
+		super(hero);
+		this.badge = badge;
+		this.unlocked = unlocked;
 		
 		Image icon = BadgeBanner.image( badge.image );
 		icon.scale.set( 2 );
@@ -58,6 +65,7 @@ public class WndBadge extends Window {
 		if (unlock != null){
 			desc = LocalizedString.concat(desc, unlock);
 		}
+		this.desc = desc;
 
 		RenderedTextBlock info = PixelScene.renderTextBlock( desc, 6 );
 		info.maxWidth(MAX_WIDTH - MARGIN * 2);
@@ -91,5 +99,17 @@ public class WndBadge extends Window {
 		};
 		blocker.camera = PixelScene.uiCamera;
 		add(blocker);
+	}
+
+	public Badges.Badge badge() {
+		return badge;
+	}
+
+	public boolean unlocked() {
+		return unlocked;
+	}
+
+	public LocalizedString desc() {
+		return desc;
 	}
 }

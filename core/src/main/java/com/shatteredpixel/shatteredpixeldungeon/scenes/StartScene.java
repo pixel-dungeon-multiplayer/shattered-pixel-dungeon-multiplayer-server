@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
+import com.nikita22007.multiplayer.utils.text.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
@@ -37,7 +38,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
@@ -121,13 +121,13 @@ public class StartScene extends PixelScene {
 		
 		GamesInProgress.curSlot = 0;
 
-		String sortText = "";
+		LocalizedString sortText = LocalizedString.EMPTY;
 		switch (SPDSettings.gamesInProgressSort()){
 			case "level":
-				sortText = Messages.get(this, "sort_level").toString();
+				sortText = Messages.get(this, "sort_level");
 				break;
 			case "last_played":
-				sortText = Messages.get(this, "sort_recent").toString();
+				sortText = Messages.get(this, "sort_recent");
 				break;
 		}
 
@@ -344,7 +344,7 @@ public class StartScene extends PixelScene {
 				GamesInProgress.selectedClass = null;
 				GamesInProgress.curSlot = slot;
 			} else {
-				ShatteredPixelDungeon.scene().add( new WndGameInProgress(slot));
+
 			}
 		}
 	}

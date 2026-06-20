@@ -31,15 +31,11 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndChallenges;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndGame;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
-import com.watabou.input.GameAction;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
-import com.nikita22007.multiplayer.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.DeviceCompat;
 
@@ -133,8 +129,6 @@ public class MenuPane extends Component {
 			};
 			add(challengeButton);
 		}
-		btnMenu = new MenuButton();
-		add( btnMenu );
 
 		danger = new DangerIndicator();
 		add( danger );
@@ -203,57 +197,4 @@ public class MenuPane extends Component {
 	public void updateKeys(){
 	}
 
-	private static class MenuButton extends Button {
-
-		private Image image;
-
-		public MenuButton() {
-			super();
-
-			width = image.width + 4;
-			height = image.height + 10;
-		}
-
-		@Override
-		protected void createChildren() {
-			super.createChildren();
-
-			image = new Image( Assets.Interfaces.MENU_BTN, 17, 2, 12, 11 );
-			add( image );
-		}
-
-		@Override
-		protected void layout() {
-			super.layout();
-
-			image.x = x + 2;
-			image.y = y + 8;
-		}
-
-		@Override
-		protected void onPointerDown() {
-			image.brightness( 1.5f );
-			Sample.INSTANCE.play( Assets.Sounds.CLICK );
-		}
-
-		@Override
-		protected void onPointerUp() {
-			image.resetColor();
-		}
-
-		@Override
-		protected void onClick() {
-			GameScene.show( new WndGame() );
-		}
-
-		@Override
-		public GameAction keyAction() {
-			return GameAction.BACK;
-		}
-
-		@Override
-		protected LocalizedString hoverText() {
-			return Messages.titleCase(Messages.get(WndKeyBindings.class, "menu"));
-		}
-	}
 }

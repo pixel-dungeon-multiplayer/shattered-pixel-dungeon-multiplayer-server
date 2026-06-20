@@ -49,8 +49,10 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.nikita22007.multiplayer.noosa.audio.Sample;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class WndBlacksmith extends Window {
 
@@ -496,15 +498,19 @@ public class WndBlacksmith extends Window {
 		private static final int GAP		= 2;
 		private final Blacksmith troll;
 
+		public IconTitle titlebar;
+		public RenderedTextBlock message;
+		public ArrayList<ItemButton> rewardButtons;
+
 		public WndSmith( Blacksmith troll, Hero hero ){
-			super();
+			super(hero);
 			this.troll = troll;
 
-			IconTitle titlebar = new IconTitle();
+			titlebar = new IconTitle();
 			titlebar.icon(troll.sprite());
 			titlebar.label(Messages.titleCase(troll.name()));
 
-			RenderedTextBlock message = PixelScene.renderTextBlock( Messages.get(this, "prompt"), 6 );
+			message = PixelScene.renderTextBlock( Messages.get(this, "prompt"), 6 );
 
 			titlebar.setRect( 0, 0, WIDTH, 0 );
 			add( titlebar );
@@ -517,6 +523,7 @@ public class WndBlacksmith extends Window {
 				Blacksmith.Quest.generateRewards(false);
 			}
 
+			rewardButtons = new ArrayList<>();
 			int count = 0;
 			for (Item i : Blacksmith.Quest.smithRewards){
 				count++;
@@ -527,6 +534,7 @@ public class WndBlacksmith extends Window {
 					}
 				};
 				btnReward.item( i );
+				rewardButtons.add(btnReward);
 				btnReward.setRect( count*(WIDTH - BTN_GAP) / Blacksmith.Quest.smithRewards.size() - BTN_SIZE,
 						message.top() + message.height() + BTN_GAP,
 						BTN_SIZE, BTN_SIZE );
@@ -547,7 +555,16 @@ public class WndBlacksmith extends Window {
 			return troll;
 		}
 
+		@Override
+		protected void onSelect(int button) {
+			if (button >= 0 && button < rewardButtons.size()) {
+				rewardButtons.get(button).onClickNetwork();
+			}
+		}
+
 		private class RewardWindow extends WndInfoItem {
+
+			public ArrayList<RedButton> buttons = new ArrayList<>();
 
 			public RewardWindow( Blacksmith troll, Hero hero, Item item ) {
 				super(hero, item);
@@ -580,6 +597,7 @@ public class WndBlacksmith extends Window {
 					}
 				};
 				btnConfirm.setRect(0, height+2, width/2-1, 16);
+				buttons.add(btnConfirm);
 				add(btnConfirm);
 
 				RedButton btnCancel = new RedButton(Messages.get(WndSadGhost.class, "cancel")){
@@ -589,9 +607,22 @@ public class WndBlacksmith extends Window {
 					}
 				};
 				btnCancel.setRect(btnConfirm.right()+2, height+2, btnConfirm.width(), 16);
+				buttons.add(btnCancel);
 				add(btnCancel);
 
 				resize(width, (int)btnCancel.bottom());
+			}
+
+			@Override
+			protected void onSelect(int button) {
+				if (button >= 0 && button < buttons.size()) {
+					buttons.get(button).onClickNetwork();
+				}
+			}
+
+			@Override
+			public @NotNull List<RedButton> actionsForNetwork() {
+				return buttons;
 			}
 		}
 

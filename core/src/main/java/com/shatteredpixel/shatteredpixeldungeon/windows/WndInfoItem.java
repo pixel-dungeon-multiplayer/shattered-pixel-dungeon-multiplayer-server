@@ -26,9 +26,13 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
+import java.util.List;
 
 public class WndInfoItem extends Window {
 	
@@ -131,5 +135,9 @@ public class WndInfoItem extends Window {
 		add( info );
 
 		resize( width, (int)(info.bottom() + 2) );
+	}
+
+	public @NotNull List<RedButton> actionsForNetwork() {
+		return Collections.emptyList();
 	}
 }

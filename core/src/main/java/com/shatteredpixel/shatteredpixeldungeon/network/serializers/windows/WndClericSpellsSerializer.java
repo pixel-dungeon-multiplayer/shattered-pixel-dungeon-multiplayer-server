@@ -1,11 +1,16 @@
 package com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.ClericSpell;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializationContext;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndClericSpells;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class WndClericSpellsSerializer extends WindowSerializer<WndClericSpells> {
 
@@ -18,20 +23,36 @@ public class WndClericSpellsSerializer extends WindowSerializer<WndClericSpells>
     protected @Nullable JSONObject args(@NotNull WndClericSpells obj, @NotNull SerializationContext ctx, @NotNull String profile) {
         JSONObject args = new JSONObject();
         args.put("info", obj.infoMode());
+        args.put("description", ctx.serialize(obj.desc(), profile));
 
-        JSONArray buttons = new JSONArray();
-        for (WndClericSpells.SpellButton button : obj.spellBtns) {
-            JSONObject btnObj = new JSONObject();
-            btnObj.put("info", button.info);
-            btnObj.put("alpha", obj.tome().canCast(obj.getOwnerHero(), button.spell) ? 1.0 : 0.3);
-            btnObj.put("tier", button.tier);
-            btnObj.put("icon", button.spell.icon());
-            btnObj.put("spell_id", button.spellID);
-            btnObj.put("spell_short_desc", ctx.serialize(button.spell.shortDesc(obj.getOwnerHero()), profile));
-            btnObj.put("spell_name", ctx.serialize(button.spell.name(), profile));
-            buttons.put(btnObj);
+        JSONArray spellTiers = new JSONArray();
+        Hero cleric = obj.getOwnerHero();
+        for (int i = 1; i <= Talent.MAX_TALENT_TIERS; i++) {
+            ArrayList<ClericSpell> spells = ClericSpell.getSpellList(cleric, i);
+            if (spells.isEmpty()) {
+                continue;
+            }
+
+            JSONObject tierObj = new JSONObject();
+            tierObj.put("tier", i);
+
+            JSONArray spellsArray = new JSONArray();
+            for (ClericSpell spell : spells) {
+                JSONObject spellObj = new JSONObject();
+                spellObj.put("id", spell.name());
+                spellObj.put("spell_id", ClericSpell.getSpellID(spell));
+                spellObj.put("name", ctx.serialize(spell.name(), profile));
+                spellObj.put("short_desc", ctx.serialize(spell.shortDesc(cleric), profile));
+                spellObj.put("desc", ctx.serialize(spell.desc(cleric), profile));
+                spellObj.put("alpha", obj.tome().canCast(cleric, spell) ? 1.0 : 0.3);
+                spellObj.put("icon", spell.icon());
+                spellsArray.put(spellObj);
+            }
+            tierObj.put("spells", spellsArray);
+            spellTiers.put(tierObj);
         }
-        args.put("buttons", buttons);
+        args.put("spell_tiers", spellTiers);
+
         return args;
     }
 }

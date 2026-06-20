@@ -60,6 +60,7 @@ public class WndClericSpells extends Window {
 	private HolyTome tome;
 	private boolean info;
 	public final IconTitle title;
+	public ArrayList<SpellButton> spellButtons = new ArrayList<>();
 
 	public WndClericSpells(HolyTome tome, Hero cleric, boolean info){
 		super(cleric);
@@ -106,9 +107,10 @@ public class WndClericSpells extends Window {
 			ArrayList<IconButton> spellBtns = new ArrayList<>();
 
 			for (ClericSpell spell : spells) {
-				IconButton spellBtn = new SpellButton(spell, tome, info);
+				SpellButton spellBtn = new SpellButton(spell, tome, info);
 				add(spellBtn);
 				spellBtns.add(spellBtn);
+				spellButtons.add(spellBtn);
 			}
 
 			int left = 2 + (WIDTH - spellBtns.size() * (BTN_SIZE + 4)) / 2;
@@ -194,9 +196,9 @@ public class WndClericSpells extends Window {
 
 	public class SpellButton extends IconButton {
 
-		ClericSpell spell;
-		HolyTome tome;
-		boolean info;
+		public ClericSpell spell;
+		public HolyTome tome;
+		public boolean info;
 
 		NinePatch bg;
 
@@ -207,7 +209,7 @@ public class WndClericSpells extends Window {
 			this.tome = tome;
 			this.info = info;
 			if (!tome.canCast(getOwnerHero(), spell)){
-				icon.alpha( 0.3f );
+				image.alpha( 0.3f );
 			}
 
 			bg = Chrome.get(Chrome.Type.TOAST);
@@ -218,7 +220,7 @@ public class WndClericSpells extends Window {
 		protected void onPointerUp() {
 			super.onPointerUp();
 			if (!tome.canCast(getOwnerHero(), spell)){
-				icon.alpha( 0.3f );
+				image.alpha( 0.3f );
 			}
 		}
 
@@ -265,8 +267,8 @@ public class WndClericSpells extends Window {
 
 
 		@Override
-		protected String hoverText() {
-			return "_" + Messages.titleCase(spell.name()) + "_\n" + spell.shortDesc(getOwnerHero());
+		public LocalizedString hoverText() {
+			return LocalizedString.concat("_", Messages.titleCase(spell.name()), "_\n" + spell.shortDesc(getOwnerHero()));
 		}
 	}
 

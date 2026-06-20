@@ -34,33 +34,30 @@ public class WndClericSpellsSerializer extends WindowSerializer<WndClericSpells>
         }
         args.put("title", title);
 
-        JSONArray spellTiers = new JSONArray();
+        JSONArray buttons = new JSONArray();
         Hero cleric = obj.getOwnerHero();
-        for (int i = 1; i <= Talent.MAX_TALENT_TIERS; i++) {
-            ArrayList<ClericSpell> spells = ClericSpell.getSpellList(cleric, i);
-            if (spells.isEmpty()) {
-                continue;
-            }
+        for (WndClericSpells.SpellButton button : obj.spellButtons) {
+            JSONObject btnObj = new JSONObject();
+            btnObj.put("id", button.spell.name());
+            btnObj.put("spell_id", ClericSpell.getSpellID(button.spell));
+            btnObj.put("spell_name", ctx.serialize(button.spell.name(), profile));
+            btnObj.put("spell_short_desc", ctx.serialize(button.spell.shortDesc(cleric), profile));
+            btnObj.put("spell_desc", ctx.serialize(button.spell.desc(cleric), profile));
+            btnObj.put("alpha", obj.tome().canCast(cleric, button.spell) ? 1.0 : 0.3);
+            btnObj.put("icon", button.spell.icon());
+            btnObj.put("hover_text", ctx.serialize(button.hoverText(), profile));
 
-            JSONObject tierObj = new JSONObject();
-            tierObj.put("tier", i);
-
-            JSONArray spellsArray = new JSONArray();
-            for (ClericSpell spell : spells) {
-                JSONObject spellObj = new JSONObject();
-                spellObj.put("id", spell.name());
-                spellObj.put("spell_id", ClericSpell.getSpellID(spell));
-                spellObj.put("name", ctx.serialize(spell.name(), profile));
-                spellObj.put("short_desc", ctx.serialize(spell.shortDesc(cleric), profile));
-                spellObj.put("desc", ctx.serialize(spell.desc(cleric), profile));
-                spellObj.put("alpha", obj.tome().canCast(cleric, spell) ? 1.0 : 0.3);
-                spellObj.put("icon", spell.icon());
-                spellsArray.put(spellObj);
+            int tier = 1;
+            for (int i = 1; i <= Talent.MAX_TALENT_TIERS; i++) {
+                if (ClericSpell.getSpellList(cleric, i).contains(button.spell)) {
+                    tier = i;
+                    break;
+                }
             }
-            tierObj.put("spells", spellsArray);
-            spellTiers.put(tierObj);
+            btnObj.put("tier", tier);
+            buttons.put(btnObj);
         }
-        args.put("spell_tiers", spellTiers);
+        args.put("buttons", buttons);
 
         return args;
     }

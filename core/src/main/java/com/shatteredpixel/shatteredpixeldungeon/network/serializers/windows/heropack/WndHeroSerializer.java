@@ -26,7 +26,7 @@ public class WndHeroSerializer extends WindowSerializer<WndHero> {
         args.put("selected_tab", obj.selectedTabIndex());
         args.put("owner_hero", ctx.serialize(obj.getOwnerHero(), profile));
 
-        // Динамические характеристики
+        // Dynamic stats
         JSONArray statsArray = new JSONArray();
         for (WndHero.Stat stat : obj.stats()) {
             JSONObject statObj = new JSONObject();
@@ -36,7 +36,7 @@ public class WndHeroSerializer extends WindowSerializer<WndHero> {
         }
         args.put("stats", statsArray);
 
-        // Таланты
+        // Talents
         JSONArray tiers = new JSONArray();
         Hero hero = obj.getOwnerHero();
         for (int i = 0; i < hero.talents.size(); i++) {
@@ -61,7 +61,7 @@ public class WndHeroSerializer extends WindowSerializer<WndHero> {
         }
         args.put("talent_tiers", tiers);
 
-        // Баффы
+        // Buffs
         JSONArray buffs = new JSONArray();
         for (Buff buff : hero.buffs()) {
             if (buff.icon() != 0) { // BuffIndicator.NONE

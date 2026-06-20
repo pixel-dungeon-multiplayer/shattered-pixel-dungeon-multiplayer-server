@@ -34,11 +34,11 @@ public class WndHeroInfoSerializer extends WindowSerializer<WndHeroInfo> {
         args.put("title", ctx.serialize(Messages.titleCase(heroClass.title()), profile));
         args.put("description", ctx.serialize(heroClass.desc(), profile));
 
-        // Доступность табов на основе достижений
+        // Tab availability based on badges/achievements
         args.put("subclass_unlocked", Badges.isUnlocked(Badges.Badge.BOSS_SLAIN_2) || DeviceCompat.isDebug());
         args.put("ability_unlocked", Badges.isUnlocked(Badges.Badge.BOSS_SLAIN_4) || DeviceCompat.isDebug());
 
-        // Подклассы
+        // Subclasses
         JSONArray subclasses = new JSONArray();
         for (HeroSubClass subClass : heroClass.subClasses()) {
             JSONObject subObj = new JSONObject();
@@ -49,7 +49,7 @@ public class WndHeroInfoSerializer extends WindowSerializer<WndHeroInfo> {
         }
         args.put("subclasses", subclasses);
 
-        // Способности брони
+        // Armor abilities
         JSONArray abilities = new JSONArray();
         for (ArmorAbility ability : heroClass.armorAbilities()) {
             JSONObject abilityObj = new JSONObject();
@@ -60,11 +60,11 @@ public class WndHeroInfoSerializer extends WindowSerializer<WndHeroInfo> {
         }
         args.put("abilities", abilities);
 
-        // Таланты
+        // Talents
         JSONArray tiers = new JSONArray();
         ArrayList<LinkedHashMap<Talent, Integer>> classTalents = new ArrayList<>();
         Talent.initClassTalents(heroClass, classTalents);
-        classTalents.get(2).clear(); // убираем T3 таланты, как в оригинале
+        classTalents.get(2).clear(); // remove T3 talents, as in original
 
         for (int i = 0; i < classTalents.size(); i++) {
             JSONObject tierObj = new JSONObject();

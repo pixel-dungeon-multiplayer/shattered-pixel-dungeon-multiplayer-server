@@ -16,7 +16,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.network.actions.*;
 import com.shatteredpixel.shatteredpixeldungeon.network.actions.serializers.*;
 import com.shatteredpixel.shatteredpixeldungeon.network.NetworkPacket.SerializedAction;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.WndInfoTalentSerializer;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wnddialog.WndInfoTalentSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.WndMetamorphChooseSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.WndMetamorphReplaceSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.heropack.WndHeroInfoSerializer;
@@ -212,7 +212,6 @@ public class Server extends Thread {
         SERIALIZERS.register(WndSadGhost.class, new WndSadGhostSerializer());
         SERIALIZERS.register(WndTextInput.class, new WndTextInputSerializer());
         SERIALIZERS.register(WndTitledMessage.class, new WndTitledMessageSerializer<>());
-        SERIALIZERS.register(WndTradeItem.class, new WndTradeItemSerializer());
         SERIALIZERS.register(WndUpgrade.class, new WndUpgradeSerializer());
         SERIALIZERS.register(WndUseItem.class, new WndUseItemSerializer());
         SERIALIZERS.register(WndVictoryCongrats.class, new WndVictoryCongratsSerializer());

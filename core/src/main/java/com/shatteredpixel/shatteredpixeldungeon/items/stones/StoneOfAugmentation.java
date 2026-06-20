@@ -39,6 +39,8 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 
+import java.util.ArrayList;
+
 public class StoneOfAugmentation extends InventoryStone {
 	
 	{
@@ -98,20 +100,26 @@ public class StoneOfAugmentation extends InventoryStone {
 		private static final int MARGIN 		= 2;
 		private static final int BUTTON_WIDTH	= WIDTH - MARGIN * 2;
 		private static final int BUTTON_HEIGHT	= 20;
+		private final Item toAugment;
+		public IconTitle titlebar;
+		public RenderedTextBlock message;
+		public ArrayList<RedButton> buttons;
 		
 		public WndAugment( final Item toAugment, Hero hero ) {
 			super(hero);
+			this.toAugment = toAugment;
 			
-			IconTitle titlebar = new IconTitle( toAugment );
+			titlebar = new IconTitle( toAugment );
 			titlebar.setRect( 0, 0, WIDTH, 0 );
 			add( titlebar );
 			
-			RenderedTextBlock tfMesage = PixelScene.renderTextBlock( Messages.get(this, "choice"), 8 );
-			tfMesage.maxWidth(WIDTH - MARGIN * 2);
-			tfMesage.setPos(MARGIN, titlebar.bottom() + MARGIN);
-			add( tfMesage );
+			message = PixelScene.renderTextBlock( Messages.get(this, "choice"), 8 );
+			message.maxWidth(WIDTH - MARGIN * 2);
+			message.setPos(MARGIN, titlebar.bottom() + MARGIN);
+			add( message );
 			
-			float pos = tfMesage.top() + tfMesage.height();
+			float pos = message.top() + message.height();
+			buttons = new ArrayList<>();
 			
 			if (toAugment instanceof Weapon){
 				for (final Weapon.Augment aug : Weapon.Augment.values()){
@@ -125,6 +133,7 @@ public class StoneOfAugmentation extends InventoryStone {
 						};
 						btnSpeed.setRect( MARGIN, pos + MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT );
 						add( btnSpeed );
+						buttons.add( btnSpeed );
 						
 						pos = btnSpeed.bottom();
 					}
@@ -142,6 +151,7 @@ public class StoneOfAugmentation extends InventoryStone {
 						};
 						btnSpeed.setRect( MARGIN, pos + MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT );
 						add( btnSpeed );
+						buttons.add( btnSpeed );
 						
 						pos = btnSpeed.bottom();
 					}
@@ -157,14 +167,26 @@ public class StoneOfAugmentation extends InventoryStone {
 			};
 			btnCancel.setRect( MARGIN, pos + MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT );
 			add( btnCancel );
+			buttons.add( btnCancel );
 			
 			resize( WIDTH, (int)btnCancel.bottom() + MARGIN );
+		}
+
+		@Override
+		protected void onSelect(int button) {
+			if (button >= 0 && button < buttons.size()) {
+				buttons.get(button).onClickNetwork();
+			}
 		}
 		
 		@Override
 		public void onBackPressed() {
 			if (!anonymous) StoneOfAugmentation.this.collect(getOwnerHero());
 			super.onBackPressed();
+		}
+
+		public Item toAugment() {
+			return toAugment;
 		}
 	}
 }

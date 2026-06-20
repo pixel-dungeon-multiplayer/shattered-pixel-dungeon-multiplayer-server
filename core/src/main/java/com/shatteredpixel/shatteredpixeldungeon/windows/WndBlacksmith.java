@@ -60,24 +60,28 @@ public class WndBlacksmith extends Window {
 	private static final int GAP  = 2;
 	private final Blacksmith troll;
 
+	public IconTitle titlebar;
+	public RenderedTextBlock message;
+	public ArrayList<RedButton> buttons;
+
 	public WndBlacksmith( Blacksmith troll, Hero hero ) {
 		super(hero);
 		this.troll = troll;
 
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 
-		IconTitle titlebar = new IconTitle();
+		titlebar = new IconTitle();
 		titlebar.icon( troll.sprite() );
 		titlebar.label( Messages.titleCase( troll.name() ) );
 		titlebar.setRect( 0, 0, width, 0 );
 		add( titlebar );
 
-		RenderedTextBlock message = PixelScene.renderTextBlock( Messages.get(this, "prompt", Blacksmith.Quest.favor), 6 );
+		message = PixelScene.renderTextBlock( Messages.get(this, "prompt", Blacksmith.Quest.favor), 6 );
 		message.maxWidth( width );
 		message.setPos(0, titlebar.bottom() + GAP);
 		add( message );
 
-		ArrayList<RedButton> buttons = new ArrayList<>();
+		buttons = new ArrayList<>();
 
 		int pickaxeCost = Blacksmith.Quest.freePickaxe ? 0 : 250;
 		RedButton pickaxe = new RedButton(Messages.get(this, "pickaxe", pickaxeCost), 6){
@@ -209,6 +213,13 @@ public class WndBlacksmith extends Window {
 
 	public Blacksmith troll() {
 		return troll;
+	}
+
+	@Override
+	protected void onSelect(int button) {
+		if (button >= 0 && button < buttons.size()) {
+			buttons.get(button).onClickNetwork();
+		}
 	}
 
 	public static class WndReforge extends Window {
@@ -368,6 +379,23 @@ public class WndBlacksmith extends Window {
 				}
 			}
 		};
+
+		@Override
+		protected void onSelect(int button) {
+			switch (button) {
+				case 0:
+					btnItem1.onClickNetwork();
+					break;
+				case 1:
+					btnItem2.onClickNetwork();
+					break;
+				case 2:
+					if (btnReforge.active) {
+						btnReforge.onClickNetwork();
+					}
+					break;
+			}
+		}
 
 	}
 

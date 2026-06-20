@@ -69,17 +69,71 @@ public class WndUpgrade extends Window {
 	private static final int ITEMSLOT_SIZE = 18;
 
 	private Item upgrader;
+	private Item toUpgrade;
 	private boolean force;
 
 	private RedButton btnUpgrade;
 	private RedButton btnCancel;
 
+	public static class VisualStat {
+		public final LocalizedString title;
+		public final LocalizedString valFrom;
+		public final LocalizedString valTo;
+
+		public VisualStat(LocalizedString title, LocalizedString valFrom, LocalizedString valTo) {
+			this.title = title;
+			this.valFrom = valFrom;
+			this.valTo = valTo;
+		}
+	}
+
+	public static class VisualMessage {
+		public final LocalizedString text;
+		public final String color; // "warning" | "positive"
+
+		public VisualMessage(LocalizedString text, String color) {
+			this.text = text;
+			this.color = color;
+		}
+	}
+
+	public static class SlotState {
+		public final String levelText;
+		public final String levelColor; // "upgraded" | "curse_infused"
+		public final String bgColor; // "normal" | "identified_uncursed" | "cursed" | "unidentified"
+
+		public SlotState(String levelText, String levelColor, String bgColor) {
+			this.levelText = levelText;
+			this.levelColor = levelColor;
+			this.bgColor = bgColor;
+		}
+	}
+
+	private LocalizedString titleText;
+	private LocalizedString descText;
+	private SlotState leftSlot;
+	private SlotState rightSlot;
+	private final java.util.ArrayList<VisualStat> stats = new java.util.ArrayList<>();
+	private final java.util.ArrayList<VisualMessage> messages = new java.util.ArrayList<>();
+
+	public LocalizedString getTitleText() { return titleText; }
+	public LocalizedString getDescText() { return descText; }
+	public SlotState getLeftSlot() { return leftSlot; }
+	public SlotState getRightSlot() { return rightSlot; }
+	public java.util.ArrayList<VisualStat> getVisualStats() { return stats; }
+	public java.util.ArrayList<VisualMessage> getVisualMessages() { return messages; }
+	public RedButton btnUpgrade() { return btnUpgrade; }
+	public RedButton btnCancel() { return btnCancel; }
+
 	public WndUpgrade(Item upgrader, Item toUpgrade, boolean force, Hero owner) {
 		super(owner);
 		this.upgrader = upgrader;
+		this.toUpgrade = toUpgrade;
 		this.force = force;
 
-		IconTitle title = new IconTitle(new ItemSprite(upgrader), Messages.get(this, "title"));
+		this.titleText = Messages.get(this, "title");
+
+		IconTitle title = new IconTitle(new ItemSprite(upgrader), this.titleText);
 
 		title.setRect(0, 0, WIDTH, 0);
 		add(title);
@@ -95,6 +149,8 @@ public class WndUpgrade extends Window {
 		if (quantity > 1) {
 			mainText = LocalizedString.concat(mainText, LocalizedString.concat("\n", Messages.get(this, "remaining", quantity)));
 		}
+
+		this.descText = mainText;
 
 		RenderedTextBlock message = PixelScene.renderTextBlock(6);
 		message.text(mainText, WIDTH);
@@ -120,6 +176,36 @@ public class WndUpgrade extends Window {
 				levelTo++;
 			}
 		}
+
+		String slotBgColor = "normal";
+		if (!toUpgrade.isIdentified()) {
+			if (!toUpgrade.cursed && toUpgrade.cursedKnown) {
+				slotBgColor = "identified_uncursed";
+			} else {
+				slotBgColor = "unidentified";
+			}
+		} else if (toUpgrade.cursed && toUpgrade.cursedKnown) {
+			slotBgColor = "cursed";
+		}
+
+		String leftLevelText = "";
+		String rightLevelText = "";
+		String levelColor = "upgraded";
+		if (toUpgrade.isIdentified()) {
+			if (levelFrom > 0) {
+				leftLevelText = "+" + levelFrom;
+			}
+			rightLevelText = "+" + levelTo;
+			if (curseInfused) {
+				levelColor = "curse_infused";
+			}
+		} else {
+			leftLevelText = "?";
+			rightLevelText = "+1?";
+		}
+
+		this.leftSlot = new SlotState(leftLevelText, levelColor, slotBgColor);
+		this.rightSlot = new SlotState(rightLevelText, levelColor, slotBgColor);
 
 		// *** Sprites, showing item at current level and with +1 ***
 
@@ -520,11 +606,24 @@ public class WndUpgrade extends Window {
 		return null;
 	}
 
+	public Item upgrader() {
+		return upgrader;
+	}
+
+	public Item toUpgrade() {
+		return toUpgrade;
+	}
+
+	public boolean force() {
+		return force;
+	}
+
 	private float fillFields(LocalizedString title, String msg1, String msg2, float bottom) {
 		return fillFields(title, LocalizedString.raw(msg1), LocalizedString.raw(msg2), bottom);
 	}
 
 	private float fillFields(LocalizedString title, LocalizedString msg1, LocalizedString msg2, float bottom){
+		this.stats.add(new VisualStat(title, msg1, msg2));
 
 		//the ~ symbol is more commonly used in Chinese
 		if (Messages.lang() == Languages.CHI_SMPL || Messages.lang() == Languages.CHI_TRAD){
@@ -554,6 +653,8 @@ public class WndUpgrade extends Window {
 	}
 
 	private float addMessage(LocalizedString text, int color, float bottom){
+		String colorName = (color == CharSprite.WARNING) ? "warning" : "positive";
+		this.messages.add(new VisualMessage(text, colorName));
 		return addMessage(text.toString(), color, bottom);
 	}
 

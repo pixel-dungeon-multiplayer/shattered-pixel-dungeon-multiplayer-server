@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wnd
 
 import com.nikita22007.multiplayer.utils.text.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializationContext;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.ui.ImageIcon;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.WindowSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +23,7 @@ public class WndTitledMessageSerializer<T extends WndTitledMessage> extends Wind
         WndOptionContract contract = new WndOptionContract();
         contract.titleText = obj.title() == null ? LocalizedString.raw("") : Objects.requireNonNull(obj.title());
         contract.message = obj.message() == null ? LocalizedString.raw("") : Objects.requireNonNull(obj.message());
-        contract.titleIcon = WndOptionContract.TitleIcon.fromImage(obj.titleIcon(), ctx, profile);
+        contract.titleIcon = ImageIcon.fromImage(obj.titleIcon(), ctx, profile);
         contract.layout = WndOptionContract.Layout.titledMessage(obj.highlightingForNetwork());
         contract.fillFromTitlebar(obj.titlebar(), ctx, profile);
 

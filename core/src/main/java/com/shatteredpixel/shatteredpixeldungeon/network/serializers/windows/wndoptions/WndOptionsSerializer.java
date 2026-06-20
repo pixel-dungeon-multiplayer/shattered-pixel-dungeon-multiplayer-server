@@ -2,8 +2,10 @@ package com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wnd
 
 import com.nikita22007.multiplayer.utils.text.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializationContext;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.ui.ImageIcon;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.WindowSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.watabou.noosa.Image;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -33,23 +35,31 @@ public class WndOptionsSerializer<T extends WndOptions> extends WindowSerializer
             contract.options.add(new WndOptionContract.Option(
                     option,
                     obj.hasInfoForNetwork(i),
-                    obj.enabledForNetwork(i)));
+                    obj.enabledForNetwork(i),
+                    optionIcon(obj, i, ctx, profile)));
         }
 
         return contract.toJson(ctx, profile);
     }
 
-    private @NotNull WndOptionContract.TitleIcon titleIcon(@NotNull WndOptions.WndOptionsParams params) {
+    private @NotNull ImageIcon titleIcon(@NotNull WndOptions.WndOptionsParams params) {
         if (params.itemSpriteImage != null) {
-            return WndOptionContract.TitleIcon.itemSprite(params.itemSpriteImage, params.itemSpriteGlowing);
+            return ImageIcon.itemSprite(params.itemSpriteImage, params.itemSpriteGlowing);
         }
         if (params.charSprite != null) {
-            return WndOptionContract.TitleIcon.charSprite(
+            return ImageIcon.charSprite(
                     params.charSprite.getSpriteAsset(),
                     params.charSprite.spriteName());
         }
-        return WndOptionContract.TitleIcon.none();
+        return ImageIcon.none();
+    }
+
+    private @NotNull ImageIcon optionIcon(
+            @NotNull WndOptions obj,
+            int index,
+            @NotNull SerializationContext ctx,
+            @NotNull String profile) {
+        Image icon = obj.optionIcon(index);
+        return ImageIcon.fromImage(icon, ctx, profile);
     }
 }
-
-

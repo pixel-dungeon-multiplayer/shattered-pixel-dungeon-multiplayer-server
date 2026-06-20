@@ -40,6 +40,8 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.DeviceCompat;
+import org.json.JSONObject;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -54,9 +56,11 @@ public class WndHeroInfo extends WndTabbed {
 	private static int WIDTH = 120;
 	private static int MIN_HEIGHT = 125;
 	private static int MARGIN = 2;
+	private final HeroClass heroClass;
 
 	public WndHeroInfo( HeroClass cl, Hero hero ){
 		super(hero);
+		this.heroClass = cl;
 		Image tabIcon;
 		switch (cl){
 			case WARRIOR: default:
@@ -150,6 +154,68 @@ public class WndHeroInfo extends WndTabbed {
 	public void offset(int xOffset, int yOffset) {
 		super.offset(xOffset, yOffset);
 		talentInfo.layout();
+	}
+
+	public HeroClass heroClass() {
+		return heroClass;
+	}
+
+	@Override
+	public void onSelect(int button, @Nullable JSONObject args) {
+		if (args != null && args.has("action")) {
+			String action = args.getString("action");
+			if ("tab".equals(action)) {
+				int tabIdx = args.getInt("index");
+				select(tabIdx);
+			} else if ("subclass_info".equals(action)) {
+				String subclassId = args.getString("id");
+				HeroSubClass found = null;
+				for (HeroSubClass sc : heroClass.subClasses()) {
+					if (sc.name().equals(subclassId)) {
+						found = sc;
+						break;
+					}
+				}
+				if (found != null) {
+					Game.scene().addToFront(new WndInfoSubclass(heroClass, found, getOwnerHero()));
+				}
+			} else if ("ability_info".equals(action)) {
+				String abilityClassName = args.getString("class");
+				ArmorAbility found = null;
+				for (ArmorAbility ability : heroClass.armorAbilities()) {
+					if (ability.getClass().getName().equals(abilityClassName)) {
+						found = ability;
+						break;
+					}
+				}
+				if (found != null) {
+					Game.scene().addToFront(new WndInfoArmorAbility(heroClass, found, getOwnerHero()));
+				}
+			} else if ("click_talent".equals(action)) {
+				String talentId = args.getString("id");
+				ArrayList<LinkedHashMap<Talent, Integer>> list = new ArrayList<>();
+				Talent.initClassTalents(heroClass, list);
+				list.get(2).clear();
+				
+				Talent found = null;
+				int points = 0;
+				for (LinkedHashMap<Talent, Integer> tier : list) {
+					for (Talent t : tier.keySet()) {
+						if (t.name().equals(talentId)) {
+							found = t;
+							points = getOwnerHero().pointsInTalent(t);
+							break;
+						}
+					}
+					if (found != null) break;
+				}
+				if (found != null) {
+					Game.scene().addToFront(new WndInfoTalent(found, points, null));
+				}
+			}
+		} else {
+			super.onSelect(button, args);
+		}
 	}
 
 	private static class HeroInfoTab extends Component {

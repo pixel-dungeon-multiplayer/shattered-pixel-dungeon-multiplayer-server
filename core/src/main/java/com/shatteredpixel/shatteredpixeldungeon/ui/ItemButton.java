@@ -42,6 +42,7 @@ public class ItemButton extends Component {
 	protected boolean onLongClick(){
 		return false;
 	}
+	public final boolean onLongClickNetwork() { return onLongClick(); }
 
 	public Item item(){
 		return item;

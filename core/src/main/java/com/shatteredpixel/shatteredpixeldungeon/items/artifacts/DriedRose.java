@@ -79,6 +79,8 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -963,7 +965,7 @@ public class DriedRose extends Artifact {
 				@Override
 				protected boolean onLongClick() {
 					if (item() != null && item().name() != null){
-						GameScene.show(new WndInfoItem(curUser, item()));
+						GameScene.show(new WndInfoItem(getOwnerHero(), item()));
 						return true;
 					}
 					return false;
@@ -1087,13 +1089,20 @@ public class DriedRose extends Artifact {
 		}
 
 		@Override
-		public void onSelect(int button) {
+		public void onSelect(int button, @Nullable JSONObject args) {
+			boolean isLongClick = args != null && args.optBoolean("is_long_click", false);
 			if (button == 0) {
-				btnWeapon.onClickNetwork();
+				if (isLongClick) {
+					btnWeapon.onLongClickNetwork();
+				} else {
+					btnWeapon.onClickNetwork();
+				}
 			} else if (button == 1) {
-				btnArmor.onClickNetwork();
-			} else {
-				return;
+				if (isLongClick) {
+					btnArmor.onLongClickNetwork();
+				} else {
+					btnArmor.onClickNetwork();
+				}
 			}
 		}
 	}

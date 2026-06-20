@@ -124,7 +124,7 @@ public class Imp extends NPC {
 				Game.runOnRenderThread(new Callback() {
 					@Override
 					public void call() {
-						GameScene.show( new WndImp( Imp.this, tokens ) );
+						GameScene.show( new WndImp(hero, Imp.this, tokens ) );
 					}
 				});
 			} else {

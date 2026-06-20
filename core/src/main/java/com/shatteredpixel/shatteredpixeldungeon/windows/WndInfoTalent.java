@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.nikita22007.multiplayer.utils.text.LocalizedString;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -31,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TalentIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.utils.Callback;
+import org.jetbrains.annotations.NotNull;
 
 public class WndInfoTalent extends Window {
 
@@ -46,8 +48,8 @@ public class WndInfoTalent extends Window {
 	public final RenderedTextBlock txtInfo;
 	public RedButton button;
 
-	public WndInfoTalent(Talent talent, int points, TalentButtonCallback buttonCallback){
-		super();
+	public WndInfoTalent(@NotNull Hero hero, Talent talent, int points, TalentButtonCallback buttonCallback){
+		super(hero);
 		this.talent = talent;
 		this.points = points;
 		this.buttonCallback = buttonCallback;

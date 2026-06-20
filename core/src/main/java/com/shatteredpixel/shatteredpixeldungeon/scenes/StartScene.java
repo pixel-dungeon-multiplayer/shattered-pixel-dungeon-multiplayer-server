@@ -74,8 +74,8 @@ public class StartScene extends PixelScene {
 		ExitButton btnExit = new ExitButton();
 		btnExit.setPos( insets.left + w - btnExit.width(), insets.top );
 		add( btnExit );
-		
-		IconTitle title = new IconTitle( Icons.ENTER.get(), Messages.get(this, "title"));
+
+		IconTitle title = null;
 		title.setSize(200, 0);
 		title.setPos(
 				insets.left + (w - title.reqWidth()) / 2f,

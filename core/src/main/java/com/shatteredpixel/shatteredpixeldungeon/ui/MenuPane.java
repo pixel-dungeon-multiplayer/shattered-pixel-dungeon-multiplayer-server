@@ -51,7 +51,6 @@ public class MenuPane extends Component {
 	private BitmapText challengeText;
 	private Button challengeButton;
 
-	private MenuButton btnMenu;
 
 	private BitmapText version;
 	private NinePatch versionOverflowBG;
@@ -160,10 +159,6 @@ public class MenuPane extends Component {
 		version.y -= .001f;
 		PixelScene.align(version);
 
-		btnMenu.setPos( x + WIDTH - btnMenu.width(), y );
-
-
-		depthIcon.x = btnMenu.left() - 7 + (7 - depthIcon.width())/2f - 0.1f;
 		depthIcon.y = y+8;
 		PixelScene.align(depthIcon);
 
@@ -175,7 +170,6 @@ public class MenuPane extends Component {
 		depthButton.setRect(depthIcon.x, depthIcon.y, depthIcon.width(), depthIcon.height() + depthText.height());
 
 		if (challengeIcon != null){
-			challengeIcon.x = btnMenu.left() - 14 + (7 - challengeIcon.width())/2f - 0.1f;
 			challengeIcon.y = depthIcon.y;
 			PixelScene.align(challengeIcon);
 

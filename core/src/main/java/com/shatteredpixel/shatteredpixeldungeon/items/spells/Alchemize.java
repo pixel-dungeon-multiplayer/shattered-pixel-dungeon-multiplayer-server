@@ -219,7 +219,7 @@ public class Alchemize extends Spell {
 						@Override
 						protected void onClick() {
 							if (item instanceof Trinket){
-								GameScene.show(new WndOptions(new ItemSprite(item), Messages.titleCase(item.name()),
+								GameScene.show(new WndOptions(owner.getOwnerHero(), new ItemSprite(item), Messages.titleCase(item.name()),
 										Messages.get(WndEnergizeItem.class, "trinket_warn"),
 										Messages.get(WndEnergizeItem.class, "trinket_yes"),
 										Messages.get(WndEnergizeItem.class, "trinket_no")){

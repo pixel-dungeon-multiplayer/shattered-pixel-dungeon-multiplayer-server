@@ -47,28 +47,8 @@ public class WndTabbed extends Window {
 
 	private Signal.Listener<KeyEvent> tabListener;
 	
-	public WndTabbed() {
-		super( 0, 0, Chrome.get( Chrome.Type.TAB_SET ) );
-
-		KeyEvent.addKeyListener(tabListener = new Signal.Listener<KeyEvent>() {
-			@Override
-			public boolean onSignal(KeyEvent keyEvent) {
-
-				if (!keyEvent.pressed && KeyBindings.getActionForKey(keyEvent) == SPDAction.CYCLE){
-					int idx = tabs.indexOf(selected);
-					idx++;
-					if (idx >= tabs.size()) idx = 0;
-					tabs.get(idx).onClick();
-
-					return true;
-				}
-
-				return false;
-			}
-		});
-	}
 	public WndTabbed(Hero hero) {
-		super( 0, 0, Chrome.get( Chrome.Type.TAB_SET ), hero );
+		super(hero, 0, 0, Chrome.get( Chrome.Type.TAB_SET ));
 
 		KeyEvent.addKeyListener(tabListener = new Signal.Listener<KeyEvent>() {
 			@Override
@@ -179,6 +159,14 @@ public class WndTabbed extends Window {
 	
 	protected void onClick( Tab tab ) {
 		select( tab );
+	}
+
+	public int tabCount() {
+		return tabs.size();
+	}
+
+	public int selectedTabIndex() {
+		return tabs.indexOf(selected);
 	}
 	
 	protected class Tab extends Button {

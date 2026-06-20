@@ -35,12 +35,19 @@ import java.util.LinkedHashMap;
 
 public class WndInfoSubclass extends WndTitledMessage {
 
+	private final HeroClass cls;
+	private final HeroSubClass subCls;
+	private final LinkedHashMap<Talent, Integer> subclassTalents;
+
 	public WndInfoSubclass(HeroClass cls, HeroSubClass subCls, Hero hero){
 		super(hero, new HeroIcon(subCls), Messages.titleCase(subCls.title()), subCls.desc());
+		this.cls = cls;
+		this.subCls = subCls;
 
 		ArrayList<LinkedHashMap<Talent, Integer>> talentList = new ArrayList<>();
 		Talent.initClassTalents(cls, talentList);
 		Talent.initSubclassTalents(subCls, talentList);
+		this.subclassTalents = talentList.get(2);
 
 		TalentsPane.TalentTierPane talentPane = new TalentsPane.TalentTierPane(talentList.get(2), 3, TalentButton.Mode.INFO, hero);
 		talentPane.title.text( Messages.titleCase(Messages.get(WndHeroInfo.class, "talents")));
@@ -55,4 +62,15 @@ public class WndInfoSubclass extends WndTitledMessage {
 		return super.targetHeight()-40;
 	}
 
+	public HeroClass heroClass() {
+		return cls;
+	}
+
+	public HeroSubClass subClass() {
+		return subCls;
+	}
+
+	public LinkedHashMap<Talent, Integer> subclassTalents() {
+		return subclassTalents;
+	}
 }

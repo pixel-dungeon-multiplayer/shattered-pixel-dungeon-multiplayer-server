@@ -1,4 +1,4 @@
-package com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows;
+package com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wnddialog.wndoptions;
 
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializationContext;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.ui.ImageIcon;

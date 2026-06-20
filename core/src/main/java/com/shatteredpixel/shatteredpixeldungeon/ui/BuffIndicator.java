@@ -35,7 +35,6 @@ import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Image;
 import com.nikita22007.multiplayer.noosa.audio.Sample;
-import com.nikita22007.multiplayer.noosa.tweeners.AlphaTweener;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.GameMath;
 
@@ -319,17 +318,17 @@ public class BuffIndicator extends Component {
 		}
 
 		public void updateIcon(){
-			((BuffIcon)icon).refresh(buff);
+			((BuffIcon) image).refresh(buff);
 			//round up to the nearest pixel if <50% faded, otherwise round down
 			if (!large || buff.iconTextDisplay().isEmpty()) {
 				text.visible = false;
 				grey.visible = true;
-				float fadeHeight = GameMath.gate(0, buff.iconFadePercent(), 1) * icon.height();
+				float fadeHeight = GameMath.gate(0, buff.iconFadePercent(), 1) * image.height();
 				float zoom = (camera() != null) ? camera().zoom : 1;
-				if (fadeHeight < icon.height() / 2f) {
-					grey.scale.set(icon.width(), (float) Math.ceil(zoom * fadeHeight) / zoom);
+				if (fadeHeight < image.height() / 2f) {
+					grey.scale.set(image.width(), (float) Math.ceil(zoom * fadeHeight) / zoom);
 				} else {
-					grey.scale.set(icon.width(), (float) Math.floor(zoom * fadeHeight) / zoom);
+					grey.scale.set(image.width(), (float) Math.floor(zoom * fadeHeight) / zoom);
 				}
 			} else if (!buff.iconTextDisplay().isEmpty()) {
 				text.visible = true;
@@ -346,8 +345,8 @@ public class BuffIndicator extends Component {
 		@Override
 		protected void layout() {
 			super.layout();
-			grey.x = icon.x = this.x + (large ? 0 : 1);
-			grey.y = icon.y = this.y + (large ? 0 : 2) + topOffset;
+			grey.x = image.x = this.x + (large ? 0 : 1);
+			grey.y = image.y = this.y + (large ? 0 : 2) + topOffset;
 
 			if (text.width > width()){
 				text.scale.set(PixelScene.align(0.5f));

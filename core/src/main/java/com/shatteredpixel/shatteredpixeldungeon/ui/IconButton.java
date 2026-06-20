@@ -25,59 +25,83 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.watabou.noosa.Image;
 import com.nikita22007.multiplayer.noosa.audio.Sample;
+import org.jetbrains.annotations.Nullable;
 
 public class IconButton extends Button {
-	
-	protected Image icon;
+
+	@Nullable protected Icons icon;
+	@Nullable protected Image image;
 	
 	public IconButton(){
 		super();
 	}
 	
-	public IconButton( Image icon ){
+	public IconButton( @Nullable Icons icon ){
 		super();
 		icon( icon );
+	}
+
+	public IconButton( @Nullable Image image ){
+		super();
+		icon( image );
 	}
 	
 	@Override
 	protected void layout() {
 		super.layout();
 		
-		if (icon != null) {
-			icon.x = x + (width - icon.width()) / 2f;
-			icon.y = y + (height - icon.height()) / 2f;
-			PixelScene.align(icon);
+		if (image != null) {
+			image.x = x + (width - image.width()) / 2f;
+			image.y = y + (height - image.height()) / 2f;
+			PixelScene.align(image);
 		}
 	}
 	
 	@Override
 	protected void onPointerDown() {
-		if (icon != null) icon.brightness( 1.5f );
+		if (image != null) image.brightness( 1.5f );
 		Sample.INSTANCE.play( Assets.Sounds.CLICK );
 	}
 	
 	@Override
 	protected void onPointerUp() {
-		if (icon != null) icon.resetColor();
+		if (image != null) image.resetColor();
 	}
 	
 	public void enable( boolean value ) {
 		active = value;
-		if (icon != null) icon.alpha( value ? 1.0f : 0.3f );
+		if (image != null) image.alpha( value ? 1.0f : 0.3f );
 	}
 	
-	public void icon( Image icon ) {
-		if (this.icon != null) {
-			remove( this.icon );
+	public void icon( @Nullable Icons icon ) {
+		if (this.image != null) {
+			remove( this.image);
 		}
 		this.icon = icon;
-		if (this.icon != null) {
-			add( this.icon );
+		this.image = icon == null? null: icon.get();
+		if (this.image != null) {
+			add( this.image);
+			layout();
+		}
+	}
+
+	public void icon( @Nullable Image image ) {
+		if (this.image != null) {
+			remove( this.image);
+		}
+		this.icon = null;
+		this.image = image;
+		if (this.image != null) {
+			add( this.image);
 			layout();
 		}
 	}
 	
 	public Image icon(){
+		return image;
+	}
+
+	public @Nullable Icons iconType() {
 		return icon;
 	}
 }

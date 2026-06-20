@@ -39,7 +39,7 @@ public class ItemJournalButton extends IconButton {
 	Window parentWnd;
 
 	public ItemJournalButton(Item item, Window parentWnd){
-		super(Icons.JOURNAL.get());
+		super(Icons.JOURNAL);
 		this.item = item;
 		this.parentWnd = parentWnd;
 	}

@@ -22,6 +22,7 @@ public final class WndDialogContract {
     public @NotNull List<@NotNull ItemSlot> itemSlots = new ArrayList<>();
     public @NotNull List<@NotNull Action> actions = new ArrayList<>();
     public @NotNull ImageIcon titleIcon = ImageIcon.none();
+    public @Nullable TopRightButton topRightButton = null;
     public @NotNull Layout layout = Layout.options();
 
     public @NotNull JSONObject toJson(@NotNull SerializationContext ctx, @NotNull String profile) {
@@ -37,6 +38,7 @@ public final class WndDialogContract {
         args.put("message", ctx.serialize(message, profile));
         args.put("item_slots", itemSlots(ctx));
         args.put("actions", actions(ctx, profile));
+        args.put("top_right_button", topRightButton == null ? JSONObject.NULL : topRightButton.toJson(ctx, profile));
         args.put("layout", layout.toJson());
 
         return args;
@@ -62,6 +64,7 @@ public final class WndDialogContract {
             actionObj.put("has_info", action.hasInfo);
             actionObj.put("enabled", action.enabled);
             actionObj.put("icon", action.icon.toJson());
+            actionObj.put("font_size", action.fontSize);
             serialized.put(actionObj);
         }
         return serialized;
@@ -89,6 +92,7 @@ public final class WndDialogContract {
         private final boolean hasInfo;
         private final boolean enabled;
         private final @NotNull ImageIcon icon;
+        private final int fontSize;
 
         public Action(@NotNull LocalizedString text) {
             this(text, false, true);
@@ -103,10 +107,15 @@ public final class WndDialogContract {
         }
 
         public Action(@NotNull LocalizedString text, boolean hasInfo, boolean enabled, @NotNull ImageIcon icon) {
+            this(text, hasInfo, enabled, icon, 9);
+        }
+
+        public Action(@NotNull LocalizedString text, boolean hasInfo, boolean enabled, @NotNull ImageIcon icon, int fontSize) {
             this.text = text;
             this.hasInfo = hasInfo;
             this.enabled = enabled;
             this.icon = icon;
+            this.fontSize = fontSize;
         }
     }
 
@@ -122,6 +131,30 @@ public final class WndDialogContract {
             this.item = item;
             this.enabled = enabled;
             this.selectable = selectable;
+        }
+    }
+
+    public static final class TopRightButton {
+        private final @NotNull LocalizedString text;
+        private final boolean enabled;
+        private final @NotNull ImageIcon icon;
+
+        public TopRightButton(@NotNull LocalizedString text, @NotNull ImageIcon icon) {
+            this(text, true, icon);
+        }
+
+        public TopRightButton(@NotNull LocalizedString text, boolean enabled, @NotNull ImageIcon icon) {
+            this.text = text;
+            this.enabled = enabled;
+            this.icon = icon;
+        }
+
+        public @NotNull JSONObject toJson(@NotNull SerializationContext ctx, @NotNull String profile) {
+            JSONObject json = new JSONObject();
+            json.put("text", ctx.serialize(text, profile));
+            json.put("enabled", enabled);
+            json.put("icon", icon.toJson());
+            return json;
         }
     }
 

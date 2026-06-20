@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.network.serializers.Serializatio
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.watabou.noosa.Image;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +37,12 @@ public final class ImageIcon {
 
     public static @NotNull ImageIcon none() {
         return new ImageIcon("none", new JSONObject());
+    }
+
+    public static @NotNull ImageIcon uiIcon(@NotNull Icons icon) {
+        JSONObject args = new JSONObject();
+        args.put("name", icon.name());
+        return new ImageIcon("ui_icon", args);
     }
 
     public static @NotNull ImageIcon itemSprite(ItemSprite sprite) {

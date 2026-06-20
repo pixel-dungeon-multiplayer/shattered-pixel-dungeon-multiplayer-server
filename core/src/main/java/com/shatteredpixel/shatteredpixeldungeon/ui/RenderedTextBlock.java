@@ -121,6 +121,10 @@ public class RenderedTextBlock extends Component {
 		return maxWidth;
 	}
 
+	public int size() {
+		return size;
+	}
+
 	private synchronized void build(){
 		if (tokens == null) return;
 		

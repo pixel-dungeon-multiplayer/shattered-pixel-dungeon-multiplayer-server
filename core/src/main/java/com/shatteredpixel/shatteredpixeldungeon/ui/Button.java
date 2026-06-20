@@ -181,8 +181,16 @@ public class Button extends Component {
 
 	public void onClickNetwork(){this.onClick();}
 
+	public boolean activeForNetwork() {
+		return active;
+	}
+
 	protected LocalizedString hoverText() {
 		return null;
+	}
+
+	public LocalizedString hoverTextForNetwork() {
+		return hoverText();
 	}
 
 	//TODO might be nice for more flexibility here

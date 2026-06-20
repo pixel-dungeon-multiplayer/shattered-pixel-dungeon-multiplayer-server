@@ -136,6 +136,10 @@ public class StyledButton extends Button {
 	public LocalizedString LocalizedStringText() {
 		return text.LocalizedStringText();
 	}
+
+	public int fontSize() {
+		return text.size();
+	}
 	
 	public void textColor( int value ) {
 		text.hardlight( value );

@@ -225,6 +225,10 @@ public class Wandmaker extends NPC {
 		// 1 = corpse dust quest
 		// 2 = elemental embers quest
 		// 3 = rotberry quest
+
+		public static int type() {
+			return type;
+		}
 		
 		private static boolean spawned;
 		

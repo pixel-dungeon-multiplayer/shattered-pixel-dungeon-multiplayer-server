@@ -214,7 +214,6 @@ public class Server extends Thread {
         SERIALIZERS.register(WndTitledMessage.class, new WndTitledMessageSerializer<>());
         SERIALIZERS.register(WndUpgrade.class, new WndUpgradeSerializer());
         SERIALIZERS.register(WndUseItem.class, new WndUseItemSerializer());
-        SERIALIZERS.register(WndVictoryCongrats.class, new WndVictoryCongratsSerializer());
         SERIALIZERS.register(WndWandmaker.class, new WndWandmakerSerializer());
         SERIALIZERS.register(Alchemize.WndAlchemizeItem.class, new WndAlchemizeItemSerializer());
         SERIALIZERS.register(StoneOfAugmentation.WndAugment.class, new WndAugmentSerializer());

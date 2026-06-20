@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.ClericSpell;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializationContext;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.ui.ImageIcon;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndClericSpells;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,6 +25,14 @@ public class WndClericSpellsSerializer extends WindowSerializer<WndClericSpells>
         JSONObject args = new JSONObject();
         args.put("info", obj.infoMode());
         args.put("description", ctx.serialize(obj.desc(), profile));
+
+        JSONObject title = new JSONObject();
+        {
+            title.put("text", ctx.serialize(obj.title.text, profile));
+            title.put("color", obj.title.color == null ? JSONObject.NULL : obj.title.color);
+            title.put("title_icon", ImageIcon.fromImage(obj.title.imIcon, ctx, profile).toJson());
+        }
+        args.put("title", title);
 
         JSONArray spellTiers = new JSONArray();
         Hero cleric = obj.getOwnerHero();

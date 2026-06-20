@@ -59,12 +59,12 @@ public class WndClericSpells extends Window {
 
 	private HolyTome tome;
 	private boolean info;
+	public final IconTitle title;
 
 	public WndClericSpells(HolyTome tome, Hero cleric, boolean info){
 		super(cleric);
 		this.tome = tome;
 		this.info = info;
-		IconTitle title;
 		if (!info){
 			title = new IconTitle(new ItemSprite(tome), Messages.titleCase(Messages.get(this, "cast_title")));
 		} else {

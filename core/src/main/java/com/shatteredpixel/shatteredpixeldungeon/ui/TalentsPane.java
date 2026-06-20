@@ -123,6 +123,14 @@ public class TalentsPane extends ScrollPane {
 		}
 	}
 
+	public ArrayList<TalentButton> buttonsForNetwork() {
+		ArrayList<TalentButton> buttons = new ArrayList<>();
+		for (TalentTierPane pane : panes) {
+			buttons.addAll(pane.buttons);
+		}
+		return buttons;
+	}
+
 	@Override
 	protected void layout() {
 		super.layout();
@@ -198,6 +206,10 @@ public class TalentsPane extends ScrollPane {
 				add(btn);
 			}
 
+		}
+
+		public ArrayList<TalentButton> buttonsForNetwork() {
+			return buttons;
 		}
 
 		private void setupStars(Hero hero){

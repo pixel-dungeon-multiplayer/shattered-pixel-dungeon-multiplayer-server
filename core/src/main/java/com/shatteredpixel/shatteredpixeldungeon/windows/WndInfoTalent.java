@@ -38,13 +38,23 @@ public class WndInfoTalent extends Window {
 
 	private static final int WIDTH_MIN = 120;
 	private static final int WIDTH_MAX = 220;
+	private final Talent talent;
+	private final int points;
+	private final TalentButtonCallback buttonCallback;
+	private final boolean metaDesc;
+	public final IconTitle titlebar;
+	public final RenderedTextBlock txtInfo;
+	public RedButton button;
 
 	public WndInfoTalent(Talent talent, int points, TalentButtonCallback buttonCallback){
 		super();
+		this.talent = talent;
+		this.points = points;
+		this.buttonCallback = buttonCallback;
 
 		int width = WIDTH_MIN;
 
-		IconTitle titlebar = new IconTitle();
+		titlebar = new IconTitle();
 
 		titlebar.icon( new TalentIcon( talent ) );
 		LocalizedString title = Messages.titleCase(talent.title());
@@ -55,10 +65,10 @@ public class WndInfoTalent extends Window {
 		titlebar.setRect( 0, 0, width, 0 );
 		add( titlebar );
 
-		boolean metaDesc = (buttonCallback != null && buttonCallback.metamorphDesc()) ||
+		metaDesc = (buttonCallback != null && buttonCallback.metamorphDesc()) ||
 				(getOwnerHero() != null && getOwnerHero().metamorphedTalents.containsValue(talent));
 
-		RenderedTextBlock txtInfo = PixelScene.renderTextBlock(talent.desc(metaDesc), 6);
+		txtInfo = PixelScene.renderTextBlock(talent.desc(metaDesc), 6);
 		txtInfo.maxWidth(width);
 		txtInfo.setPos(titlebar.left(), titlebar.bottom() + 2*GAP);
 		add( txtInfo );
@@ -73,7 +83,7 @@ public class WndInfoTalent extends Window {
 		resize( width, (int)(txtInfo.bottom() + GAP) );
 
 		if (buttonCallback != null) {
-			RedButton button = new RedButton( buttonCallback.prompt() ) {
+			button = new RedButton( buttonCallback.prompt() ) {
 				@Override
 				protected void onClick() {
 					super.onClick();
@@ -87,6 +97,29 @@ public class WndInfoTalent extends Window {
 			resize( width, (int)button.bottom()+1 );
 		}
 
+	}
+
+	public Talent talent() {
+		return talent;
+	}
+
+	public int points() {
+		return points;
+	}
+
+	public TalentButtonCallback buttonCallback() {
+		return buttonCallback;
+	}
+
+	public boolean metaDesc() {
+		return metaDesc;
+	}
+
+	@Override
+	protected void onSelect(int button) {
+		if (button == 0 && this.button != null) {
+			this.button.onClickNetwork();
+		}
 	}
 
 	public static abstract class TalentButtonCallback implements Callback {

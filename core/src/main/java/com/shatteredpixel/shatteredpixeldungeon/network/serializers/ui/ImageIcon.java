@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializationContext;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.TerrainFeaturesTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.watabou.noosa.Image;
@@ -31,6 +32,8 @@ public final class ImageIcon {
             return itemSprite((ItemSprite) image);
         } else if (image instanceof BuffIcon) {
             return buffIcon((BuffIcon) image, ctx, profile);
+        } else if (image instanceof TerrainFeaturesTilemap.TileImage) {
+            return tileImage((TerrainFeaturesTilemap.TileImage) image, ctx, profile);
         }
         throw new IllegalArgumentException("Unsupported image type: " + image.getClass().getName());
     }
@@ -59,6 +62,12 @@ public final class ImageIcon {
             args.put("glowing", glowing.toJsonObject());
         }
         return new ImageIcon("item_sprite", args);
+    }
+
+    private static @NotNull ImageIcon tileImage(TerrainFeaturesTilemap.TileImage image, SerializationContext ctx, String profile) {
+        JSONObject args = new JSONObject();
+        args.put("tile", image.tileVisual);
+        return new ImageIcon("tile_image", args);
     }
 
     public static @NotNull ImageIcon charSprite(@Nullable String spriteAsset, @NotNull String spriteClass) {

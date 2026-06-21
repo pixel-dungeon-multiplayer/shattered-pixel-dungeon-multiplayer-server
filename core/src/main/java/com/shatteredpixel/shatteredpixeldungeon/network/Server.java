@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.network;
 
 
 import com.badlogic.gdx.Gdx;
+import com.nikita22007.multiplayer.utils.text.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
@@ -16,6 +17,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.network.actions.*;
 import com.shatteredpixel.shatteredpixeldungeon.network.actions.serializers.*;
 import com.shatteredpixel.shatteredpixeldungeon.network.NetworkPacket.SerializedAction;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.*;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wnddialog.WndInfoTalentSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.WndMetamorphChooseSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.WndMetamorphReplaceSerializer;
@@ -54,22 +56,8 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.MissileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.ActorSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.CharSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.BagSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.HeapSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.HeapRemovalSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.ItemSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.MissileAnchorSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializerRegistry;
 
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.ParticleFactorySerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SpeckFactorySerializer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.BelongingsSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SpecialSlotDefinitionsSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SplashFactorySerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.KeyIndicatorSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.emitters.EmitterAnchorSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.dtos.emitters.EmitterAnchor;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.dtos.KeyIndicatorDTO;
@@ -79,8 +67,6 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
 import com.watabou.noosa.particles.SerializableParticleFactory;
 import com.watabou.utils.Rect;
 import com.watabou.utils.RectF;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.RectSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.RectFSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.*;
 
@@ -88,6 +74,8 @@ public class Server extends Thread {
     public static final SerializerRegistry SERIALIZERS = new SerializerRegistry();
 
     static {
+        SERIALIZERS.register(LocalizedString.class, "default", new LocalizedStringSerializer());
+
         SERIALIZERS.register(Item.class, "default", new ItemSerializer());
         SERIALIZERS.register(Heap.class, "default", new HeapSerializer());
         SERIALIZERS.register(Heap.class, "remove", new HeapRemovalSerializer());

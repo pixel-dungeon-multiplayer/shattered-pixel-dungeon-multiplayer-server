@@ -141,4 +141,17 @@ public abstract class CustomTilemap implements Bundlable {
 		bundle.put(TILE_W, tileW);
 		bundle.put(TILE_H, tileH);
 	}
+
+	public static final class CustomTileImage extends Image {
+		public final int tilemapIndex;
+		public final int localX;
+		public final int localY;
+
+		public CustomTileImage(Image image, int tilemapIndex, int localX, int localY) {
+			super(image);
+			this.tilemapIndex = tilemapIndex;
+			this.localX = localX;
+			this.localY = localY;
+		}
+	}
 }

@@ -61,7 +61,7 @@ public class RenderedTextBlock extends Component {
 		this.size = size;
 	}
 
-	public RenderedTextBlock(String text, int size){
+	public RenderedTextBlock(LocalizedString text, int size){
 		this.size = size;
 		text(text);
 	}

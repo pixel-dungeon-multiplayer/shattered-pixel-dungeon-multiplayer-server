@@ -15,8 +15,8 @@ public class WndWandmakerSerializer extends WndDialogSerializer<WndWandmaker> {
         contract.message = obj.message;
         contract.titleIcon = ImageIcon.charSprite(obj.wandmaker.getSprite().getClass().getName());
         contract.layout = WndDialogContract.Layout.titledMessage();
-        contract.itemSlots.add(new WndDialogContract.ItemSlot(Wandmaker.Quest.wand1, true, true));
-        contract.itemSlots.add(new WndDialogContract.ItemSlot(Wandmaker.Quest.wand2, true, true));
+        contract.itemSlots.add(new WndDialogContract.ItemSlot(Wandmaker.Quest.wand1, true));
+        contract.itemSlots.add(new WndDialogContract.ItemSlot(Wandmaker.Quest.wand2, true));
         return contract;
     }
 }

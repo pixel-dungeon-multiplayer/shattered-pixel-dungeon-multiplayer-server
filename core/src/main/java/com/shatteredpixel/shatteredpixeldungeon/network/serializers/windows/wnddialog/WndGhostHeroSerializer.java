@@ -14,8 +14,8 @@ public class WndGhostHeroSerializer extends WndDialogSerializer<DriedRose.WndGho
         contract.message = obj.message();
         contract.titleIcon = ImageIcon.itemSprite(obj.rose().image(), null);
         contract.layout = WndDialogContract.Layout.titledMessage();
-        contract.itemSlots.add(new WndDialogContract.ItemSlot(obj.weaponItem(), true, true));
-        contract.itemSlots.add(new WndDialogContract.ItemSlot(obj.armorItem(), true, true));
+        contract.itemSlots.add(new WndDialogContract.ItemSlot(obj.weaponItem(), true));
+        contract.itemSlots.add(new WndDialogContract.ItemSlot(obj.armorItem(), true));
         return contract;
     }
 }

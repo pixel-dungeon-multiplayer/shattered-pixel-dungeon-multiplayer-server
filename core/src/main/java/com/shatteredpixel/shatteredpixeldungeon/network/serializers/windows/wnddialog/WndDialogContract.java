@@ -50,7 +50,6 @@ public final class WndDialogContract {
             JSONObject itemSlotObj = new JSONObject();
             itemSlotObj.put("item", itemSlot.item == null ? JSONObject.NULL : ctx.serialize(itemSlot.item, "inventory"));
             itemSlotObj.put("enabled", itemSlot.enabled);
-            itemSlotObj.put("selectable", itemSlot.selectable);
             serialized.put(itemSlotObj);
         }
         return serialized;
@@ -126,15 +125,12 @@ public final class WndDialogContract {
     public static final class ItemSlot {
         private final @Nullable com.shatteredpixel.shatteredpixeldungeon.items.Item item;
         private final boolean enabled;
-        private final boolean selectable;
 
         public ItemSlot(
                 @Nullable com.shatteredpixel.shatteredpixeldungeon.items.Item item,
-                boolean enabled,
-                boolean selectable) {
+                boolean enabled) {
             this.item = item;
             this.enabled = enabled;
-            this.selectable = selectable;
         }
     }
 

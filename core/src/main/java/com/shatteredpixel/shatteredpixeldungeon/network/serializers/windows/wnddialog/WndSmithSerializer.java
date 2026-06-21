@@ -15,7 +15,7 @@ public class WndSmithSerializer extends WndDialogSerializer<WndBlacksmith.WndSmi
         contract.layout = WndDialogContract.Layout.titledMessage();
 
         for (ItemButton button : obj.rewardButtons) {
-            contract.itemSlots.add(new WndDialogContract.ItemSlot(button.item(), true, true));
+            contract.itemSlots.add(new WndDialogContract.ItemSlot(button.item(), true));
         }
 
         return contract;

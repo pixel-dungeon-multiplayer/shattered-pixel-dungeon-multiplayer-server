@@ -10,7 +10,7 @@ public abstract class WndDialogSerializer<T extends Window> extends WindowSerial
 
     @Override
     protected final @NotNull String type() {
-        return "wnd_dialog";
+        return "dialog";
     }
 
     @Override

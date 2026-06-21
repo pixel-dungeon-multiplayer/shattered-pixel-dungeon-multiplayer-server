@@ -145,7 +145,7 @@ public class MagesStaff extends MeleeWeapon {
 		} else if (action.equals(AC_ZAP)){
 
 			if (wand == null) {
-				GameScene.show(new WndUseItem(null, this, hero));
+				GameScene.show(new WndUseItem(hero, null, this));
 				return;
 			}
 

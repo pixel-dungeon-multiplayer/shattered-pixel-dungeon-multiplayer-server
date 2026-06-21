@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 import com.badlogic.gdx.Gdx;
 import com.nikita22007.multiplayer.utils.text.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
@@ -31,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.TextInput;
+import org.jetbrains.annotations.NotNull;
 
 //todo send this?
 public class WndTextInput extends Window {
@@ -52,8 +54,9 @@ public class WndTextInput extends Window {
 	private final LocalizedString positiveText;
 	private final LocalizedString negativeText;
 
-	public WndTextInput(final LocalizedString title, final LocalizedString body, final LocalizedString initialValue, final int maxLength,
+	public WndTextInput(@NotNull Hero hero, final LocalizedString title, final LocalizedString body, final LocalizedString initialValue, final int maxLength,
 						final boolean multiLine, final LocalizedString posTxt, final LocalizedString negTxt) {
+		super(hero);
 		this.title = title;
 		this.body = body;
 		this.initialValue = initialValue;

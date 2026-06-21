@@ -210,7 +210,7 @@ public class WndHeroInfo extends WndTabbed {
 					if (found != null) break;
 				}
 				if (found != null) {
-					Game.scene().addToFront(new WndInfoTalent(found, points, null));
+					Game.scene().addToFront(new WndInfoTalent(getOwnerHero(), found, points, null));
 				}
 			}
 		} else {

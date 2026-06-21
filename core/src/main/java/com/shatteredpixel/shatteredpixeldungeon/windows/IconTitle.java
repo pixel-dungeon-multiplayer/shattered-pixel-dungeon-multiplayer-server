@@ -27,12 +27,11 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
-import com.shatteredpixel.shatteredpixeldungeon.ui.HealthBar;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 public class IconTitle extends Component {
@@ -40,6 +39,7 @@ public class IconTitle extends Component {
 	private static final float FONT_SIZE = 9;
 
 	private static final float GAP = 2;
+	public @Nullable Icons iconsIcon;
 
 	public Image imIcon;
 	protected RenderedTextBlock tfLabel;
@@ -60,7 +60,15 @@ public class IconTitle extends Component {
 		icon.view( item );
 		layout();
 	}
-	
+
+	public IconTitle(@NotNull Icons icon, @NotNull LocalizedString text) {
+		this.iconsIcon = icon;
+		Image image = icon.get();
+		icon( image );
+		label( text );
+		layout();
+	}
+
 	public IconTitle( Heap heap ){
 		ItemSprite icon = new ItemSprite();
 		icon( icon );

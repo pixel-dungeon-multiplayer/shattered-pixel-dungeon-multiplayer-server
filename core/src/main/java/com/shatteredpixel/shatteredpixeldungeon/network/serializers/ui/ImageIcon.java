@@ -77,7 +77,7 @@ public final class ImageIcon {
 
     public static @NotNull ImageIcon mobTitleBar(@NotNull Mob mob, @NotNull SerializationContext ctx, @NotNull String profile) {
         JSONObject args = new JSONObject();
-        args.put("mob", ctx.serialize(mob));
+        args.put("mob", ctx.serialize(mob, profile));
         JSONArray buffs = new JSONArray();
         for (Buff buff : mob.buffs()) {
             buffs.put(ctx.serialize(buff, profile));
@@ -91,7 +91,6 @@ public final class ImageIcon {
         args.put("buff", ctx.serialize(image.buff, profile));
         return new ImageIcon("buff_titlebar", args);
     }
-
 
     public @NotNull JSONObject toJson() {
         return json;

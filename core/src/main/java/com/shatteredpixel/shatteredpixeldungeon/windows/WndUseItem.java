@@ -43,7 +43,7 @@ public class WndUseItem extends WndInfoItem {
 	public Item item;
 	public final ArrayList<RedButton> buttons = new ArrayList<>();
 
-	public WndUseItem(@Nullable final Window ownerWnd, final Item item, @NotNull Hero ownerHero ) {
+	public WndUseItem(@NotNull Hero ownerHero, @Nullable final Window ownerWnd, final Item item ) {
 		
 		super(ownerHero, item);
 
@@ -81,7 +81,7 @@ public class WndUseItem extends WndInfoItem {
 			}
 			y = layoutButtons(buttons, width, y);
 
-			ItemJournalButton btn = new ItemJournalButton(item, this);
+			ItemJournalButton btn = new ItemJournalButton(getOwnerHero(), item, this);
 			btn.setRect(width - 16, 0, 16, 16);
 			add(btn);
 		}

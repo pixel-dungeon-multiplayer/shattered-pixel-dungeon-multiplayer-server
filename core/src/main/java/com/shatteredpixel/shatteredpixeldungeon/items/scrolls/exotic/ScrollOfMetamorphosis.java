@@ -195,7 +195,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 		TalentsPane.TalentTierPane optionsPane;
 
 		//for window restoring
-		public WndMetamorphReplace(){
+		/* public WndMetamorphReplace(){
 			super();
 
 			if (INSTANCE != null){
@@ -208,7 +208,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 				hide();
 			}
 		}
-
+*/
 		public WndMetamorphReplace(Talent replacing, int tier, Hero hero){
 			super(hero);
 

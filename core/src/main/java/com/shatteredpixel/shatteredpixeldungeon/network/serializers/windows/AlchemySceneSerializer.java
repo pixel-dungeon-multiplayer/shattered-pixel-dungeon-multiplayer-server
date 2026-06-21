@@ -13,7 +13,7 @@ public class AlchemySceneSerializer extends WindowSerializer<AlchemyScene> {
 
     @Override
     protected @NotNull String type() {
-        return "alchemy";
+        return "alchemy_scene";
     }
 
     @Override

@@ -182,6 +182,8 @@ public class TalentsPane extends ScrollPane {
 		public TalentTierPane(LinkedHashMap<Talent, Integer> talents, int tier, TalentButton.Mode mode, Hero hero){
 			super();
 
+			final Hero wndOwnerHero = hero; //todo fix this
+
 			this.tier = tier;
 
 			title = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(TalentsPane.class, "tier", tier)), 9);
@@ -192,7 +194,7 @@ public class TalentsPane extends ScrollPane {
 
 			buttons = new ArrayList<>();
 			for (Talent talent : talents.keySet()){
-				TalentButton btn = new TalentButton(tier, talent, talents.get(talent), mode){
+				TalentButton btn = new TalentButton(wndOwnerHero, tier, talent, talents.get(talent), mode){
 					@Override
 					public void upgradeTalent() {
 						super.upgradeTalent();

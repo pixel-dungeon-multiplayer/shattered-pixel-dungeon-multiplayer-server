@@ -79,7 +79,11 @@ public final class WndDialogContract {
             this.titleColor = ((WndInfoMob.MobTitle) titlebar).color;
             this.titleText = ((WndInfoMob.MobTitle) titlebar).title;
         } else if (titlebar instanceof IconTitle) {
-            this.titleIcon = ImageIcon.fromImage(((IconTitle) titlebar).imIcon, ctx, profile);
+            if (((IconTitle) titlebar).iconsIcon != null) {
+                this.titleIcon = ImageIcon.uiIcon(((IconTitle) titlebar).iconsIcon);
+            } else {
+                this.titleIcon = ImageIcon.fromImage(((IconTitle) titlebar).imIcon, ctx, profile);
+            }
             this.titleColor = ((IconTitle) titlebar).color;
             this.titleText = ((IconTitle) titlebar).text;
         } else {

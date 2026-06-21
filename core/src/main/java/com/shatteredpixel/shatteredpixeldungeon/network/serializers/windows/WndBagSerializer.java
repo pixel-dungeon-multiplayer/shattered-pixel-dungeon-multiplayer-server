@@ -13,7 +13,7 @@ public class WndBagSerializer extends WindowSerializer<WndBag> {
 
     @Override
     protected @NotNull String type() {
-        return "wnd_bag";
+        return "bag_listener";
     }
 
     @Override

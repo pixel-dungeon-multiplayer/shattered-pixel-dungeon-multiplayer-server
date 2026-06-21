@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.nikita22007.multiplayer.utils.text.LocalizedString;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Trinket;
@@ -32,14 +33,17 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndUseItem;
+import org.jetbrains.annotations.NotNull;
 
 public class ItemJournalButton extends IconButton {
 
 	Item item;
 	Window parentWnd;
+	final Hero ownerHero;
 
-	public ItemJournalButton(Item item, Window parentWnd){
+	public ItemJournalButton(@NotNull Hero hero, Item item, Window parentWnd){
 		super(Icons.JOURNAL);
+		this.ownerHero = hero;
 		this.item = item;
 		this.parentWnd = parentWnd;
 	}
@@ -60,7 +64,7 @@ public class ItemJournalButton extends IconButton {
 		}
 		if (note == null){
 			if (Notes.getRecords(Notes.CustomRecord.class).size() >= Notes.customRecordLimit()){
-				GameScene.show(new WndTitledMessage(Icons.INFO.get(),
+				GameScene.show(new WndTitledMessage(ownerHero, Icons.INFO.get(),
 						Messages.get(CustomNoteButton.class, "limit_title"),
 						Messages.get(CustomNoteButton.class, "limit_text")));
 			} else {
@@ -78,12 +82,12 @@ public class ItemJournalButton extends IconButton {
 						Messages.get(CustomNoteButton.class, "new_item_title", Messages.titleCase(item.name())));
 			}
 		} else {
-			GameScene.show(new CustomNoteButton.CustomNoteWindow(note, parentWnd));
+			GameScene.show(new CustomNoteButton.CustomNoteWindow(ownerHero, note, parentWnd));
 		}
 	}
 
-	private static void addNote(Window parentWindow, Notes.CustomRecord note, LocalizedString promptTitle, LocalizedString prompttext){
-		GameScene.show(new WndTextInput(promptTitle,
+	private void addNote(Window parentWindow, Notes.CustomRecord note, LocalizedString promptTitle, LocalizedString prompttext){
+		GameScene.show( new WndTextInput(ownerHero, promptTitle,
 				prompttext,
 				LocalizedString.EMPTY,
 				50,
@@ -101,7 +105,7 @@ public class ItemJournalButton extends IconButton {
 
 					hide();
 					if (parentWindow instanceof WndUseItem){
-						GameScene.show(new WndUseItem(((WndUseItem) parentWindow).owner, ((WndUseItem) parentWindow).item, getOwnerHero()));
+						GameScene.show(new WndUseItem(getOwnerHero(), ((WndUseItem) parentWindow).owner, ((WndUseItem) parentWindow).item));
 					}
 				}
 			}

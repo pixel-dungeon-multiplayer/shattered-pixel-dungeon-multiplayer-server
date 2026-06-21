@@ -172,6 +172,7 @@ public class Server extends Thread {
         SERIALIZERS.register(ItemAction.Replace.class, new ItemActionSerializers.Replace());
         SERIALIZERS.register(HeapUpdateAction.class, new HeapUpdateActionSerializer());
         SERIALIZERS.register(UpdateWindowAction.class, new UpdateWindowActionSerializer());
+        SERIALIZERS.register(HideWindowAction.class, new HideWindowActionSerializer());
         SERIALIZERS.register(AlchemyScene.class, new AlchemySceneSerializer());
         SERIALIZERS.register(WndBadge.class, new WndBadgeSerializer());
         SERIALIZERS.register(WndBag.class, new WndBagSerializer());

@@ -28,6 +28,8 @@ import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.effects.ShadowBox;
+import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
+import com.shatteredpixel.shatteredpixeldungeon.network.actions.HideWindowAction;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
@@ -259,7 +261,9 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 		offset(newXOfs, newYOfs);
 	}
 	//TODO: check this
+	@MustBeInvokedByOverriders
 	public void hide() {
+		SendData.sendAction(getOwnerHero(), new HideWindowAction(this.getId()));
 		destroy();
 	}
 

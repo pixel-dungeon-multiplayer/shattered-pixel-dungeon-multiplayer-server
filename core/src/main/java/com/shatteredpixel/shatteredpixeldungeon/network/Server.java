@@ -131,6 +131,9 @@ public class Server extends Thread {
         SERIALIZERS.register(WndSadGhost.class, new WndSadGhostSerializer());
         SERIALIZERS.register(WndTextInput.class, new WndTextInputSerializer());
         SERIALIZERS.register(WndTitledMessage.class, new WndTitledMessageSerializer<>());
+        SERIALIZERS.register(com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.cleric.Trinity.WndUseTrinity.class, new WndUseTrinitySerializer());
+        SERIALIZERS.register(com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.cleric.Trinity.WndItemtypeSelect.class, new WndItemtypeSelectSerializer());
+        SERIALIZERS.register(com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.cleric.Trinity.WndItemConfirm.class, new WndItemConfirmSerializer());
         SERIALIZERS.register(WndUpgrade.class, new WndUpgradeSerializer());
         SERIALIZERS.register(WndUseItem.class, new WndUseItemSerializer());
         SERIALIZERS.register(WndWandmaker.class, new WndWandmakerSerializer());

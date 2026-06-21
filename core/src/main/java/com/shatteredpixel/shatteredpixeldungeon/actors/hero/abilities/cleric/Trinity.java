@@ -106,6 +106,7 @@ public class Trinity extends ArmorAbility {
 	}
 
 	public class WndUseTrinity extends WndTitledMessage {
+		public final ArrayList<RedButton> buttons = new ArrayList<>();
 
 		public WndUseTrinity(ClassArmor armor, Hero hero) {
 			super(hero, new HeroIcon(Trinity.this),
@@ -188,6 +189,7 @@ public class Trinity extends ArmorAbility {
 				btnBody.setSize(width, 100); //for text layout
 				btnBody.setRect(0, top + 2, width, btnBody.reqHeight());
 				add(btnBody);
+				buttons.add(btnBody);
 				top = (int)btnBody.bottom();
 
 				btnBody.enable(hero.buff(MagicImmune.class) == null && armor.charge >= trinityChargeUsePerEffect(bodyForm.getClass(), hero));
@@ -217,6 +219,7 @@ public class Trinity extends ArmorAbility {
 				btnMind.setSize(width, 100); //for text layout
 				btnMind.setRect(0, top + 2, width, btnMind.reqHeight());
 				add(btnMind);
+				buttons.add(btnMind);
 				top = (int)btnMind.bottom();
 
 				btnMind.enable(armor.charge >= trinityChargeUsePerEffect(mindForm.getClass(), hero));
@@ -263,6 +266,7 @@ public class Trinity extends ArmorAbility {
 				btnSpirit.setSize(width, 100); //for text layout
 				btnSpirit.setRect(0, top + 2, width, btnSpirit.reqHeight());
 				add(btnSpirit);
+				buttons.add(btnSpirit);
 				top = (int)btnSpirit.bottom();
 
 				btnSpirit.enable(hero.buff(MagicImmune.class) == null && armor.charge >= trinityChargeUsePerEffect(spiritForm.getClass(), hero));
@@ -270,6 +274,13 @@ public class Trinity extends ArmorAbility {
 
 			resize(width, top);
 
+		}
+
+		@Override
+		protected void onSelect(int button) {
+			if (button >= 0 && button < buttons.size()) {
+				buttons.get(button).onClickNetwork();
+			}
 		}
 
 	}
@@ -305,6 +316,7 @@ public class Trinity extends ArmorAbility {
 	}
 
 	public static class WndItemtypeSelect extends WndTitledMessage {
+		public final ArrayList<ItemButton> buttons = new ArrayList<>();
 
 		//probably want a callback here?
 		public WndItemtypeSelect(HolyTome tome, ClericSpell spell, Hero hero) {
@@ -403,6 +415,7 @@ public class Trinity extends ArmorAbility {
 				btn.slot().textVisible(false);
 				btn.setRect(left, top, 19, 19);
 				add(btn);
+				buttons.add(btn);
 
 				left += 20;
 				if (left >= width - 19){
@@ -420,9 +433,17 @@ public class Trinity extends ArmorAbility {
 
 		}
 
+		@Override
+		protected void onSelect(int button) {
+			if (button >= 0 && button < buttons.size()) {
+				buttons.get(button).onClickNetwork();
+			}
+		}
+
 	}
 
 	public static class WndItemConfirm extends WndTitledMessage {
+		public RedButton btnConfirm;
 
 		public WndItemConfirm(Window parentWnd, Item item, HolyTome tome, ClericSpell spell, Hero hero){
 			super(hero, new ItemSprite(item),  Messages.titleCase(getName(item)), getText(item, hero));
@@ -436,7 +457,7 @@ public class Trinity extends ArmorAbility {
 				text = Messages.get(this, "spirit");
 			}
 
-			RedButton btnConfirm = new RedButton(text){
+			btnConfirm = new RedButton(text){
 				@Override
 				protected void onClick() {
 					parentWnd.hide();
@@ -463,6 +484,13 @@ public class Trinity extends ArmorAbility {
 
 			resize(width, (int)btnConfirm.bottom());
 
+		}
+
+		@Override
+		protected void onSelect(int button) {
+			if (button == 0 && btnConfirm != null) {
+				btnConfirm.onClickNetwork();
+			}
 		}
 
 		private static LocalizedString getName(Item item){

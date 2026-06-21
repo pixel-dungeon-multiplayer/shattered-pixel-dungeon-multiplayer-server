@@ -21,13 +21,11 @@
 
 package com.watabou.noosa;
 
-import com.badlogic.gdx.Gdx;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.glwrap.Quad;
 import com.watabou.glwrap.Vertexbuffer;
 import com.watabou.utils.RectF;
-import org.json.JSONObject;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
@@ -45,7 +43,6 @@ public class Image extends Visual {
 	protected Vertexbuffer buffer;
 	
 	protected boolean dirty;
-	String asset = null;
 
 	public Image() {
 		super( 0, 0, 0, 0 );
@@ -71,7 +68,6 @@ public class Image extends Visual {
 	
 	public void texture( Object tx ) {
 		if (tx instanceof String) {
-			asset = (String) tx;
 		}
 		texture = tx instanceof SmartTexture ? (SmartTexture)tx : TextureCache.get( tx );
 		frame( new RectF( 0, 0, 1, 1 ) );
@@ -108,7 +104,6 @@ public class Image extends Visual {
 
 		rm = other.rm; gm = other.gm; bm = other.bm; am = other.am;
 		ra = other.ra; ga = other.ga; ba = other.ba; aa = other.aa;
-		asset = other.asset;
 	}
 	
 	protected void updateFrame() {
@@ -200,17 +195,4 @@ public class Image extends Visual {
 		if (buffer != null)
 			buffer.delete();
 	}
-	public JSONObject toJson(){
-		JSONObject object = new JSONObject();
-		object.put("asset", asset);
-		if (frame != null) {
-			RectF temp = frame();
-			object.put("left", temp.left);
-			object.put("top", temp.top);
-			object.put("right", temp.right);
-			object.put("bottom", temp.bottom);
-		}
-		return object;
-	}
-
 }

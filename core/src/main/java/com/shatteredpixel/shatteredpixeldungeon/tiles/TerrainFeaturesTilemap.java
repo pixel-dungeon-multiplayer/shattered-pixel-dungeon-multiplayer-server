@@ -116,8 +116,8 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 		public final int tileVisual;
 		public TileImage(Image image, int tileVisual) {
 			super(image);
-            this.tileVisual = tileVisual;
-        }
+			this.tileVisual = tileVisual;
+		}
 	}
 
 	public void growPlant( final int pos ){

@@ -54,22 +54,17 @@ public class WndInfoCell extends Window {
 		Image customImage = null;
 		int x = cell % Dungeon.level.width();
 		int y = cell / Dungeon.level.width();
-		int tilemapIndex = -1;
-		CustomTilemap matchingTilemap = null;
-		for (int idx = 0; idx < Dungeon.level.customTiles.size(); idx++){
-			CustomTilemap i = Dungeon.level.customTiles.get(idx);
+		for (CustomTilemap i : Dungeon.level.customTiles){
 			if ((x >= i.tileX && x < i.tileX+i.tileW) &&
 					(y >= i.tileY && y < i.tileY+i.tileH)){
 				if ((customImage = i.image(x - i.tileX, y - i.tileY)) != null) {
-					tilemapIndex = idx;
-					matchingTilemap = i;
 					break;
 				}
 			}
 		}
 
 		if (customImage != null){
-			return new CustomTilemap.CustomTileImage(customImage, tilemapIndex, x - matchingTilemap.tileX, y - matchingTilemap.tileY);
+			return customImage;
 		} else {
 
 			if (tile == Terrain.WATER) {

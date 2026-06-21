@@ -170,14 +170,4 @@ public class IconTitle extends Component {
 		health.level( healthLvl = value );
 		layout();
 	}
-
-	public JSONObject toJson(){
-		JSONObject object = new JSONObject();
-		if (!Float.isNaN(healthLvl)) {
-			object.put("health_lvl", healthLvl);
-		}
-		object.put("icon", imIcon.toJson());
-		object.put("tf_label", tfLabel.toJson());
-		return object;
-	}
 }

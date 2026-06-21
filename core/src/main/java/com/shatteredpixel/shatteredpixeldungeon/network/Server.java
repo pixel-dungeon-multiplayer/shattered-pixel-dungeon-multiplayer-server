@@ -64,9 +64,13 @@ import com.shatteredpixel.shatteredpixeldungeon.network.serializers.dtos.KeyIndi
 
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
+import com.watabou.gltextures.TextureSource;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.particles.SerializableParticleFactory;
 import com.watabou.utils.Rect;
 import com.watabou.utils.RectF;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.ImageSerializer;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.TextureSourceSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.*;
 
@@ -87,6 +91,10 @@ public class Server extends Thread {
         SERIALIZERS.register(KeyIndicatorDTO.class, "default", new KeyIndicatorSerializer());
         SERIALIZERS.register(Rect.class, "default", new RectSerializer());
         SERIALIZERS.register(RectF.class, "default", new RectFSerializer());
+        SERIALIZERS.register(Image.class, "default", new ImageSerializer());
+        SERIALIZERS.register(TextureSource.File.class, "default", new TextureSourceSerializer.FileSerializer());
+        SERIALIZERS.register(TextureSource.Solid.class, "default", new TextureSourceSerializer.SolidSerializer());
+        SERIALIZERS.register(TextureSource.Gradient.class, "default", new TextureSourceSerializer.GradientSerializer());
 
         SERIALIZERS.register(SerializableParticleFactory.class, "default", new ParticleFactorySerializer());
         SERIALIZERS.register(Speck.SpeckFactory.class, "default", new SpeckFactorySerializer());

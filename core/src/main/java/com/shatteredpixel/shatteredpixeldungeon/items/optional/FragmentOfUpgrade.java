@@ -19,6 +19,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndUpgrade;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
@@ -48,7 +49,7 @@ public class FragmentOfUpgrade extends Item {
         @Override
         public void onSelect(Item item) {
             if(item != null) {
-                upgradeItem(item, getOwner());
+                GameScene.show(new WndUpgrade(FragmentOfUpgrade.this, item, false, getOwner()));
             }
         }
     };

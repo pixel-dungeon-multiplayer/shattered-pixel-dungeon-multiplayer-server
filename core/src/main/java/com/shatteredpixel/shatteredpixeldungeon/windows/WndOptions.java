@@ -23,8 +23,6 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.nikita22007.multiplayer.utils.text.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -36,7 +34,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.Image;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.WindowAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,25 +46,7 @@ public class WndOptions extends Window {
 	protected static final int MARGIN 		= 2;
 	protected static final int BUTTON_HEIGHT	= 18;
 
-	public WndOptions(Image icon, LocalizedString title, LocalizedString message, LocalizedString... options) {
-		this(icon, title.toString(), message.toString(), LocalizedString.resolveArray(options));
-	}
-	public WndOptions(Image icon, String title, String message, String... options) {
-		super();
-
-		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
-
-		float pos = 0;
-		if (title != null) {
-			IconTitle tfTitle = new IconTitle(icon, title);
-			tfTitle.setRect(0, pos, width, 0);
-			add(tfTitle);
-
-			pos = tfTitle.bottom() + 2*MARGIN;
-		}
-
-		layoutBody(pos, message, options);
-	}
+	private WndOptionsParams params;
 
 	public WndOptions(Hero hero, Image icon, String title, String message, String... options) {
 		this(hero, icon, LocalizedString.raw(title), LocalizedString.raw(message), LocalizedString.raw(options));
@@ -78,14 +57,12 @@ public class WndOptions extends Window {
 		params.title = title;
 		params.message = message;
 		params.options = List.of(options);
-//		if (icon instanceof ItemSprite) {
-//			ItemSprite sprite = (ItemSprite) icon;
-//			Item item = new Item();
-//			item.image = sprite.image;
-//			params.item = item;
-//		} else {
-			params.icon = icon;
-		//}
+		if (icon instanceof CharSprite) {
+			params.charSprite = (CharSprite) icon;
+		} else if (icon instanceof ItemSprite) {
+			params.itemSpriteImage = ((ItemSprite) icon).image();
+			params.itemSpriteGlowing = ((ItemSprite) icon).glowing();
+		}
 		sendWnd(params);
 	}
 	public WndOptions(Hero owner, LocalizedString title, LocalizedString message, LocalizedString... options) {
@@ -107,17 +84,26 @@ public class WndOptions extends Window {
 		params.title = title;
 		params.titleColor = titleColor;
 		params.message = message;
-		params.icon = icon;
+		if (icon instanceof CharSprite) {
+			params.charSprite = (CharSprite) icon;
+		} else if (icon instanceof ItemSprite) {
+			params.itemSpriteImage = ((ItemSprite) icon).image();
+			params.itemSpriteGlowing = ((ItemSprite) icon).glowing();
+		}
 		params.options = List.of(options);
 		sendWnd(params);
 	}
 
 	protected void sendWnd(WndOptionsParams params) {
-		SendData.packAndSendAction(getOwnerHero(), new WindowAction.Options(getId(), params));
+		this.params = params;
 	}
 
-	public WndOptions( String title, String message, String... options ) {
-		super();
+	public WndOptionsParams params() {
+		return params;
+	}
+
+	public WndOptions( Hero hero, String title, String message, String... options ) {
+		super(hero);
 
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 
@@ -180,26 +166,32 @@ public class WndOptions extends Window {
 		resize( width, (int)(pos - MARGIN) );
 	}
 	public static final class WndOptionsParams {
-		public @Nullable Item item;
+		public @Nullable Integer itemSpriteImage;
+		public @Nullable ItemSprite.Glowing itemSpriteGlowing;
 		public @Nullable CharSprite charSprite;
 		public @NotNull LocalizedString title = LocalizedString.raw("Untitled");
 		public @Nullable Integer titleColor = null;
 		public @NotNull LocalizedString message = LocalizedString.raw("MissingNo");
 		public List<LocalizedString> options = new ArrayList<LocalizedString>(3);
-		public @Nullable Image icon;
-
-
 
 	}
 
 	protected boolean enabled( int index ){
 		return true;
 	}
+
+	public boolean enabledForNetwork(int index) {
+		return enabled(index);
+	}
 	
 	protected void onSelect( int index ) {}
 
 	protected boolean hasInfo( int index ) {
 		return false;
+	}
+
+	public boolean hasInfoForNetwork(int index) {
+		return hasInfo(index);
 	}
 
 	protected void onInfo( int index ) {}
@@ -210,5 +202,9 @@ public class WndOptions extends Window {
 
 	protected Image getIcon( int index ) {
 		return null;
+	}
+
+	public Image optionIcon(int index) {
+		return hasIcon(index) ? getIcon(index) : null;
 	}
 }

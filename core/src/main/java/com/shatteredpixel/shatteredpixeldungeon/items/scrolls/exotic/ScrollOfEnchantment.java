@@ -200,9 +200,9 @@ public class ScrollOfEnchantment extends ExoticScroll {
 		@Override
 		protected void onInfo( int index ) {
 			GameScene.show(new WndTitledMessage(
-					Icons.get(Icons.INFO),
+                    getOwnerHero(), Icons.get(Icons.INFO),
 					Messages.titleCase(enchantments[index].name()),
-					enchantments[index].desc(), getOwnerHero()));
+					enchantments[index].desc()));
 		}
 
 		@Override
@@ -262,9 +262,9 @@ public class ScrollOfEnchantment extends ExoticScroll {
 		@Override
 		protected void onInfo(int index) {
 			GameScene.show(new WndTitledMessage(
-					Icons.get(Icons.INFO),
+                    getOwnerHero(), Icons.get(Icons.INFO),
 					Messages.titleCase(glyphs[index].name()),
-					glyphs[index].desc(), getOwnerHero()));
+					glyphs[index].desc()));
 		}
 
 		@Override

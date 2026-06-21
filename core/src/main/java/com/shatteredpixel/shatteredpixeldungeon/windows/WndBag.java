@@ -33,8 +33,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.WindowAction;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
@@ -59,6 +57,9 @@ public class WndBag extends WndTabbed {
 	private static final Map<Integer,WndBag> INSTANCE = new HashMap<>();
 
 	private final ItemSelector selector;
+	private final LocalizedString title;
+	private final List<List<Integer>> allowedItems;
+	private final boolean hasListener;
 
 	private static Bag lastBag;
 
@@ -87,10 +88,10 @@ public class WndBag extends WndTabbed {
 		layoutTabs();
 
 
-		LocalizedString title = selector != null ? selector.textPrompt() : null;
+		title = selector != null ? selector.textPrompt() : null;
+		allowedItems = allowedItems(hero);
+		hasListener = selector != null;
 		//title =	title != null ? Messages.titleCase(title) : Messages.titleCase( bag.name() );
-
-		SendData.packAndSendAction(hero, new WindowAction.Bag(getId(), title, allowedItems(hero), selector != null));
 	}
 
 	private static WndBag getInstance(@NotNull Hero hero) {
@@ -104,6 +105,18 @@ public class WndBag extends WndTabbed {
 	}
 	public ItemSelector getSelector() {
 		return selector;
+	}
+
+	public LocalizedString title() {
+		return title;
+	}
+
+	public List<List<Integer>> allowedItems() {
+		return allowedItems;
+	}
+
+	public boolean hasListener() {
+		return hasListener;
 	}
 
 

@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.nikita22007.multiplayer.utils.text.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -35,23 +36,30 @@ public class WndInfoMob extends WndTitledMessage {
 	
 	public WndInfoMob(Mob mob, Hero hero) {
 
-		super( new MobTitle( mob ), mob.info() , hero);
+		super(hero, new MobTitle( mob ), mob.info());
 		
 	}
 	
-	private static class MobTitle extends Component {
+	public static class MobTitle extends Component {
 
 		private static final int GAP	= 2;
 		
-		private CharSprite image;
-		private RenderedTextBlock name;
-		private HealthBar health;
-		private BuffIndicator buffs;
-		
+		public final CharSprite image;
+		public final LocalizedString title;
+		public final Integer color;
+		private final RenderedTextBlock name;
+		private final HealthBar health;
+		private final BuffIndicator buffs;
+
+		public final Mob mob;
+
 		public MobTitle( Mob mob ) {
-			
+			this.mob = mob;
+
+			title = Messages.titleCase( mob.name() );
 			name = PixelScene.renderTextBlock( Messages.titleCase( mob.name() ), 9 );
 			name.hardlight( TITLE_COLOR );
+			this.color = TITLE_COLOR;
 			add( name );
 			
 			image = mob.sprite();

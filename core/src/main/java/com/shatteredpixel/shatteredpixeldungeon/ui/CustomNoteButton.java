@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 import com.nikita22007.multiplayer.utils.text.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -39,6 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Reflection;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,8 +50,11 @@ import java.util.Comparator;
 //TODO: check this
 public class CustomNoteButton extends IconButton {
 
-	public CustomNoteButton () {
+	@NotNull
+	final Hero hero;
+	public CustomNoteButton (@NotNull Hero hero) {
 		super(Icons.PLUS.get());
+		this.hero = hero;
 
 		width = 11;
 		height = 11;
@@ -60,13 +65,13 @@ public class CustomNoteButton extends IconButton {
 		super.onClick();
 
 		if (Notes.getRecords(Notes.CustomRecord.class).size() >= Notes.customRecordLimit()){
-			GameScene.show(new WndTitledMessage(Icons.INFO.get(),
+			GameScene.show(new WndTitledMessage(hero, Icons.INFO.get(),
 					Messages.get(this, "limit_title"),
 					Messages.get(this, "limit_text")));
 			return;
 		}
 
-		GameScene.show(new WndOptions(Icons.SCROLL_COLOR.get(),
+		GameScene.show(new WndOptions(hero, Icons.SCROLL_COLOR.get(),
 				Messages.get(CustomNoteButton.class, "title"),
 				Messages.get(CustomNoteButton.class, "desc"),
 				Messages.get(CustomNoteButton.class, "new_text"),
@@ -77,7 +82,7 @@ public class CustomNoteButton extends IconButton {
 			protected void onSelect(int index) {
 				if (index == 0){
 					Notes.CustomRecord custom = new Notes.CustomRecord("", "");
-					addNote(custom,
+					addNote(hero, custom,
 							Messages.get(CustomNoteButton.class, "new_text"),
 							Messages.get(CustomNoteButton.class, "new_text_title"));
 				} else if (index == 1){
@@ -85,7 +90,7 @@ public class CustomNoteButton extends IconButton {
 				} else if (index == 2){
 					GameScene.selectItem(itemSelector, getOwnerHero());
 				} else {
-					GameScene.show(new WndItemtypeSelect());
+					GameScene.show(new WndItemtypeSelect(hero));
 				}
 			}
 
@@ -109,7 +114,7 @@ public class CustomNoteButton extends IconButton {
 	private class WndDepthSelect extends WndTitledMessage {
 
 		public WndDepthSelect(){
-			super(Icons.STAIRS.get(),
+			super(hero, Icons.STAIRS.get(),
 					Messages.get(CustomNoteButton.class, "new_floor"),
 					Messages.get(CustomNoteButton.class, "new_floor_prompt"));
 
@@ -125,7 +130,7 @@ public class CustomNoteButton extends IconButton {
 				RedButton btnDepth = new RedButton(Integer.toString(finalI)){
 					@Override
 					protected void onClick() {
-						addNote(new Notes.CustomRecord(finalI, "", ""),
+						addNote(hero, new Notes.CustomRecord(finalI, "", ""),
 								Messages.get(CustomNoteButton.class, "new_floor"),
 								Messages.get(CustomNoteButton.class, "new_floor_title", finalI));
 					}
@@ -179,7 +184,7 @@ public class CustomNoteButton extends IconButton {
 					custom.assignID();
 				}
 
-				addNote(custom,
+				addNote(hero, custom,
 						Messages.get(CustomNoteButton.class, "new_inv"),
 						Messages.get(CustomNoteButton.class, "new_item_title", Messages.titleCase(item.name())));
 			}
@@ -188,8 +193,8 @@ public class CustomNoteButton extends IconButton {
 
 	private static class WndItemtypeSelect extends WndTitledMessage {
 
-		public WndItemtypeSelect() {
-			super(Icons.SCROLL_COLOR.get(),
+		public WndItemtypeSelect(@NotNull Hero hero) {
+			super(hero, Icons.SCROLL_COLOR.get(),
 					Messages.get(CustomNoteButton.class, "new_type"),
 					Messages.get(CustomNoteButton.class, "new_type_prompt"));
 
@@ -211,7 +216,7 @@ public class CustomNoteButton extends IconButton {
 				ItemButton itemButton = new ItemButton(){
 					@Override
 					protected void onClick() {
-						addNote(new Notes.CustomRecord(item.getClass(), "", ""),
+						addNote(hero, new Notes.CustomRecord(item.getClass(), "", ""),
 								Messages.get(CustomNoteButton.class, "new_type"),
 								Messages.get(CustomNoteButton.class, "new_item_title", Messages.titleCase(item.name())));
 					}
@@ -259,13 +264,13 @@ public class CustomNoteButton extends IconButton {
 
 	public static class CustomNoteWindow extends WndJournalItem {
 
-		public CustomNoteWindow(Notes.CustomRecord rec, Window parentWindow) {
-			super(rec.icon(), rec.title(), rec.desc());
+		public CustomNoteWindow(@NotNull Hero hero, @NotNull Notes.CustomRecord rec, Window parentWindow) {
+			super(hero, rec.icon(), rec.title(), rec.desc());
 
 			RedButton title = new RedButton( Messages.get(CustomNoteWindow.class, "edit_title") ){
 				@Override
 				protected void onClick() {
-					GameScene.show(new WndTextInput(Messages.get(CustomNoteWindow.class, "edit_title"),
+					GameScene.show(new WndTextInput(hero, Messages.get(CustomNoteWindow.class, "edit_title"),
 							LocalizedString.EMPTY,
 							rec.title(),
 							50,
@@ -278,11 +283,11 @@ public class CustomNoteButton extends IconButton {
 								rec.editText(text, rec.desc().toString());
 								CustomNoteWindow.this.hide();
 								if (parentWindow instanceof WndUseItem){
-									WndUseItem newParent = new WndUseItem(((WndUseItem) parentWindow).owner, ((WndUseItem) parentWindow).item, getOwnerHero());
+									WndUseItem newParent = new WndUseItem(getOwnerHero(), ((WndUseItem) parentWindow).owner, ((WndUseItem) parentWindow).item);
 									GameScene.show(newParent);
-									GameScene.show(new CustomNoteWindow(rec, newParent));
+									GameScene.show(new CustomNoteWindow(hero, rec, newParent));
 								} else {
-									GameScene.show(new CustomNoteWindow(rec, parentWindow));
+									GameScene.show(new CustomNoteWindow(hero, rec, parentWindow));
 								}
 							}
 						}
@@ -296,7 +301,7 @@ public class CustomNoteButton extends IconButton {
 			RedButton body = new RedButton(editBodyText){
 				@Override
 				protected void onClick() {
-					GameScene.show(new WndTextInput(editBodyText,
+					GameScene.show(new WndTextInput(hero, editBodyText,
 							LocalizedString.EMPTY,
 							rec.desc(),
 							500,
@@ -308,7 +313,7 @@ public class CustomNoteButton extends IconButton {
 							if (positive){
 								rec.editText(rec.title().toString(), text);
 								CustomNoteWindow.this.hide();
-								GameScene.show(new CustomNoteWindow(rec, parentWindow));
+								GameScene.show(new CustomNoteWindow(hero, rec, parentWindow));
 							}
 						}
 					});
@@ -320,7 +325,7 @@ public class CustomNoteButton extends IconButton {
 			RedButton delete = new RedButton( Messages.get(CustomNoteWindow.class, "delete") ){
 				@Override
 				protected void onClick() {
-					GameScene.show(new WndOptions(Icons.WARNING.get(),
+					GameScene.show(new WndOptions(hero, Icons.WARNING.get(),
 							Messages.get(CustomNoteWindow.class, "delete"),
 							Messages.get(CustomNoteWindow.class, "delete_warn"),
 							Messages.get(CustomNoteWindow.class, "confirm"),
@@ -332,7 +337,7 @@ public class CustomNoteButton extends IconButton {
 								CustomNoteWindow.this.hide();
 								if ( parentWindow == null){
 								} else if (parentWindow instanceof WndUseItem){
-									GameScene.show(new WndUseItem(((WndUseItem) parentWindow).owner, ((WndUseItem) parentWindow).item, getOwnerHero()));
+									GameScene.show(new WndUseItem(getOwnerHero(), ((WndUseItem) parentWindow).owner, ((WndUseItem) parentWindow).item));
 								}
 							}
 						}
@@ -351,8 +356,8 @@ public class CustomNoteButton extends IconButton {
 		}
 	}
 
-	private static void addNote(Notes.CustomRecord note, LocalizedString promptTitle, LocalizedString prompttext){
-		GameScene.show(new WndTextInput(promptTitle,
+	private static void addNote(Hero hero, Notes.CustomRecord note, LocalizedString promptTitle, LocalizedString prompttext){
+		GameScene.show(new WndTextInput(hero, promptTitle,
 				prompttext,
 				LocalizedString.EMPTY,
 				50,

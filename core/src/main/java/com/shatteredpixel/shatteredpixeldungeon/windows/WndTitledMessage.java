@@ -24,46 +24,61 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 import com.nikita22007.multiplayer.utils.text.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class WndTitledMessage extends Window {
 
 	protected static final int WIDTH_MIN    = 120;
 	protected static final int WIDTH_MAX    = 220;
 	protected static final int GAP	= 2;
-	//Todo: send this
-	public WndTitledMessage( Image icon, String title, String message, Hero hero ) {
-		this(icon, LocalizedString.raw(title), LocalizedString.raw(message), hero);
-	}
-	public WndTitledMessage(Image icon, LocalizedString title, LocalizedString message, Hero hero ) {
+
+	private @Nullable Image icon;
+	private @Nullable LocalizedString title;
+	private @Nullable LocalizedString message;
+	private @Nullable Component titlebar;
+
+	public WndTitledMessage(Hero hero, Image icon, LocalizedString title, LocalizedString message ) {
 		super(hero);
+		this.icon = icon;
+		this.title = title;
+		this.message = message;
 		//this( new IconTitle( icon, title ), message, hero );
 
 	}
-	public WndTitledMessage( Image icon, LocalizedString title, LocalizedString message ) {
-		this(icon, title.toString(), message.toString());
+
+	public WndTitledMessage(@NotNull Hero hero, @Nullable Component titlebar, @Nullable LocalizedString message ) {
+		super(hero);
+		this.titlebar = titlebar;
+		this.message = message;
+		//todo WndCheck Component titlebar cannot be losslessly converted to wnd_option title/title_icon yet.
 	}
 
-	public WndTitledMessage( Image icon, String title, String message ) {
-		this(icon, title, message, null);
-	}
-	public WndTitledMessage( Component titlebar, String message) {
-		this( titlebar, message, null );
-	}
-	//Todo: send this
-	public WndTitledMessage( Component titlebar, String message, Hero hero ) {
-		super(hero);
+	public @Nullable Image titleIcon() {
+		return icon;
 	}
 
-	public WndTitledMessage( Component titlebar, LocalizedString message, Hero hero ) {
-		super(hero);
+	public @Nullable LocalizedString title() {
+		return title;
+	}
+
+	public @Nullable LocalizedString message() {
+		return message;
+	}
+
+	public @Nullable Component titlebar() {
+		return titlebar;
 	}
 
 	protected boolean useHighlighting(){
 		return true;
+	}
+
+	public boolean highlightingForNetwork() {
+		return useHighlighting();
 	}
 
 	protected float targetHeight() {

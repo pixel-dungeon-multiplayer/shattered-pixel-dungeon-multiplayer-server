@@ -62,7 +62,7 @@ public class Toast extends Component {
 				return GameAction.BACK;
 			}
 		};
-		close.setSize(close.icon.width(), close.icon.height());
+		close.setSize(close.image.width(), close.image.height());
 		add( close );
 
 		text = PixelScene.renderTextBlock(8);

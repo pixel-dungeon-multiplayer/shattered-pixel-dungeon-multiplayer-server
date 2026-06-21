@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
@@ -42,13 +43,15 @@ public class WndChallenges extends Window {
 	private static final int GAP        = 1;
 
 	private boolean editable;
+	private int checked;
 	private ArrayList<CheckBox> boxes;
 
-	public WndChallenges( int checked, boolean editable ) {
+	public WndChallenges( Hero hero, int checked, boolean editable ) {
 
-		super();
+		super(hero);
 
 		this.editable = editable;
+		this.checked = checked;
 
 		RenderedTextBlock title = PixelScene.renderTextBlock( Messages.get(this, "title"), 12 );
 		title.hardlight( TITLE_COLOR );
@@ -83,7 +86,7 @@ public class WndChallenges extends Window {
 				protected void onClick() {
 					super.onClick();
 					ShatteredPixelDungeon.scene().add(
-							new WndMessage(Messages.get(Challenges.class, challenge+"_desc"))
+							new WndMessage(hero, Messages.get(Challenges.class, challenge+"_desc"))
 					);
 				}
 			};
@@ -94,6 +97,14 @@ public class WndChallenges extends Window {
 		}
 
 		resize( WIDTH, (int)pos );
+	}
+
+	public int checked() {
+		return checked;
+	}
+
+	public boolean editable() {
+		return editable;
 	}
 
 	@Override

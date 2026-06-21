@@ -54,7 +54,7 @@ public class GLog {
 			str = Messages.format(text, args);
 		}
 		else {
-			str = LocalizedString.raw(text);
+			str = LocalizedString.raw(text, args);
 		}
 
 		DeviceCompat.log(TAG, str.toString());

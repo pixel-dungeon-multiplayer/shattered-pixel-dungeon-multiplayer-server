@@ -99,7 +99,7 @@ public class Blandfruit extends Food {
 
 		if (action.equals( Potion.AC_CHOOSE )){
 
-			GameScene.show(new WndUseItem(null, this, hero) );
+			GameScene.show(new WndUseItem(hero, null, this) );
 			return;
 
 		}

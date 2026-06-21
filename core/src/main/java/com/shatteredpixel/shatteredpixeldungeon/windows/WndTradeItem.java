@@ -36,21 +36,17 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MasterThievesArm
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import org.jetbrains.annotations.NotNull;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.WindowAction;
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.ArrayList;
 
 public class WndTradeItem extends WndInfoItem {
 
@@ -62,15 +58,25 @@ public class WndTradeItem extends WndInfoItem {
 	private boolean selling = false;
 	Item item;
 	Shopkeeper shop;
+	private int price;
+	private boolean steal;
+	private int stealChance;
+	private int stealCharges;
+
+	private final ArrayList<RedButton> buttons = new ArrayList<>();
 
 	//selling
 	public WndTradeItem( final Item item, @NotNull WndBag owner ) {
 
-		super(item, owner.getOwnerHero());
+		super(owner.getOwnerHero(), item);
 		selling = true;
 
 		this.owner = owner;
 		this.item = item;
+		price = item.value();
+		steal = false;
+		stealChance = 0;
+		stealCharges = 0;
 
 		//find the shopkeeper in the current level
 		for (Char ch : Actor.chars()){
@@ -79,15 +85,46 @@ public class WndTradeItem extends WndInfoItem {
 				break;
 			}
 		}
-		SendData.packAndSendAction(getOwnerHero(), new WindowAction.TradeItem(
-			getId(),
-			true,
-			item,
-			item.value(),
-			false,
-			0,
-			0
-		));
+
+		float pos = height;
+		if (item.quantity() <= 1) {
+			RedButton btnSell = new RedButton(Messages.get(WndTradeItem.class, "sell", price)) {
+				@Override
+				protected void onClick() {
+					hide();
+					sell(item, shop, owner.getOwnerHero());
+				}
+			};
+			btnSell.setRect(0, pos + GAP, width, BTN_HEIGHT);
+			buttons.add(btnSell);
+			add(btnSell);
+			pos = btnSell.bottom();
+		} else {
+			RedButton btnSell1 = new RedButton(Messages.get(WndTradeItem.class, "sell_1", price)) {
+				@Override
+				protected void onClick() {
+					hide();
+					sellOne(item, shop, owner.getOwnerHero());
+				}
+			};
+			btnSell1.setRect(0, pos + GAP, width, BTN_HEIGHT);
+			buttons.add(btnSell1);
+			add(btnSell1);
+			pos = btnSell1.bottom();
+
+			RedButton btnSellAll = new RedButton(Messages.get(WndTradeItem.class, "sell_all", price * item.quantity())) {
+				@Override
+				protected void onClick() {
+					hide();
+					sell(item, shop, owner.getOwnerHero());
+				}
+			};
+			btnSellAll.setRect(0, pos + GAP, width, BTN_HEIGHT);
+			buttons.add(btnSellAll);
+			add(btnSellAll);
+			pos = btnSellAll.bottom();
+		}
+		resize(width, (int) pos);
 	}
 	RedButton btnSteal = null;
 	Heap heap;
@@ -105,6 +142,7 @@ public class WndTradeItem extends WndInfoItem {
 		float pos = height;
 
 		final int price = Shopkeeper.sellPrice( item );
+		this.price = price;
 
 		RedButton btnBuy = new RedButton( Messages.get(this, "buy", price) ) {
 			@Override
@@ -117,6 +155,7 @@ public class WndTradeItem extends WndInfoItem {
 		btnBuy.icon(new ItemSprite(ItemSpriteSheet.GOLD));
 		btnBuy.enable( price <= getOwnerHero().getGold());
 		add( btnBuy );
+		buttons.add( btnBuy );
 
 		pos = btnBuy.bottom();
 
@@ -177,45 +216,55 @@ public class WndTradeItem extends WndInfoItem {
 				}
 			};
 		}
-		SendData.packAndSendAction(hero, new WindowAction.TradeItem(
-			getId(),
-			false,
-			item,
-			price,
-			steal,
-			chanceVal,
-			chargesToUseVal
-		));
+		this.steal = steal;
+		this.stealChance = chanceVal;
+		this.stealCharges = chargesToUseVal;
+
+		if (btnSteal != null) {
+			btnSteal.setRect( 0, pos + GAP, width, BTN_HEIGHT );
+			add( btnSteal );
+			buttons.add( btnSteal );
+			pos = btnSteal.bottom();
+		}
+		resize(width, (int) pos);
+	}
+
+	public boolean selling() {
+		return selling;
+	}
+
+	public Item tradeItem() {
+		return item;
+	}
+
+	public int price() {
+		return price;
+	}
+
+	public boolean stealAvailable() {
+		return steal;
+	}
+
+	public int stealChance() {
+		return stealChance;
+	}
+
+	public int stealCharges() {
+		return stealCharges;
 	}
 
 	@Override
 	public void onSelect(int button) {
-		if (selling) {
-			if (button == 0) {
-				sellOne(item, shop, owner.getOwnerHero());
-			} if (button == 1){
-				sell(item, shop, owner.getOwnerHero());
-			}
-			//Selling logic
+		if (button >= 0 && button < buttons.size()) {
+			buttons.get(button).onClickNetwork();
 		} else {
-			if (button == 0) {
-				buy(heap);
-			}
-			if (button == 1 && btnSteal != null) {
-				//HACK
-				//don't think I should change onClick
-                try {
-                    Method onClickMethod = Button.class.getMethod("onClick");
-					onClickMethod.setAccessible(true);
-					onClickMethod.invoke(btnSteal);
-                } catch (Exception e) {
-
-                    throw new RuntimeException(e);
-                }
-			}
-			//buying logic
+			hide();
 		}
-		hide();
+	}
+
+	@Override
+	public @NotNull List<RedButton> actionsForNetwork() {
+		return buttons;
 	}
 
 	@Override

@@ -49,11 +49,23 @@ import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
+import org.json.JSONObject;
+import org.jetbrains.annotations.Nullable;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
 public class WndHero extends WndTabbed {
+
+	public static class Stat {
+		public final LocalizedString label;
+		public final String value;
+		public Stat(LocalizedString label, String value) {
+			this.label = label;
+			this.value = value;
+		}
+	}
 	
 	private static final int WIDTH		= 120;
 	private static final int HEIGHT		= 120;
@@ -136,6 +148,109 @@ public class WndHero extends WndTabbed {
 		buffs.layout();
 	}
 
+	public ArrayList<Stat> stats() {
+		ArrayList<Stat> list = new ArrayList<>();
+		Hero hero = getOwnerHero();
+		int strBonus = hero.STR() - hero.getSTR();
+		if (strBonus > 0)           list.add(new Stat(Messages.get(WndHero.class, "str"), hero.getSTR() + " + " + strBonus));
+		else if (strBonus < 0)      list.add(new Stat(Messages.get(WndHero.class, "str"), hero.getSTR() + " - " + -strBonus));
+		else                        list.add(new Stat(Messages.get(WndHero.class, "str"), String.valueOf(hero.STR())));
+
+		if (hero.shielding() > 0)   list.add(new Stat(Messages.get(WndHero.class, "health"), hero.getHP() + "+" + hero.shielding() + "/" + hero.getHT()));
+		else                        list.add(new Stat(Messages.get(WndHero.class, "health"), hero.getHP() + "/" + hero.getHT()));
+
+		list.add(new Stat(Messages.get(WndHero.class, "exp"), hero.exp + "/" + hero.maxExp()));
+		list.add(new Stat(Messages.get(WndHero.class, "gold"), String.valueOf(Statistics.goldCollected)));
+		list.add(new Stat(Messages.get(WndHero.class, "depth"), String.valueOf(Statistics.deepestFloor)));
+
+		if (Dungeon.daily){
+			if (!Dungeon.dailyReplay) {
+				list.add(new Stat(Messages.get(WndHero.class, "daily_for"), "_" + Dungeon.customSeedText + "_"));
+			} else {
+				list.add(new Stat(Messages.get(WndHero.class, "replay_for"), "_" + Dungeon.customSeedText + "_"));
+			}
+		} else if (!Dungeon.customSeedText.isEmpty()){
+			list.add(new Stat(Messages.get(WndHero.class, "custom_seed"), "_" + Dungeon.customSeedText + "_"));
+		} else {
+			list.add(new Stat(Messages.get(WndHero.class, "dungeon_seed"), DungeonSeed.convertToCode(Dungeon.seed)));
+		}
+		return list;
+	}
+
+	@Override
+	public void onSelect(int button, @Nullable JSONObject args) {
+		if (args != null && args.has("action")) {
+			String action = args.getString("action");
+			if ("tab".equals(action)) {
+				int tabIdx = args.getInt("index");
+				select(tabIdx);
+			} else if ("info".equals(action)) {
+				Hero hero = getOwnerHero();
+				if (ShatteredPixelDungeon.scene() instanceof GameScene){
+					GameScene.show(new WndHeroInfo(hero.heroClass, getOwnerHero()));
+				} else {
+					ShatteredPixelDungeon.scene().addToFront(new WndHeroInfo(hero.heroClass, getOwnerHero()));
+				}
+			} else if ("click_buff".equals(action)) {
+				String buffClassName = args.getString("class");
+				Hero hero = getOwnerHero();
+				Buff foundBuff = null;
+				for (Buff buff : hero.buffs()) {
+					if (buff.getClass().getName().equals(buffClassName)) {
+						foundBuff = buff;
+						break;
+					}
+				}
+				if (foundBuff != null) {
+					if (ShatteredPixelDungeon.scene() instanceof GameScene){
+						GameScene.show(new WndInfoBuff(hero, foundBuff));
+					} else {
+						ShatteredPixelDungeon.scene().addToFront(new WndInfoBuff(hero, foundBuff));
+					}
+				}
+			} else if ("click_talent".equals(action)) {
+				String talentId = args.getString("id");
+				Hero hero = getOwnerHero();
+				Talent talent = null;
+				int pointsInTalent = 0;
+				int tier = 0;
+				for (int i = 0; i < hero.talents.size(); i++) {
+					for (Talent t : hero.talents.get(i).keySet()) {
+						if (t.name().equals(talentId)) {
+							talent = t;
+							pointsInTalent = hero.talents.get(i).get(t);
+							tier = i + 1;
+							break;
+						}
+					}
+					if (talent != null) break;
+				}
+				if (talent != null && hero.isAlive()) {
+					final Talent fTalent = talent;
+					if (hero.talentPointsAvailable(tier) > 0 && pointsInTalent < talent.maxPoints()) {
+						WndInfoTalent toAdd = new WndInfoTalent(hero, talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback() {
+							@Override
+							public LocalizedString prompt() {
+								return Messages.titleCase(Messages.get(WndInfoTalent.class, "upgrade"));
+							}
+							@Override
+							public void call() {
+								TalentButton.upgradeTalent(getOwnerHero(), fTalent);
+								Statistics.qualifiedForRandomVictoryBadge = false;
+							}
+						});
+						ShatteredPixelDungeon.scene().addToFront(toAdd);
+					} else {
+						WndInfoTalent toAdd = new WndInfoTalent(hero, talent, pointsInTalent, null);
+						ShatteredPixelDungeon.scene().addToFront(toAdd);
+					}
+				}
+			}
+		} else {
+			super.onSelect(button, args);
+		}
+	}
+
 	private class StatsTab extends Group {
 		
 		private static final int GAP = 6;
@@ -187,28 +302,8 @@ public class WndHero extends WndTabbed {
 
 			pos = title.bottom() + 2*GAP;
 
-			int strBonus = hero.STR() - hero.getSTR();
-			if (strBonus > 0)           statSlot( Messages.get(this, "str"), hero.getSTR() + " + " + strBonus );
-			else if (strBonus < 0)      statSlot( Messages.get(this, "str"), hero.getSTR() + " - " + -strBonus );
-			else                        statSlot( Messages.get(this, "str"), hero.STR() );
-			if (hero.shielding() > 0)   statSlot( Messages.get(this, "health"), hero.getHP() + "+" + hero.shielding() + "/" + hero.getHT());
-			else                        statSlot( Messages.get(this, "health"), (hero.getHP()) + "/" + hero.getHT());
-			statSlot( Messages.get(this, "exp"), hero.exp + "/" + hero.maxExp() );
-
-			pos += GAP;
-
-			statSlot( Messages.get(this, "gold"), Statistics.goldCollected );
-			statSlot( Messages.get(this, "depth"), Statistics.deepestFloor );
-			if (Dungeon.daily){
-				if (!Dungeon.dailyReplay) {
-					statSlot(Messages.get(this, "daily_for"), "_" + Dungeon.customSeedText + "_");
-				} else {
-					statSlot(Messages.get(this, "replay_for"), "_" + Dungeon.customSeedText + "_");
-				}
-			} else if (!Dungeon.customSeedText.isEmpty()){
-				statSlot( Messages.get(this, "custom_seed"), "_" + Dungeon.customSeedText + "_" );
-			} else {
-				statSlot( Messages.get(this, "dungeon_seed"), DungeonSeed.convertToCode(Dungeon.seed) );
+			for (Stat stat : stats()) {
+				statSlot(stat.label, stat.value);
 			}
 
 			pos += GAP;
@@ -364,7 +459,7 @@ public class WndHero extends WndTabbed {
 			
 			protected boolean onClick ( float x, float y ) {
 				if (inside( x, y )) {
-					GameScene.show(new WndInfoBuff(buff));
+					GameScene.show(new WndInfoBuff(getOwnerHero(), buff));
 					return true;
 				} else {
 					return false;

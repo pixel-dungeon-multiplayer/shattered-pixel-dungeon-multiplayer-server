@@ -44,15 +44,11 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TitleBackground;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndSettings;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndVictoryCongrats;
 import com.watabou.glwrap.Blending;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.*;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.PointerArea;
-import com.watabou.noosa.audio.Music;
-import com.watabou.noosa.tweeners.Tweener;
 import com.watabou.noosa.tweeners.Tweener;
 import com.watabou.utils.ColorMath;
 import com.watabou.utils.DeviceCompat;
@@ -279,7 +275,6 @@ public class TitleScene extends PixelScene {
 		Badges.loadGlobal();
 		if (Badges.isUnlocked(Badges.Badge.VICTORY) && !SPDSettings.victoryNagged()) {
 			SPDSettings.victoryNagged(true);
-			add(new WndVictoryCongrats());
 		}
 
 		fadeIn();
@@ -366,11 +361,6 @@ public class TitleScene extends PixelScene {
 			}
 		}
 
-		@Override
-		protected void onClick() {
-			super.onClick();
-			ShatteredPixelDungeon.switchNoFade( NewsScene.class );
-		}
 	}
 
 	private static class ChangesButton extends StyledButton {
@@ -396,35 +386,6 @@ public class TitleScene extends PixelScene {
 
 			if (updateShown){
 				textColor(ColorMath.interpolate( 0xFFFFFF, Window.SHPX_COLOR, 0.5f + (float)Math.sin(Game.timeTotal*5)/2f));
-			}
-		}
-
-		@Override
-		protected void onClick() {
-			if (Updates.updateAvailable()){
-				AvailableUpdateData update = Updates.updateData();
-				//Todo check this
-				ShatteredPixelDungeon.scene().addToFront( new WndOptions(
-						Icons.get(Icons.CHANGES),
-						update.versionName == null ? Messages.get(this,"title") : Messages.get(this,"versioned_title", update.versionName),
-						update.desc == null ? Messages.get(this,"desc") : LocalizedString.raw(update.desc),
-						Messages.get(this,"update"),
-						Messages.get(this,"changes")
-				) {
-					@Override
-					protected void onSelect(int index) {
-						if (index == 0) {
-							Updates.launchUpdate(Updates.updateData());
-						} else if (index == 1){
-							ChangesScene.changesSelected = 0;
-							ShatteredPixelDungeon.switchNoFade( ChangesScene.class );
-						}
-					}
-				});
-
-			} else {
-				ChangesScene.changesSelected = 0;
-				ShatteredPixelDungeon.switchNoFade( ChangesScene.class );
 			}
 		}
 
@@ -454,13 +415,7 @@ public class TitleScene extends PixelScene {
 			}
 		}
 
-		@Override
-		protected void onClick() {
-			if (Messages.lang().status() == Languages.Status.X_UNFINISH){
-				WndSettings.last_index = 5;
-			}
-			ShatteredPixelDungeon.scene().add(new WndSettings());
-		}
+
 	}
 
 	private static class SupportButton extends StyledButton{
@@ -477,7 +432,6 @@ public class TitleScene extends PixelScene {
 
 		@Override
 		protected void onClick() {
-			ShatteredPixelDungeon.switchNoFade(SupporterScene.class);
 		}
 	}
 }

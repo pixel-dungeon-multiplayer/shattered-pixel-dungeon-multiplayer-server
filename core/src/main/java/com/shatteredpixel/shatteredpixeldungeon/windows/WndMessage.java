@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.nikita22007.multiplayer.utils.text.LocalizedString;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
@@ -33,12 +34,15 @@ public class WndMessage extends Window {
 	private static final int WIDTH_MAX = 220;
 	private static final int MARGIN = 4;
 
-	public WndMessage( String text ) {
-		this(LocalizedString.raw(text));
+	private final LocalizedString text;
+
+	public WndMessage( Hero hero, String text ) {
+		this(hero, LocalizedString.raw(text));
 	}
-	public WndMessage( LocalizedString text ) {
+	public WndMessage( Hero hero, LocalizedString text ) {
 		
-		super();
+		super(hero);
+		this.text = text;
 
 		int width = WIDTH_MIN;
 		
@@ -57,5 +61,9 @@ public class WndMessage extends Window {
 		resize(
 			(int)info.width() + MARGIN * 2,
 			(int)info.height() + MARGIN * 2 );
+	}
+
+	public LocalizedString text() {
+		return text;
 	}
 }

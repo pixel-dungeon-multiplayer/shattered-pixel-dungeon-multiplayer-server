@@ -27,10 +27,10 @@ import com.shatteredpixel.shatteredpixeldungeon.HeroHelp;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.ClericSpell;
 import com.shatteredpixel.shatteredpixeldungeon.effects.ShadowBox;
+import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
+import com.shatteredpixel.shatteredpixeldungeon.network.actions.HideWindowAction;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndClericSpells;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
 import com.watabou.input.PointerEvent;
@@ -95,6 +95,7 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 		this.ownerHero = ownerHero;
 	}
 	public Window(Hero hero) {
+		this();
 		attachToHero(hero);
 	}
 
@@ -144,16 +145,16 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 		idCounter.put(heroId, getId());
 		windows.get(heroId).put(getId(), this);
 	}
-	@Deprecated
-	public Window() {
+
+	private Window() {
 		this( 0, 0, Chrome.get( Chrome.Type.WINDOW ) );
 	}
 	
-	public Window( int width, int height ) {
+	private Window( int width, int height ) {
 		this( width, height, Chrome.get( Chrome.Type.WINDOW ) );
 	}
 
-	public Window( int width, int height, NinePatch chrome ) {
+	private Window( int width, int height, NinePatch chrome ) {
 		super();
 		
 		blocker = new PointerArea( 0, 0, PixelScene.uiCamera.width, PixelScene.uiCamera.height ) {
@@ -209,7 +210,7 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 	public void resize( int w, int h ) {
 
 	}
-	public Window( int width, int height, NinePatch chrome, Hero owner ) {
+	public Window(Hero owner, int width, int height, NinePatch chrome ) {
 		this(width, height, chrome);
 		setOwnerHero(owner);
 		attachToHero(owner);
@@ -260,7 +261,9 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 		offset(newXOfs, newYOfs);
 	}
 	//TODO: check this
+	@MustBeInvokedByOverriders
 	public void hide() {
+		SendData.sendAction(getOwnerHero(), new HideWindowAction(this.getId()));
 		destroy();
 	}
 

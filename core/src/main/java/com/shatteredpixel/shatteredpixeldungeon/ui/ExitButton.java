@@ -34,7 +34,7 @@ import com.watabou.utils.DeviceCompat;
 public class ExitButton extends IconButton {
 
 	public ExitButton() {
-		super(Icons.EXIT.get());
+		super(Icons.EXIT);
 
 		width = (PixelScene.landscape() && !DeviceCompat.isDesktop()) ? 40 : 20;
 		height = 20;

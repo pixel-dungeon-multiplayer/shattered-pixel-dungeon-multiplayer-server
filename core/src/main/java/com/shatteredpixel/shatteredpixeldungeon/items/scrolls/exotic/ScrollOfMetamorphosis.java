@@ -110,6 +110,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 		public static WndMetamorphChoose INSTANCE;
 
 		TalentsPane pane;
+		private ArrayList<LinkedHashMap<Talent, Integer>> talents;
 
 		public WndMetamorphChoose(Hero hero){
 			super(hero);
@@ -132,7 +133,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 
 			top = text.bottom() + 2;
 
-			ArrayList<LinkedHashMap<Talent, Integer>> talents = new ArrayList<>();
+			talents = new ArrayList<>();
 			Talent.initClassTalents(hero.heroClass, talents, hero.metamorphedTalents);
 
 			for (LinkedHashMap<Talent, Integer> tier : talents){
@@ -147,6 +148,18 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 			pane.setSize(120, pane.content().height());
 			resize((int)pane.width(), (int)pane.bottom());
 			pane.setPos(0, top);
+		}
+
+		public ArrayList<LinkedHashMap<Talent, Integer>> talents() {
+			return talents;
+		}
+
+		@Override
+		protected void onSelect(int button) {
+			ArrayList<TalentButton> buttons = pane.buttonsForNetwork();
+			if (button >= 0 && button < buttons.size()) {
+				buttons.get(button).onClickNetwork();
+			}
 		}
 
 		@Override
@@ -179,9 +192,10 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 		public Talent replacing;
 		public int tier;
 		LinkedHashMap<Talent, Integer> replaceOptions;
+		TalentsPane.TalentTierPane optionsPane;
 
 		//for window restoring
-		public WndMetamorphReplace(){
+		/* public WndMetamorphReplace(){
 			super();
 
 			if (INSTANCE != null){
@@ -194,7 +208,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 				hide();
 			}
 		}
-
+*/
 		public WndMetamorphReplace(Talent replacing, int tier, Hero hero){
 			super(hero);
 
@@ -254,7 +268,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 
 			top = text.bottom() + 2;
 
-			TalentsPane.TalentTierPane optionsPane = new TalentsPane.TalentTierPane(replaceOptions, tier, TalentButton.Mode.METAMORPH_REPLACE, getOwnerHero());
+			optionsPane = new TalentsPane.TalentTierPane(replaceOptions, tier, TalentButton.Mode.METAMORPH_REPLACE, getOwnerHero());
 			add(optionsPane);
 			optionsPane.title.text(" ");
 			optionsPane.setPos(0, top);
@@ -278,6 +292,18 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 				((ScrollOfMetamorphosis) curItem).confirmCancelation(this, false);
 			} else {
 				super.onBackPressed();
+			}
+		}
+
+		public LinkedHashMap<Talent, Integer> replaceOptions() {
+			return replaceOptions;
+		}
+
+		@Override
+		protected void onSelect(int button) {
+			ArrayList<TalentButton> buttons = optionsPane.buttonsForNetwork();
+			if (button >= 0 && button < buttons.size()) {
+				buttons.get(button).onClickNetwork();
 			}
 		}
 	}

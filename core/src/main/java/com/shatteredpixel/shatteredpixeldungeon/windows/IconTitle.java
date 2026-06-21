@@ -27,11 +27,11 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.HealthBar;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 public class IconTitle extends Component {
@@ -39,12 +39,15 @@ public class IconTitle extends Component {
 	private static final float FONT_SIZE = 9;
 
 	private static final float GAP = 2;
+	public @Nullable Icons iconsIcon;
 
-	protected Image imIcon;
+	public Image imIcon;
 	protected RenderedTextBlock tfLabel;
 	protected HealthBar health;
 
 	private float healthLvl = Float.NaN;
+	public LocalizedString text = null;
+	public Integer color = null;
 
 	public IconTitle() {
 		super();
@@ -57,7 +60,15 @@ public class IconTitle extends Component {
 		icon.view( item );
 		layout();
 	}
-	
+
+	public IconTitle(@NotNull Icons icon, @NotNull LocalizedString text) {
+		this.iconsIcon = icon;
+		Image image = icon.get();
+		icon( image );
+		label( text );
+		layout();
+	}
+
 	public IconTitle( Heap heap ){
 		ItemSprite icon = new ItemSprite();
 		icon( icon );
@@ -66,10 +77,13 @@ public class IconTitle extends Component {
 		layout();
 	}
 
-	public IconTitle( Image icon, LocalizedString label ) {
-		this(icon, label.toString());
+	public IconTitle( ItemSprite icon, LocalizedString label ) {
+		icon( icon );
+		label( label );
+		layout();
 	}
-	public IconTitle( Image icon, String label ) {
+
+	public IconTitle(BuffIcon icon, LocalizedString label ) {
 		icon( icon );
 		label( label );
 		layout();
@@ -127,22 +141,19 @@ public class IconTitle extends Component {
 
 
 	public void label( LocalizedString label ) {
+		text = label;
 		tfLabel.text( label.toString() );
 	}
 
-	public void label( String label ) {
-		tfLabel.text( label );
-	}
-
 	public void label(LocalizedString label, int color ) {
-		label(label.toString(), color);
-	}
-	public void label( String label, int color ) {
+		text = label;
+		this.color = color;
 		tfLabel.text( label );
 		tfLabel.hardlight( color );
 	}
 
 	public void color( int color ) {
+		this.color = color;
 		tfLabel.hardlight( color );
 	}
 
@@ -158,14 +169,5 @@ public class IconTitle extends Component {
 	public void health( float value ) {
 		health.level( healthLvl = value );
 		layout();
-	}
-	public JSONObject toJson(){
-		JSONObject object = new JSONObject();
-		if (!Float.isNaN(healthLvl)) {
-			object.put("health_lvl", healthLvl);
-		}
-		object.put("icon", imIcon.toJson());
-		object.put("tf_label", tfLabel.toJson());
-		return object;
 	}
 }

@@ -263,7 +263,7 @@ public class Armor extends EquipableItem {
 				BrokenSeal seal = oldArmor != null ? oldArmor.checkSeal() : null;
 				if (seal != null && (!cursed || (seal.getGlyph() != null && seal.getGlyph().curse()))){
 
-					GameScene.show(new WndOptions(new ItemSprite(ItemSpriteSheet.SEAL),
+					GameScene.show(new WndOptions(hero, new ItemSprite(ItemSpriteSheet.SEAL),
 							Messages.titleCase(seal.title()),
 							Messages.get(Armor.class, "seal_transfer"),
 							Messages.get(Armor.class, "seal_transfer_yes"),

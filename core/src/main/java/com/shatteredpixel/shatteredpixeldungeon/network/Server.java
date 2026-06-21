@@ -3,15 +3,34 @@ package com.shatteredpixel.shatteredpixeldungeon.network;
 
 
 import com.badlogic.gdx.Gdx;
+import com.nikita22007.multiplayer.utils.text.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfMetamorphosis;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.Alchemize;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAugmentation;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.network.actions.*;
 import com.shatteredpixel.shatteredpixeldungeon.network.actions.serializers.*;
 import com.shatteredpixel.shatteredpixeldungeon.network.NetworkPacket.SerializedAction;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.*;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wnddialog.WndInfoTalentSerializer;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.WndMetamorphChooseSerializer;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.WndMetamorphReplaceSerializer;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.heropack.WndHeroInfoSerializer;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.heropack.WndHeroSerializer;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.heropack.WndInfoSubclassSerializer;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.journalpack.WndBadgeSerializer;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.menupack.WndChallengesSerializer;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wnddialog.*;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.wnddialog.wndoptions.*;
 import com.shatteredpixel.shatteredpixeldungeon.plugins.PluginLoader;
 import com.shatteredpixel.shatteredpixeldungeon.plugins.PluginManager;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.AlchemyScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.texturepack.TexturePackManager;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -37,38 +56,30 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.MissileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.ActorSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.CharSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.BagSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.HeapSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.HeapRemovalSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.ItemSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.MissileAnchorSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializerRegistry;
 
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.ParticleFactorySerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SpeckFactorySerializer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.BelongingsSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SpecialSlotDefinitionsSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SplashFactorySerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.KeyIndicatorSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.emitters.EmitterAnchorSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.dtos.emitters.EmitterAnchor;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.dtos.KeyIndicatorDTO;
 
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
+import com.watabou.gltextures.TextureSource;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.particles.SerializableParticleFactory;
 import com.watabou.utils.Rect;
 import com.watabou.utils.RectF;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.RectSerializer;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.RectFSerializer;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.ImageSerializer;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.TextureSourceSerializer;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.*;
+import com.shatteredpixel.shatteredpixeldungeon.windows.*;
 
 public class Server extends Thread {
     public static final SerializerRegistry SERIALIZERS = new SerializerRegistry();
 
     static {
+        SERIALIZERS.register(LocalizedString.class, "default", new LocalizedStringSerializer());
+
         SERIALIZERS.register(Item.class, "default", new ItemSerializer());
         SERIALIZERS.register(Heap.class, "default", new HeapSerializer());
         SERIALIZERS.register(Heap.class, "remove", new HeapRemovalSerializer());
@@ -80,12 +91,56 @@ public class Server extends Thread {
         SERIALIZERS.register(KeyIndicatorDTO.class, "default", new KeyIndicatorSerializer());
         SERIALIZERS.register(Rect.class, "default", new RectSerializer());
         SERIALIZERS.register(RectF.class, "default", new RectFSerializer());
+        SERIALIZERS.register(Image.class, "default", new ImageSerializer());
+        SERIALIZERS.register(TextureSource.File.class, "default", new TextureSourceSerializer.FileSerializer());
+        SERIALIZERS.register(TextureSource.Solid.class, "default", new TextureSourceSerializer.SolidSerializer());
+        SERIALIZERS.register(TextureSource.Gradient.class, "default", new TextureSourceSerializer.GradientSerializer());
 
         SERIALIZERS.register(SerializableParticleFactory.class, "default", new ParticleFactorySerializer());
         SERIALIZERS.register(Speck.SpeckFactory.class, "default", new SpeckFactorySerializer());
         SERIALIZERS.register(Splash.SplashFactory.class, "default", new SplashFactorySerializer());
         SERIALIZERS.register(EmitterAnchor.class, "default", new EmitterAnchorSerializer());
         SERIALIZERS.register(MissileSprite.Anchor.class, "default", new MissileAnchorSerializer());
+
+        //windows
+        SERIALIZERS.register(AlchemyScene.class, new AlchemySceneSerializer());
+        SERIALIZERS.register(WndBadge.class, new WndBadgeSerializer());
+        SERIALIZERS.register(WndBag.class, new WndBagSerializer());
+        SERIALIZERS.register(WndBlacksmith.class, new WndBlacksmithSerializer());
+        SERIALIZERS.register(WndBlacksmith.WndReforge.class, new WndReforgeSerializer());
+        SERIALIZERS.register(WndBlacksmith.WndSmith.class, new WndSmithSerializer());
+        SERIALIZERS.register(WndChallenges.class, new WndChallengesSerializer());
+        SERIALIZERS.register(WndChooseAbility.class, new WndChooseAbilitySerializer());
+        SERIALIZERS.register(WndChooseSubclass.class, new WndChooseSubclassSerializer());
+        SERIALIZERS.register(WndClericSpells.class, new WndClericSpellsSerializer());
+        SERIALIZERS.register(WndCombo.class, new WndComboSerializer());
+        SERIALIZERS.register(WndEnergizeItem.class, new WndEnergizeItemSerializer());
+        SERIALIZERS.register(WndHero.class, new WndHeroSerializer());
+        SERIALIZERS.register(WndHeroInfo.class, new WndHeroInfoSerializer());
+        SERIALIZERS.register(WndImp.class, new WndImpSerializer());
+        SERIALIZERS.register(WndInfoCell.class, new WndInfoCellSerializer());
+        SERIALIZERS.register(WndInfoItem.class, new WndInfoItemSerializer<WndInfoItem>());
+        SERIALIZERS.register(WndInfoSubclass.class, new WndInfoSubclassSerializer());
+        SERIALIZERS.register(WndInfoTalent.class, new WndInfoTalentSerializer());
+        SERIALIZERS.register(WndJournalItem.class, new WndJournalItemSerializer());
+        SERIALIZERS.register(WndMessage.class, new WndMessageSerializer());
+        SERIALIZERS.register(WndMonkAbilities.class, new WndMonkAbilitiesSerializer());
+        SERIALIZERS.register(WndOptions.class, new WndOptionsSerializer());
+        SERIALIZERS.register(WndQuest.class, new WndQuestSerializer());
+        SERIALIZERS.register(WndResurrect.class, new WndResurrectSerializer());
+        SERIALIZERS.register(WndSadGhost.class, new WndSadGhostSerializer());
+        SERIALIZERS.register(WndTextInput.class, new WndTextInputSerializer());
+        SERIALIZERS.register(WndTitledMessage.class, new WndTitledMessageSerializer<>());
+        SERIALIZERS.register(WndUpgrade.class, new WndUpgradeSerializer());
+        SERIALIZERS.register(WndUseItem.class, new WndUseItemSerializer());
+        SERIALIZERS.register(WndWandmaker.class, new WndWandmakerSerializer());
+        SERIALIZERS.register(Alchemize.WndAlchemizeItem.class, new WndAlchemizeItemSerializer());
+        SERIALIZERS.register(StoneOfAugmentation.WndAugment.class, new WndAugmentSerializer());
+        SERIALIZERS.register(StoneOfIntuition.WndGuess.class, new WndGuessSerializer());
+        SERIALIZERS.register(ScrollOfMetamorphosis.WndMetamorphChoose.class, new WndMetamorphChooseSerializer());
+        SERIALIZERS.register(ScrollOfMetamorphosis.WndMetamorphReplace.class, new WndMetamorphReplaceSerializer());
+        SERIALIZERS.register(TrinketCatalyst.WndTrinket.class, new WndTrinketSerializer());
+        SERIALIZERS.register(DriedRose.WndGhostHero.class, new WndGhostHeroSerializer());
 
         //actions
         SERIALIZERS.register(SerializedAction.class, new SerializedActionSerializer());
@@ -164,18 +219,8 @@ public class Server extends Thread {
         SERIALIZERS.register(ItemAction.Update.class, new ItemActionSerializers.Update());
         SERIALIZERS.register(ItemAction.Replace.class, new ItemActionSerializers.Replace());
         SERIALIZERS.register(HeapUpdateAction.class, new HeapUpdateActionSerializer());
-        SERIALIZERS.register(WindowAction.Alchemy.class, new WindowActionSerializers.Alchemy());
-        SERIALIZERS.register(WindowAction.Bag.class, new WindowActionSerializers.Bag());
-        SERIALIZERS.register(WindowAction.ChooseSubclass.class, new WindowActionSerializers.ChooseSubclass());
-        SERIALIZERS.register(WindowAction.ClericSpells.class, new WindowActionSerializers.ClericSpells());
-        SERIALIZERS.register(WindowAction.InfoCell.class, new WindowActionSerializers.InfoCell());
-        SERIALIZERS.register(WindowAction.Options.class, new WindowActionSerializers.Options());
-        SERIALIZERS.register(WindowAction.Quest.class, new WindowActionSerializers.Quest());
-        SERIALIZERS.register(WindowAction.SadGhost.class, new WindowActionSerializers.SadGhost());
-        SERIALIZERS.register(WindowAction.TradeItem.class, new WindowActionSerializers.TradeItem());
-        SERIALIZERS.register(WindowAction.Wandmaker.class, new WindowActionSerializers.Wandmaker());
-        SERIALIZERS.register(WindowAction.Guess.class, new WindowActionSerializers.Guess());
-        SERIALIZERS.register(WindowAction.GhostHero.class, new WindowActionSerializers.GhostHero());
+        SERIALIZERS.register(UpdateWindowAction.class, new UpdateWindowActionSerializer());
+        SERIALIZERS.register(HideWindowAction.class, new HideWindowActionSerializer());
         SERIALIZERS.register(RedirectServerAction.class, new RedirectServerActionSerializer());
     }
 

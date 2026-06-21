@@ -58,6 +58,8 @@ public class TalentButton extends Button {
 
 	ColorBlock fill;
 
+	final Hero wndOwnerHero;
+
 	public enum Mode {
 		INFO,
 		UPGRADE,
@@ -65,8 +67,9 @@ public class TalentButton extends Button {
 		METAMORPH_REPLACE
 	}
 
-	public TalentButton(int tier, Talent talent, int points, Mode mode){
+	public TalentButton(Hero hero, int tier, Talent talent, int points, Mode mode){
 		super();
+		wndOwnerHero = hero;
 		hotArea.blockLevel = PointerArea.NEVER_BLOCK;
 
 		this.tier = tier;
@@ -120,7 +123,7 @@ public class TalentButton extends Button {
 				&& tryGetHero().isAlive()
 				&& tryGetHero().talentPointsAvailable(tier) > 0
 				&& tryGetHero().pointsInTalent(talent) < talent.maxPoints()){
-			toAdd = new WndInfoTalent(talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback() {
+			toAdd = new WndInfoTalent(wndOwnerHero, talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback() {
 
 				@Override
 				public LocalizedString prompt() {
@@ -134,7 +137,7 @@ public class TalentButton extends Button {
 				}
 			});
 		} else if (mode == Mode.METAMORPH_CHOOSE && Dungeon.heroes != null && tryGetHero().isAlive()) {
-			toAdd = new WndInfoTalent(talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback() {
+			toAdd = new WndInfoTalent(wndOwnerHero, talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback() {
 
 				@Override
 				public LocalizedString prompt() {
@@ -155,7 +158,7 @@ public class TalentButton extends Button {
 				}
 			});
 		} else if (mode == Mode.METAMORPH_REPLACE && Dungeon.heroes != null && tryGetHero().isAlive()) {
-			toAdd = new WndInfoTalent(talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback() {
+			toAdd = new WndInfoTalent(wndOwnerHero, talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback() {
 
 				@Override
 				public LocalizedString prompt() {
@@ -215,7 +218,7 @@ public class TalentButton extends Button {
 				}
 			});
 		} else {
-			toAdd = new WndInfoTalent(talent, pointsInTalent, null);
+			toAdd = new WndInfoTalent(wndOwnerHero, talent, pointsInTalent, null);
 		}
 
 		if (ShatteredPixelDungeon.scene() instanceof GameScene){

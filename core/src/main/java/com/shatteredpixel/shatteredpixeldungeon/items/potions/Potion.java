@@ -234,7 +234,7 @@ public class Potion extends Item {
 		
 		if (action.equals( AC_CHOOSE )){
 			
-			GameScene.show(new WndUseItem(null, this, hero) );
+			GameScene.show(new WndUseItem(hero, null, this) );
 			
 		} else if (action.equals( AC_DRINK )) {
 			

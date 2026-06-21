@@ -47,6 +47,7 @@ public class TextureCache {
 			pixmap.fill();
 			
 			SmartTexture tx = new SmartTexture( pixmap );
+			tx.source = new TextureSource.Solid( color );
 			all.put( key, tx );
 			
 			return tx;
@@ -69,6 +70,7 @@ public class TextureCache {
 				pixmap.drawPixel( i, 0, (colors[i] << 8) | (colors[i] >>> 24) );
 			}
 			SmartTexture tx = new SmartTexture( pixmap );
+			tx.source = new TextureSource.Gradient( colors );
 
 			tx.filter( Texture.LINEAR, Texture.LINEAR );
 			tx.wrap( Texture.CLAMP, Texture.CLAMP );
@@ -121,6 +123,9 @@ public class TextureCache {
 		} else {
 
 			SmartTexture tx = new SmartTexture( getBitmap( src ) );
+			if (src instanceof String) {
+				tx.source = new TextureSource.File( (String)src );
+			}
 			all.put( src, tx );
 			return tx;
 		}

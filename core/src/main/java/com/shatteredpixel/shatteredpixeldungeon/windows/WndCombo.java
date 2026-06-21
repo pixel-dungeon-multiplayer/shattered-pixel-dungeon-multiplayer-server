@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Combo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -34,20 +33,26 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.Image;
 
+import java.util.ArrayList;
+
 public class WndCombo extends Window {
 
 	private static final int WIDTH_P = 120;
 	private static final int WIDTH_L = 180;
 
 	private static final int MARGIN  = 2;
+	private final Combo combo;
+	public RenderedTextBlock title;
+	public ArrayList<RedButton> buttons;
 
 	public WndCombo( Combo combo ){
 		super((Hero) combo.target);
+		this.combo = combo;
 
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 
 		float pos = MARGIN;
-		RenderedTextBlock title = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(this, "title")), 9);
+		title = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(this, "title")), 9);
 		title.hardlight(TITLE_COLOR);
 		title.setPos((width-title.width())/2, pos);
 		title.maxWidth(width - MARGIN * 2);
@@ -62,6 +67,7 @@ public class WndCombo extends Window {
 			icon = new ItemSprite(new Item(){ {image = ItemSpriteSheet.WEAPON_HOLDER; }});
 		}
 
+		buttons = new ArrayList<>();
 		for (Combo.ComboMove move : Combo.ComboMove.values()) {
 
 			String text = "_" + Messages.titleCase(move.title()) + " " + Messages.get(this, "combo_req", move.comboReq) + ":_ " + move.desc(combo.getComboCount(), getOwnerHero());
@@ -79,11 +85,23 @@ public class WndCombo extends Window {
 			moveBtn.setRect(0, pos, width, moveBtn.reqHeight());
 			moveBtn.enable(combo.canUseMove(move));
 			add(moveBtn);
+			buttons.add(moveBtn);
 			pos = moveBtn.bottom() + MARGIN;
 		}
 
 		resize(width, (int)pos);
 
+	}
+
+	@Override
+	protected void onSelect(int button) {
+		if (button >= 0 && button < buttons.size()) {
+			buttons.get(button).onClickNetwork();
+		}
+	}
+
+	public Combo combo() {
+		return combo;
 	}
 
 

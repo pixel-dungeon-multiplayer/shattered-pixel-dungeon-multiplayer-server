@@ -22,25 +22,35 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.nikita22007.multiplayer.utils.text.LocalizedString;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.WindowAction;
 
 public class WndQuest extends WndTitledMessage {
+
+	private final String spriteName;
+	private final LocalizedString charName;
+	private final LocalizedString text;
 
 	public WndQuest(NPC questgiver, String text, Hero hero) {
 		this(questgiver, LocalizedString.raw(text), hero);
 	}
 	public WndQuest(NPC questgiver, LocalizedString text, Hero hero) {
-		super( questgiver.sprite(), Messages.titleCase( questgiver.name() ), text, hero );
-		SendData.packAndSendAction(hero, new WindowAction.Quest(
-			getId(),
-			questgiver.getSprite().getClass().getName(),
-			questgiver.name(),
-			text
-		));
+		super(hero, questgiver.sprite(), Messages.titleCase( questgiver.name() ), text);
+		this.spriteName = questgiver.getSprite().getClass().getName();
+		this.charName = questgiver.name();
+		this.text = text;
+	}
+
+	public String spriteName() {
+		return spriteName;
+	}
+
+	public LocalizedString charName() {
+		return charName;
+	}
+
+	public LocalizedString text() {
+		return text;
 	}
 }

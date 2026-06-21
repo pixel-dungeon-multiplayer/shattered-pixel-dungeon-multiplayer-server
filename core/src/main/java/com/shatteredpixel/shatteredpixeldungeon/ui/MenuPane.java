@@ -23,27 +23,14 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.nikita22007.multiplayer.utils.text.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndChallenges;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndGame;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndStory;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
-import com.watabou.input.GameAction;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
-import com.nikita22007.multiplayer.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.DeviceCompat;
 
@@ -59,7 +46,6 @@ public class MenuPane extends Component {
 	private BitmapText challengeText;
 	private Button challengeButton;
 
-	private MenuButton btnMenu;
 
 	private BitmapText version;
 	private NinePatch versionOverflowBG;
@@ -100,45 +86,9 @@ public class MenuPane extends Component {
 				}
 			}
 
-			@Override
-			protected void onClick() {
-				super.onClick();
 
-				if (Dungeon.level.feeling == Level.Feeling.NONE){
-
-				} else {
-					GameScene.show(new WndTitledMessage(Icons.getLarge(Dungeon.level.feeling),
-							Messages.titleCase(Dungeon.level.feeling.title()),
-							Dungeon.level.feeling.desc()));
-				}
-			}
 		};
 		add(depthButton);
-
-		if (Challenges.activeChallenges() > 0){
-			challengeIcon = Icons.get(Icons.CHAL_COUNT);
-			add(challengeIcon);
-
-			challengeText = new BitmapText( Integer.toString( Challenges.activeChallenges() ), PixelScene.pixelFont);
-			challengeText.hardlight( 0xCACFC2 );
-			challengeText.measure();
-			add( challengeText );
-
-			challengeButton = new Button(){
-				@Override
-				protected void onClick() {
-					GameScene.show(new WndChallenges(Dungeon.challenges, false));
-				}
-
-				@Override
-				protected LocalizedString hoverText() {
-					return Messages.get(WndChallenges.class, "title");
-				}
-			};
-			add(challengeButton);
-		}
-		btnMenu = new MenuButton();
-		add( btnMenu );
 
 		danger = new DangerIndicator();
 		add( danger );
@@ -170,10 +120,6 @@ public class MenuPane extends Component {
 		version.y -= .001f;
 		PixelScene.align(version);
 
-		btnMenu.setPos( x + WIDTH - btnMenu.width(), y );
-
-
-		depthIcon.x = btnMenu.left() - 7 + (7 - depthIcon.width())/2f - 0.1f;
 		depthIcon.y = y+8;
 		PixelScene.align(depthIcon);
 
@@ -185,7 +131,6 @@ public class MenuPane extends Component {
 		depthButton.setRect(depthIcon.x, depthIcon.y, depthIcon.width(), depthIcon.height() + depthText.height());
 
 		if (challengeIcon != null){
-			challengeIcon.x = btnMenu.left() - 14 + (7 - challengeIcon.width())/2f - 0.1f;
 			challengeIcon.y = depthIcon.y;
 			PixelScene.align(challengeIcon);
 
@@ -207,57 +152,4 @@ public class MenuPane extends Component {
 	public void updateKeys(){
 	}
 
-	private static class MenuButton extends Button {
-
-		private Image image;
-
-		public MenuButton() {
-			super();
-
-			width = image.width + 4;
-			height = image.height + 10;
-		}
-
-		@Override
-		protected void createChildren() {
-			super.createChildren();
-
-			image = new Image( Assets.Interfaces.MENU_BTN, 17, 2, 12, 11 );
-			add( image );
-		}
-
-		@Override
-		protected void layout() {
-			super.layout();
-
-			image.x = x + 2;
-			image.y = y + 8;
-		}
-
-		@Override
-		protected void onPointerDown() {
-			image.brightness( 1.5f );
-			Sample.INSTANCE.play( Assets.Sounds.CLICK );
-		}
-
-		@Override
-		protected void onPointerUp() {
-			image.resetColor();
-		}
-
-		@Override
-		protected void onClick() {
-			GameScene.show( new WndGame() );
-		}
-
-		@Override
-		public GameAction keyAction() {
-			return GameAction.BACK;
-		}
-
-		@Override
-		protected LocalizedString hoverText() {
-			return Messages.titleCase(Messages.get(WndKeyBindings.class, "menu"));
-		}
-	}
 }

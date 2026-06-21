@@ -49,8 +49,10 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.nikita22007.multiplayer.noosa.audio.Sample;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class WndBlacksmith extends Window {
 
@@ -58,24 +60,30 @@ public class WndBlacksmith extends Window {
 	private static final int WIDTH_L = 180;
 
 	private static final int GAP  = 2;
+	private final Blacksmith troll;
+
+	public IconTitle titlebar;
+	public RenderedTextBlock message;
+	public ArrayList<RedButton> buttons;
 
 	public WndBlacksmith( Blacksmith troll, Hero hero ) {
 		super(hero);
+		this.troll = troll;
 
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 
-		IconTitle titlebar = new IconTitle();
+		titlebar = new IconTitle();
 		titlebar.icon( troll.sprite() );
 		titlebar.label( Messages.titleCase( troll.name() ) );
 		titlebar.setRect( 0, 0, width, 0 );
 		add( titlebar );
 
-		RenderedTextBlock message = PixelScene.renderTextBlock( Messages.get(this, "prompt", Blacksmith.Quest.favor), 6 );
+		message = PixelScene.renderTextBlock( Messages.get(this, "prompt", Blacksmith.Quest.favor), 6 );
 		message.maxWidth( width );
 		message.setPos(0, titlebar.bottom() + GAP);
 		add( message );
 
-		ArrayList<RedButton> buttons = new ArrayList<>();
+		buttons = new ArrayList<>();
 
 		int pickaxeCost = Blacksmith.Quest.freePickaxe ? 0 : 250;
 		RedButton pickaxe = new RedButton(Messages.get(this, "pickaxe", pickaxeCost), 6){
@@ -205,7 +213,18 @@ public class WndBlacksmith extends Window {
 
 	}
 
-	protected static class WndReforge extends Window {
+	public Blacksmith troll() {
+		return troll;
+	}
+
+	@Override
+	protected void onSelect(int button) {
+		if (button >= 0 && button < buttons.size()) {
+			buttons.get(button).onClickNetwork();
+		}
+	}
+
+	public static class WndReforge extends Window {
 
 		private static final int WIDTH		= 120;
 
@@ -215,20 +234,22 @@ public class WndBlacksmith extends Window {
 
 		private ItemButton btnPressed;
 
-		private ItemButton btnItem1;
-		private ItemButton btnItem2;
-		private RedButton btnReforge;
+		public IconTitle titlebar;
+		public RenderedTextBlock message;
+		public ItemButton btnItem1;
+		public ItemButton btnItem2;
+		public RedButton btnReforge;
 
 		public WndReforge( Blacksmith troll, Window wndParent ) {
-			super();
+			super(wndParent == null ? null : wndParent.getOwnerHero());
 
-			IconTitle titlebar = new IconTitle();
+			titlebar = new IconTitle();
 			titlebar.icon( troll.sprite() );
 			titlebar.label( Messages.titleCase( troll.name() ) );
 			titlebar.setRect( 0, 0, WIDTH, 0 );
 			add( titlebar );
 
-			RenderedTextBlock message = PixelScene.renderTextBlock( Messages.get(this, "message"), 6 );
+			message = PixelScene.renderTextBlock( Messages.get(this, "message"), 6 );
 			message.maxWidth( WIDTH);
 			message.setPos(0, titlebar.bottom() + GAP);
 			add( message );
@@ -361,6 +382,23 @@ public class WndBlacksmith extends Window {
 			}
 		};
 
+		@Override
+		protected void onSelect(int button) {
+			switch (button) {
+				case 0:
+					btnItem1.onClickNetwork();
+					break;
+				case 1:
+					btnItem2.onClickNetwork();
+					break;
+				case 2:
+					if (btnReforge.active) {
+						btnReforge.onClickNetwork();
+					}
+					break;
+			}
+		}
+
 	}
 
 	private class HardenSelector extends WndBag.ItemSelector {
@@ -458,15 +496,21 @@ public class WndBlacksmith extends Window {
 		private static final int BTN_SIZE	= 28;
 		private static final int BTN_GAP	= 4;
 		private static final int GAP		= 2;
+		private final Blacksmith troll;
+
+		public IconTitle titlebar;
+		public RenderedTextBlock message;
+		public ArrayList<ItemButton> rewardButtons;
 
 		public WndSmith( Blacksmith troll, Hero hero ){
-			super();
+			super(hero);
+			this.troll = troll;
 
-			IconTitle titlebar = new IconTitle();
+			titlebar = new IconTitle();
 			titlebar.icon(troll.sprite());
 			titlebar.label(Messages.titleCase(troll.name()));
 
-			RenderedTextBlock message = PixelScene.renderTextBlock( Messages.get(this, "prompt"), 6 );
+			message = PixelScene.renderTextBlock( Messages.get(this, "prompt"), 6 );
 
 			titlebar.setRect( 0, 0, WIDTH, 0 );
 			add( titlebar );
@@ -479,6 +523,7 @@ public class WndBlacksmith extends Window {
 				Blacksmith.Quest.generateRewards(false);
 			}
 
+			rewardButtons = new ArrayList<>();
 			int count = 0;
 			for (Item i : Blacksmith.Quest.smithRewards){
 				count++;
@@ -489,6 +534,7 @@ public class WndBlacksmith extends Window {
 					}
 				};
 				btnReward.item( i );
+				rewardButtons.add(btnReward);
 				btnReward.setRect( count*(WIDTH - BTN_GAP) / Blacksmith.Quest.smithRewards.size() - BTN_SIZE,
 						message.top() + message.height() + BTN_GAP,
 						BTN_SIZE, BTN_SIZE );
@@ -505,10 +551,23 @@ public class WndBlacksmith extends Window {
 			//do nothing
 		}
 
+		public Blacksmith troll() {
+			return troll;
+		}
+
+		@Override
+		protected void onSelect(int button) {
+			if (button >= 0 && button < rewardButtons.size()) {
+				rewardButtons.get(button).onClickNetwork();
+			}
+		}
+
 		private class RewardWindow extends WndInfoItem {
 
+			public ArrayList<RedButton> buttons = new ArrayList<>();
+
 			public RewardWindow( Blacksmith troll, Hero hero, Item item ) {
-				super(item, hero);
+				super(hero, item);
 
 				RedButton btnConfirm = new RedButton(Messages.get(WndSadGhost.class, "confirm")){
 					@Override
@@ -538,6 +597,7 @@ public class WndBlacksmith extends Window {
 					}
 				};
 				btnConfirm.setRect(0, height+2, width/2-1, 16);
+				buttons.add(btnConfirm);
 				add(btnConfirm);
 
 				RedButton btnCancel = new RedButton(Messages.get(WndSadGhost.class, "cancel")){
@@ -547,9 +607,22 @@ public class WndBlacksmith extends Window {
 					}
 				};
 				btnCancel.setRect(btnConfirm.right()+2, height+2, btnConfirm.width(), 16);
+				buttons.add(btnCancel);
 				add(btnCancel);
 
 				resize(width, (int)btnCancel.bottom());
+			}
+
+			@Override
+			protected void onSelect(int button) {
+				if (button >= 0 && button < buttons.size()) {
+					buttons.get(button).onClickNetwork();
+				}
+			}
+
+			@Override
+			public @NotNull List<RedButton> actionsForNetwork() {
+				return buttons;
 			}
 		}
 

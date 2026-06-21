@@ -57,6 +57,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
+import com.shatteredpixel.shatteredpixeldungeon.network.actions.UpdateWindowAction;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
@@ -78,7 +79,8 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import org.jetbrains.annotations.NotNull;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.WindowAction;
+import org.jetbrains.annotations.Nullable;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -151,7 +153,7 @@ public class DriedRose extends Artifact {
 
 			if (hero.buff(MagicImmune.class) != null) return;
 
-			if (!Ghost.Quest.completed())   GameScene.show(new WndUseItem(null, this, hero));
+			if (!Ghost.Quest.completed())   GameScene.show(new WndUseItem(hero, null, this));
 			else if (ghost != null)         GLog.i( Messages.get(this, "spawned") );
 			else if (!isEquipped( hero ))   GLog.i( Messages.get(Artifact.class, "need_to_equip") );
 			else if (getCharge() != chargeCap)   GLog.i( Messages.get(this, "no_charge") );
@@ -878,7 +880,7 @@ public class DriedRose extends Artifact {
 
 	}
 	
-	private static class WndGhostHero extends Window{
+	public static class WndGhostHero extends Window{
 
 		private static final String TYPE = "ghost_hero";
 
@@ -963,7 +965,7 @@ public class DriedRose extends Artifact {
 				@Override
 				protected boolean onLongClick() {
 					if (item() != null && item().name() != null){
-						GameScene.show(new WndInfoItem(item(), curUser));
+						GameScene.show(new WndInfoItem(getOwnerHero(), item()));
 						return true;
 					}
 					return false;
@@ -1039,7 +1041,7 @@ public class DriedRose extends Artifact {
 				@Override
 				protected boolean onLongClick() {
 					if (item() != null && item().name() != null){
-						GameScene.show(new WndInfoItem(item(), getOwnerHero()));
+						GameScene.show(new WndInfoItem(getOwnerHero(), item()));
 						return true;
 					}
 					return false;
@@ -1054,17 +1056,29 @@ public class DriedRose extends Artifact {
 			add( btnArmor );
 			
 			resize(WIDTH, (int)(btnArmor.bottom() + GAP));
-			sendSelf();
 		}
 		private void sendSelf() {
-			SendData.packAndSendAction(getOwnerHero(), new WindowAction.GhostHero(
-				getId(),
-				btnWeapon.item(),
-				btnArmor.item(),
-				rose,
-				title,
-				message
-			));
+			SendData.packAndSendAction(getOwnerHero(), new UpdateWindowAction(this));
+		}
+
+		public Item weaponItem() {
+			return btnWeapon.item();
+		}
+
+		public Item armorItem() {
+			return btnArmor.item();
+		}
+
+		public DriedRose rose() {
+			return rose;
+		}
+
+		public LocalizedString title() {
+			return title;
+		}
+
+		public LocalizedString message() {
+			return message;
 		}
 
 		@Override
@@ -1075,13 +1089,20 @@ public class DriedRose extends Artifact {
 		}
 
 		@Override
-		public void onSelect(int button) {
+		public void onSelect(int button, @Nullable JSONObject args) {
+			boolean isLongClick = args != null && args.optBoolean("is_long_click", false);
 			if (button == 0) {
-				btnWeapon.onClickPublicVersion();
+				if (isLongClick) {
+					btnWeapon.onLongClickNetwork();
+				} else {
+					btnWeapon.onClickNetwork();
+				}
 			} else if (button == 1) {
-				btnArmor.onClickPublicVersion();
-			} else {
-				return;
+				if (isLongClick) {
+					btnArmor.onLongClickNetwork();
+				} else {
+					btnArmor.onClickNetwork();
+				}
 			}
 		}
 	}

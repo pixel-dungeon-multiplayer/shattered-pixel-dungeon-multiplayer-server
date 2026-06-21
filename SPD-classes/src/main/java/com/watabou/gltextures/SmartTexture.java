@@ -39,6 +39,7 @@ public class SmartTexture extends Texture {
 	public Pixmap bitmap;
 	
 	public Atlas atlas;
+	public TextureSource source;
 
 	public SmartTexture( Pixmap bitmap ) {
 		this( bitmap, NEAREST, CLAMP, false );

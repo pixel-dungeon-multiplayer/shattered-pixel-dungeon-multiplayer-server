@@ -37,7 +37,7 @@ import java.util.LinkedHashMap;
 public class WndInfoArmorAbility extends WndTitledMessage {
 
 	public WndInfoArmorAbility(HeroClass cls, ArmorAbility ability, Hero hero){
-		super( new HeroIcon(ability), Messages.titleCase(ability.name()), ability.desc(), hero);
+		super(hero, new HeroIcon(ability), Messages.titleCase(ability.name()), ability.desc());
 
 		ArrayList<LinkedHashMap<Talent, Integer>> talentList = new ArrayList<>();
 		Talent.initArmorTalents(ability, talentList);

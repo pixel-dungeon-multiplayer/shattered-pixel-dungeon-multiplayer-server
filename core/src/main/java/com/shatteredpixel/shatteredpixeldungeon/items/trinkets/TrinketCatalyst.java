@@ -32,7 +32,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.AlchemyScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -48,9 +47,12 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndSadGhost;
 import com.nikita22007.multiplayer.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 
+import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public class TrinketCatalyst extends Item {
 
@@ -159,10 +161,13 @@ public class TrinketCatalyst extends Item {
 		private static final int GAP = 2;
 
 		private static final int NUM_TRINKETS = 4;
+		private final TrinketCatalyst catalyst;
+		public IconTitle titlebar;
 
 		public WndTrinket(TrinketCatalyst cata, Hero hero) {
 			super(hero);
-			IconTitle titlebar = new IconTitle();
+			this.catalyst = cata;
+			titlebar = new IconTitle();
 			titlebar.icon(new ItemSprite(cata));
 			titlebar.label(Messages.titleCase(Messages.get(TrinketCatalyst.class, "window_title")));
 			titlebar.setRect(0, 0, WIDTH, 0);
@@ -200,11 +205,29 @@ public class TrinketCatalyst extends Item {
 			//do nothing
 		}
 
-		private class RewardWindow extends WndInfoItem {
-			public RewardWindow(Item item, Hero hero) {
-				super(item, hero);
+		@Override
+		public void onSelect(int button) {
+			if (button >= 0 && button < rolledTrinkets().size()) {
+				GameScene.show(new RewardWindow(rolledTrinkets().get(button), getOwnerHero()));
+			}
+		}
 
-				RedButton btnConfirm = new RedButton(Messages.get(WndSadGhost.class, "confirm")) {
+		public TrinketCatalyst catalyst() {
+			return catalyst;
+		}
+
+		public ArrayList<Trinket> rolledTrinkets() {
+			return catalyst.rolledTrinkets;
+		}
+
+		private class RewardWindow extends WndInfoItem {
+			private final RedButton btnConfirm;
+			private final RedButton btnCancel;
+
+			public RewardWindow(Item item, Hero hero) {
+				super(hero, item);
+
+				btnConfirm = new RedButton(Messages.get(WndSadGhost.class, "confirm")) {
 					@Override
 					protected void onClick() {
 						RewardWindow.this.hide();
@@ -247,7 +270,7 @@ public class TrinketCatalyst extends Item {
 				btnConfirm.setRect(0, height + 2, width / 2 - 1, 16);
 				add(btnConfirm);
 
-				RedButton btnCancel = new RedButton(Messages.get(WndSadGhost.class, "cancel")) {
+				btnCancel = new RedButton(Messages.get(WndSadGhost.class, "cancel")) {
 					@Override
 					protected void onClick() {
 						hide();
@@ -257,6 +280,20 @@ public class TrinketCatalyst extends Item {
 				add(btnCancel);
 
 				resize(width, (int) btnCancel.bottom());
+			}
+
+			@Override
+			public @NotNull List<RedButton> actionsForNetwork() {
+				return Arrays.asList(btnConfirm, btnCancel);
+			}
+
+			@Override
+			protected void onSelect(int button) {
+				if (button == 0) {
+					btnConfirm.onClickNetwork();
+				} else if (button == 1) {
+					btnCancel.onClickNetwork();
+				}
 			}
 		}
 	}

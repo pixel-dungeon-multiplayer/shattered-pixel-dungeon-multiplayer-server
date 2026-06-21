@@ -21,7 +21,9 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.nikita22007.multiplayer.utils.text.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.DwarfToken;
@@ -32,41 +34,51 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import org.jetbrains.annotations.NotNull;
 
+// Imp reward window
 public class WndImp extends Window {
 	
 	private static final int WIDTH      = 120;
 	private static final int BTN_HEIGHT = 20;
 	private static final int GAP        = 2;
+	private final @NotNull Imp imp;
+	private final DwarfToken tokens;
+	public final LocalizedString buttonText;
+	public final RenderedTextBlock message;
+	public final IconTitle titlebar;
 
-	public WndImp( final Imp imp, final DwarfToken tokens ) {
+	public WndImp(final Hero hero,  @NotNull final Imp imp, final @NotNull DwarfToken tokens ) {
 		
-		super();
-		
-		IconTitle titlebar = new IconTitle();
+		super(hero);
+		this.imp = imp;
+		this.tokens = tokens;
+
+		titlebar = new IconTitle();
 		titlebar.icon( new ItemSprite( tokens.image(), null ) );
 		titlebar.label( Messages.titleCase( tokens.name() ) );
 		titlebar.setRect( 0, 0, WIDTH, 0 );
 		add( titlebar );
-		
-		RenderedTextBlock message = PixelScene.renderTextBlock( Messages.get(this, "message"), 6 );
+
+		message = PixelScene.renderTextBlock( Messages.get(this, "message"), 6 );
 		message.maxWidth(WIDTH);
 		message.setPos(0, titlebar.bottom() + GAP);
 		add( message );
-		
-		RedButton btnReward = new RedButton( Messages.get(this, "reward") ) {
-			@Override
-			protected void onClick() {
-				takeReward( imp, tokens, Imp.Quest.reward );
-			}
-		};
-		btnReward.setRect( 0, message.top() + message.height() + GAP, WIDTH, BTN_HEIGHT );
-		add( btnReward );
-		
-		resize( WIDTH, (int)btnReward.bottom() );
+
+		buttonText = Messages.get(this, "reward");
+
 	}
-	
-	private void takeReward( Imp imp, DwarfToken tokens, Item reward ) {
+
+	public DwarfToken tokens() {
+		return tokens;
+	}
+
+	@Override
+	protected void onSelect(int button) {
+		takeReward( imp, tokens, Imp.Quest.reward );
+	}
+
+	private void takeReward(@NotNull Imp imp, @NotNull DwarfToken tokens, Item reward ) {
 		
 		hide();
 		

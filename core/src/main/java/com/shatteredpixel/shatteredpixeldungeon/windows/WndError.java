@@ -29,7 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 public class WndError extends WndTitledMessage {
 
 	public WndError(LocalizedString message, Hero hero) {
-		super( Icons.WARNING.get(), Messages.get(WndError.class, "title"), message, hero );
+		super(hero, Icons.WARNING.get(), Messages.get(WndError.class, "title"), message);
 	}
 
 }

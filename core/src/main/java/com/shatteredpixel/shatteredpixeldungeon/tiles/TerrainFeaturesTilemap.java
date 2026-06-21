@@ -103,12 +103,21 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 	}
 
 	public static Image tile(int pos, int tile ) {
-		RectF uv = instance.tileset.get( instance.getTileVisual( pos, tile, true ) );
+		int tileVisual = instance.getTileVisual( pos, tile, true );
+		RectF uv = instance.tileset.get( tileVisual );
 		if (uv == null) return null;
 		
-		Image img = new Image( instance.texture );
+		TileImage img = new TileImage( new Image( instance.texture ), tileVisual);
 		img.frame(uv);
 		return img;
+	}
+
+	public static final class TileImage extends Image {
+		public final int tileVisual;
+		public TileImage(Image image, int tileVisual) {
+			super(image);
+			this.tileVisual = tileVisual;
+		}
 	}
 
 	public void growPlant( final int pos ){

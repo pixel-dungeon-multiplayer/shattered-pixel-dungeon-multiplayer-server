@@ -37,7 +37,7 @@ public class RedButton extends StyledButton {
 		this(LocalizedString.raw(label), size);
 	}
 	public RedButton( LocalizedString label, int size ){
-		super( Chrome.Type.RED_BUTTON, label.toString(), size); //todo check this
+		super( Chrome.Type.RED_BUTTON, label, size);
 	}
 	
 }

@@ -92,7 +92,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Toast;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndGame;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndHero;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoCell;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoItem;
@@ -122,8 +121,6 @@ import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 import com.watabou.utils.RectF;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.*;
@@ -841,7 +838,6 @@ public class GameScene extends PixelScene {
 
 	@Override
 	protected void onBackPressed() {
-		add(new WndGame());
 	}
 
 	public void addCustomTile(CustomTilemap visual) {
@@ -1170,6 +1166,8 @@ public class GameScene extends PixelScene {
 			if (wnd.getOwnerHero() != null) {
 				cancel(wnd.getOwnerHero());
 				SendData.forceFlush(wnd.getOwnerHero());
+				SendData.packAndSendAction(wnd.getOwnerHero(), new UpdateWindowAction(wnd));
+				SendData.forceFlush(wnd.getOwnerHero());
 			} else {
 				scene.addToFront(wnd);
 			}
@@ -1426,7 +1424,7 @@ public class GameScene extends PixelScene {
 			//traps are often harmful to trigger, so let the player ID just by examine
 			Bestiary.setSeen(o.getClass());
 		} else {
-			GameScene.show(new WndMessage(Messages.get(GameScene.class, "dont_know")));
+			GameScene.show(new WndMessage(hero, Messages.get(GameScene.class, "dont_know")));
 		}
 	}
 

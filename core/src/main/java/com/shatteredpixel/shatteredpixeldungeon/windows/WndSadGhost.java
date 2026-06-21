@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.nikita22007.multiplayer.utils.text.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -29,11 +30,16 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.FetidRatSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollTricksterSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.GreatCrabSprite;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ItemButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.WindowAction;
 
 public class WndSadGhost extends Window {
 
@@ -43,16 +49,69 @@ public class WndSadGhost extends Window {
 	private static final int GAP		= 2;
 
 	Ghost ghost;
+	private final int questType;
+	public IconTitle titlebar;
+	public RenderedTextBlock message;
+	public ItemButton btnWeapon;
+	public ItemButton btnArmor;
 	
 	public WndSadGhost( final Ghost ghost, final int type, Hero hero ) {
 		super(hero);
 		this.ghost = ghost;
-		SendData.packAndSendAction(hero, new WindowAction.SadGhost(
-			getId(),
-			type,
-			Ghost.Quest.weapon,
-			Ghost.Quest.armor
-		));
+		this.questType = type;
+
+		titlebar = new IconTitle();
+		switch (type){
+			case 1:default:
+				titlebar.icon( new FetidRatSprite() );
+				titlebar.label( Messages.get(this, "rat_title") );
+				message = PixelScene.renderTextBlock( LocalizedString.concat(Messages.get(this, "rat"), "\n\n", Messages.get(this, "give_item")), 6 );
+				break;
+			case 2:
+				titlebar.icon( new GnollTricksterSprite() );
+				titlebar.label( Messages.get(this, "gnoll_title") );
+				message = PixelScene.renderTextBlock( LocalizedString.concat(Messages.get(this, "gnoll"), "\n\n", Messages.get(this, "give_item")), 6 );
+				break;
+			case 3:
+				titlebar.icon( new GreatCrabSprite());
+				titlebar.label( Messages.get(this, "crab_title") );
+				message = PixelScene.renderTextBlock( LocalizedString.concat(Messages.get(this, "crab"), "\n\n", Messages.get(this, "give_item")), 6 );
+				break;
+
+		}
+
+		titlebar.setRect( 0, 0, WIDTH, 0 );
+		add( titlebar );
+
+		message.maxWidth(WIDTH);
+		message.setPos(0, titlebar.bottom() + GAP);
+		add( message );
+
+		btnWeapon = new ItemButton(){
+			@Override
+			protected void onClick() {
+				GameScene.show(new RewardWindow(item(), hero));
+			}
+		};
+		btnWeapon.item( Ghost.Quest.weapon );
+		btnWeapon.setRect( (WIDTH - BTN_GAP) / 2 - BTN_SIZE, message.top() + message.height() + BTN_GAP, BTN_SIZE, BTN_SIZE );
+		add( btnWeapon );
+
+		btnArmor = new ItemButton(){
+			@Override
+			protected void onClick() {
+				GameScene.show(new RewardWindow(item(), hero));
+			}
+		};
+		btnArmor.item( Ghost.Quest.armor );
+		btnArmor.setRect( btnWeapon.right() + BTN_GAP, btnWeapon.top(), BTN_SIZE, BTN_SIZE );
+		add(btnArmor);
+
+		resize(WIDTH, (int) btnArmor.bottom() + BTN_GAP);
+	}
+
+	public int questType() {
+		return questType;
 	}
 	
 	private void selectReward( Item reward ) {
@@ -99,7 +158,7 @@ public class WndSadGhost extends Window {
 	private class RewardWindow extends WndInfoItem {
 
 		public RewardWindow( Item item, Hero rewardTarget ) {
-			super(item, rewardTarget);
+			super(rewardTarget, item);
 
 			RedButton btnConfirm = new RedButton(Messages.get(WndSadGhost.class, "confirm")){
 				@Override

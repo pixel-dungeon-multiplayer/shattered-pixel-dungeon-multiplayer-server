@@ -144,9 +144,10 @@ public class Alchemize extends Spell {
 		private static final int BTN_HEIGHT	= 18;
 
 		private WndBag owner;
+		public ArrayList<RedButton> buttons = new ArrayList<>();
 
 		public WndAlchemizeItem(Item item, WndBag owner) {
-			super(item, owner.getOwnerHero());
+			super(owner.getOwnerHero(), item);
 			this.owner = owner;
 
 			float pos = height;
@@ -174,6 +175,7 @@ public class Alchemize extends Spell {
 					btnSell.setRect(0, pos + GAP, width, BTN_HEIGHT);
 					btnSell.icon(new ItemSprite(ItemSpriteSheet.GOLD));
 					add(btnSell);
+					buttons.add(btnSell);
 
 					pos = btnSell.bottom();
 
@@ -191,6 +193,7 @@ public class Alchemize extends Spell {
 					btnSell1.setRect(0, pos + GAP, width, BTN_HEIGHT);
 					btnSell1.icon(new ItemSprite(ItemSpriteSheet.GOLD));
 					add(btnSell1);
+					buttons.add(btnSell1);
 					RedButton btnSellAll = new RedButton(Messages.get(this, "sell_all", priceAll)) {
 						@Override
 						protected void onClick() {
@@ -202,6 +205,7 @@ public class Alchemize extends Spell {
 					btnSellAll.setRect(0, btnSell1.bottom() + 1, width, BTN_HEIGHT);
 					btnSellAll.icon(new ItemSprite(ItemSpriteSheet.GOLD));
 					add(btnSellAll);
+					buttons.add(btnSellAll);
 
 					pos = btnSellAll.bottom();
 
@@ -215,7 +219,7 @@ public class Alchemize extends Spell {
 						@Override
 						protected void onClick() {
 							if (item instanceof Trinket){
-								GameScene.show(new WndOptions(new ItemSprite(item), Messages.titleCase(item.name()),
+								GameScene.show(new WndOptions(owner.getOwnerHero(), new ItemSprite(item), Messages.titleCase(item.name()),
 										Messages.get(WndEnergizeItem.class, "trinket_warn"),
 										Messages.get(WndEnergizeItem.class, "trinket_yes"),
 										Messages.get(WndEnergizeItem.class, "trinket_no")){
@@ -243,6 +247,7 @@ public class Alchemize extends Spell {
 					btnEnergize.setRect(0, pos + GAP, width, BTN_HEIGHT);
 					btnEnergize.icon(new ItemSprite(ItemSpriteSheet.ENERGY));
 					add(btnEnergize);
+					buttons.add(btnEnergize);
 
 					pos = btnEnergize.bottom();
 
@@ -260,6 +265,7 @@ public class Alchemize extends Spell {
 					btnEnergize1.setRect(0, pos + GAP, width, BTN_HEIGHT);
 					btnEnergize1.icon(new ItemSprite(ItemSpriteSheet.ENERGY));
 					add(btnEnergize1);
+					buttons.add(btnEnergize1);
 					RedButton btnEnergizeAll = new RedButton(Messages.get(this, "energize_all", energyAll)) {
 						@Override
 						protected void onClick() {
@@ -271,6 +277,7 @@ public class Alchemize extends Spell {
 					btnEnergizeAll.setRect(0, btnEnergize1.bottom() + 1, width, BTN_HEIGHT);
 					btnEnergizeAll.icon(new ItemSprite(ItemSpriteSheet.ENERGY));
 					add(btnEnergizeAll);
+					buttons.add(btnEnergizeAll);
 
 					pos = btnEnergizeAll.bottom();
 
@@ -279,6 +286,13 @@ public class Alchemize extends Spell {
 
 			resize( width, (int)pos );
 
+		}
+
+		@Override
+		protected void onSelect(int button) {
+			if (button >= 0 && button < buttons.size()) {
+				buttons.get(button).onClickNetwork();
+			}
 		}
 
 		private void consumeAlchemize(Hero hero){

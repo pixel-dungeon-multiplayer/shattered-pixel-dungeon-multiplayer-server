@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextureFilm;
+import org.jetbrains.annotations.NotNull;
 
 public class BuffIcon extends Image {
 
@@ -35,18 +36,14 @@ public class BuffIcon extends Image {
 	private static final int LRG_SIZE = 16;
 
 	private final boolean large;
+	public final @NotNull Buff buff;
 
-	public BuffIcon(Buff buff, boolean large){
+	public BuffIcon(@NotNull Buff buff, boolean large){
 		super( large ? Assets.Interfaces.BUFFS_LARGE : Assets.Interfaces.BUFFS_SMALL );
 		this.large = large;
 		refresh(buff);
-	}
-
-	public BuffIcon(int icon, boolean large){
-		super( large ? Assets.Interfaces.BUFFS_LARGE : Assets.Interfaces.BUFFS_SMALL );
-		this.large = large;
-		refresh(icon);
-	}
+        this.buff = buff;
+    }
 
 	public void refresh(Buff buff){
 		refresh(buff.icon());

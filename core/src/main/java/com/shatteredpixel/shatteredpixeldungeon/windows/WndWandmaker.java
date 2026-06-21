@@ -21,22 +21,22 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.nikita22007.multiplayer.utils.text.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.WindowAction;
 
 import java.util.ArrayList;
 
 public class WndWandmaker extends Window {
 
-	Wandmaker wandmaker;
+	public Wandmaker wandmaker;
 	Item questItem;
+	public final LocalizedString message;
 
 	public WndWandmaker(final Wandmaker wandmaker, final Item item, Hero hero) {
 		
@@ -44,13 +44,25 @@ public class WndWandmaker extends Window {
 
 		this.wandmaker = wandmaker;
 		this.questItem = item;
-		SendData.packAndSendAction(hero, new WindowAction.Wandmaker(
-			getId(),
-			Wandmaker.Quest.wand1,
-			Wandmaker.Quest.wand2,
-			questItem,
-			questItem.getClass().getName()
-		));
+
+		String messageKey;
+		switch (Wandmaker.Quest.type()) {
+			case 1:
+			default:
+				messageKey = "dust";
+				break;
+			case 2:
+				messageKey = "ember";
+				break;
+			case 3:
+				messageKey = "berry";
+				break;
+		}
+		this.message = Messages.get(this, messageKey);
+	}
+
+	public Item questItem() {
+		return questItem;
 	}
 	private void selectReward(Item reward ) {
 

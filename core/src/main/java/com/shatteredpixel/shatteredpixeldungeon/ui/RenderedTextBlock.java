@@ -40,7 +40,7 @@ public class RenderedTextBlock extends Component {
 	private static final RenderedText SPACE = new RenderedText();
 	private static final RenderedText NEWLINE = new RenderedText();
 	
-	protected String text;
+	protected LocalizedString text;
 	protected String[] tokens = null;
 	protected ArrayList<RenderedText> words = new ArrayList<>();
 	protected boolean multiline = false;
@@ -56,25 +56,25 @@ public class RenderedTextBlock extends Component {
 	public static final int CENTER_ALIGN = 2;
 	public static final int RIGHT_ALIGN = 3;
 	private int alignment = LEFT_ALIGN;
-	
+
 	public RenderedTextBlock(int size){
 		this.size = size;
 	}
 
-	public RenderedTextBlock(String text, int size){
+	public RenderedTextBlock(LocalizedString text, int size){
 		this.size = size;
 		text(text);
 	}
 
-	public void text(LocalizedString text) {
-		text(text.toString());
+	public void text(String text) {
+		text(LocalizedString.raw(text));
 	}
-	public void text(String text){
+	public void text(LocalizedString text){
 		this.text = text;
 
-		if (text != null && !text.equals("")) {
+		if (text != null && !text.equals(LocalizedString.EMPTY)) {
 			
-			tokens = Game.platform.splitforTextBlock(text, multiline);
+			tokens = Game.platform.splitforTextBlock(text.toString(), multiline);
 			
 			build();
 		}
@@ -86,7 +86,7 @@ public class RenderedTextBlock extends Component {
 		for (String word : words) {
 			fullText.append(word);
 		}
-		text = fullText.toString();
+		text =  LocalizedString.raw(fullText.toString()); //only in WndSettings
 
 		tokens = words;
 		build();
@@ -103,6 +103,9 @@ public class RenderedTextBlock extends Component {
 	}
 
 	public String text(){
+		return text.toString();
+	}
+	public LocalizedString LocalizedStringText(){
 		return text;
 	}
 
@@ -116,6 +119,10 @@ public class RenderedTextBlock extends Component {
 
 	public int maxWidth(){
 		return maxWidth;
+	}
+
+	public int size() {
+		return size;
 	}
 
 	private synchronized void build(){

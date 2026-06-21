@@ -148,7 +148,7 @@ public class SewerLevel extends RegularLevel {
 				Game.runOnRenderThread(new Callback() {
 					@Override
 					public void call() {
-						GameScene.show( new WndMessage( Messages.get(hero, "leave") ) );
+						GameScene.show( new WndMessage(hero, Messages.get(hero, "leave") ) );
 					}
 				});
 				return false;

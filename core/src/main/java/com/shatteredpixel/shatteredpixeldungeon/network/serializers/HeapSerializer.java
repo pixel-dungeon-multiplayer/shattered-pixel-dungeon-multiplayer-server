@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.network.serializers;
 
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,11 +20,14 @@ public class HeapSerializer implements Serializer<Heap> {
             heapObj.put("pos", heap.pos);
 
             Object serializedItem = ctx.serialize(heap.peekVisual(), "ground");
-            heapObj.put("visible_item", serializedItem);
-            heapObj.put("visible_sprite", heap.showsFirstItem() ? heap.image() : -1);
-            heapObj.put("show_item", heap.showsFirstItem());
+
+            heapObj.put("peek", serializedItem);
+            heapObj.put("title", ctx.serialize(heap.title()));
+            heapObj.put("info", ctx.serialize(heap.info()));
+
             heapObj.put("seen", heap.isSeen());
-            
+            heapObj.put("hidden", heap.hidden);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

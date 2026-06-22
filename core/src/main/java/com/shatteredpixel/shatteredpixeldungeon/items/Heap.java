@@ -56,6 +56,7 @@ import com.shatteredpixel.shatteredpixeldungeon.network.serializers.Serializatio
 import com.nikita22007.multiplayer.noosa.audio.Sample;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import org.jetbrains.annotations.Contract;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -136,7 +137,8 @@ public class Heap implements Bundlable {
 		}
 		return this;
 	}
-	
+
+	@Contract(pure = true)
 	public int size() {
 		return items.size();
 	}
@@ -159,11 +161,14 @@ public class Heap implements Bundlable {
 		
 		return item;
 	}
-	
+
+	@Contract(pure = true)
 	public Item peek() {
 		return items.peek();
 	}
 
+	//send pseudo-item instead of top item to make work loot indicator properly
+	@Contract(pure = true)
 	public Item peekVisual() {
 		Heap heap = this;
 		return
@@ -175,6 +180,7 @@ public class Heap implements Bundlable {
 				heap.type == Heap.Type.REMAINS ? ItemSlot.REMAINS :
 				heap.peek();
 	}
+
 	public void drop( Item item ) {
 		hidden = false;
 		
@@ -236,9 +242,7 @@ public class Heap implements Bundlable {
 			sprite.view(this).place( pos );
 		}
 	}
-	public boolean showsFirstItem() {
-		return (type == Type.HEAP || type == Type.FOR_SALE || type == Type.CRYSTAL_CHEST);
-	}
+
 	public void burn() {
 		hidden = false;
 
@@ -382,7 +386,8 @@ public class Heap implements Bundlable {
 	public static void evaporateFX( int pos ) {
 		CellEmitter.get( pos ).burst( Speck.factory( Speck.STEAM ), 5 );
 	}
-	
+
+	@Contract(pure = true)
 	public boolean isEmpty() {
 		return items == null || items.size() == 0;
 	}
@@ -396,6 +401,7 @@ public class Heap implements Bundlable {
 		sendActionForAll(new HeapRemoveAction(this.pos));
 	}
 
+	@Contract(pure = true)
 	public LocalizedString title(){
 		switch(type){
 			case FOR_SALE:
@@ -422,6 +428,7 @@ public class Heap implements Bundlable {
 		}
 	}
 
+	@Contract(pure = true)
 	public LocalizedString info(){
 		switch(type){
 			case CHEST:
@@ -491,25 +498,8 @@ public class Heap implements Bundlable {
 		bundle.put( AUTO_EXPLORED, autoExplored );
 		bundle.put( HIDDEN, hidden );
 	}
-	public int image() {
-		switch (type) {
-			case HEAP:
-			case FOR_SALE:
-				return size() > 0 ? items.peek().image() : 0;
-			case CHEST:
-			case LOCKED_CHEST:
-				return ItemSpriteSheet.LOCKED_CHEST;
-			case CRYSTAL_CHEST:
-				return ItemSpriteSheet.CRYSTAL_CHEST;
-			case TOMB:
-				return ItemSpriteSheet.TOMB;
-			case SKELETON:
-				return ItemSpriteSheet.BONES;
-			default:
-				return 0;
-		}
-	}
 
+	@Contract(pure = true)
 	public boolean isSeen() {
 		return seen;
 	}

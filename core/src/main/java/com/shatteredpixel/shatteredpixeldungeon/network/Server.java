@@ -88,7 +88,6 @@ public class Server extends Thread {
 
         SERIALIZERS.register(Item.class, "default", new ItemSerializer());
         SERIALIZERS.register(Heap.class, "default", new HeapSerializer());
-        SERIALIZERS.register(Heap.class, "remove", new HeapRemovalSerializer());
         SERIALIZERS.register(Bag.class, "default", new BagSerializer());
         SERIALIZERS.register(Belongings.class, "default", new BelongingsSerializer());
         SERIALIZERS.register(Belongings.class, "special_slot_definitions", new SpecialSlotDefinitionsSerializer());

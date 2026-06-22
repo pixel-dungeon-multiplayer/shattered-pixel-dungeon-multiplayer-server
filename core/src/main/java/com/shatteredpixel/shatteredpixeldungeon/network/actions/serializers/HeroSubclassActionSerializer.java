@@ -10,7 +10,7 @@ public class HeroSubclassActionSerializer extends NetworkActionSerializer<HeroSu
     @Override
     protected @Nullable JSONObject serializeInternal(@NotNull HeroSubclassAction obj, @NotNull SerializationContext ctx, @NotNull String profile) {
         JSONObject actionObj = new JSONObject();
-        actionObj.put("subclass_id", obj.subclassId);
+        actionObj.put("subclass", ctx.serialize(obj.subclass, "default"));
         return actionObj;
     }
 }

@@ -3,6 +3,8 @@ package com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.her
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.dtos.TalentState;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.WindowSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndHero;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializationContext;
@@ -24,11 +26,16 @@ public class WndHeroSerializer extends WindowSerializer<WndHero> {
     protected @Nullable JSONObject args(@NotNull WndHero obj, @NotNull SerializationContext ctx, @NotNull String profile) {
         JSONObject args = new JSONObject();
         args.put("selected_tab", obj.selectedTabIndex());
+        args.put("title", ctx.serialize(obj.title(), profile));
         args.put("owner_hero", ctx.serialize(obj.getOwnerHero(), profile));
 
         // Dynamic stats
         JSONArray statsArray = new JSONArray();
         for (WndHero.Stat stat : obj.stats()) {
+            if (stat == null) {
+                statsArray.put(JSONObject.NULL);
+                continue;
+            }
             JSONObject statObj = new JSONObject();
             statObj.put("label", ctx.serialize(stat.label, profile));
             statObj.put("value", stat.value);
@@ -48,13 +55,7 @@ public class WndHeroSerializer extends WindowSerializer<WndHero> {
             JSONArray talents = new JSONArray();
             LinkedHashMap<Talent, Integer> tierTalents = hero.talents.get(i);
             for (Talent talent : tierTalents.keySet()) {
-                JSONObject talentObj = new JSONObject();
-                talentObj.put("id", talent.name());
-                talentObj.put("title", ctx.serialize(talent.title(), profile));
-                talentObj.put("description", ctx.serialize(talent.desc(), profile));
-                talentObj.put("points", tierTalents.get(talent));
-                talentObj.put("max_points", talent.maxPoints());
-                talents.put(talentObj);
+                talents.put(ctx.serialize(new TalentState(talent, tierTalents.get(talent), hero), profile));
             }
             tierObj.put("talents", talents);
             tiers.put(tierObj);
@@ -64,9 +65,10 @@ public class WndHeroSerializer extends WindowSerializer<WndHero> {
         // Buffs
         JSONArray buffs = new JSONArray();
         for (Buff buff : hero.buffs()) {
-            if (buff.icon() != 0) { // BuffIndicator.NONE
+            if (buff.icon() != BuffIndicator.NONE) {
                 JSONObject buffObj = new JSONObject();
                 buffObj.put("class", buff.getClass().getName());
+                buffObj.put("icon", buff.icon());
                 buffObj.put("name", ctx.serialize(buff.name(), profile));
                 buffObj.put("description", ctx.serialize(buff.desc(), profile));
                 buffs.put(buffObj);
@@ -77,6 +79,3 @@ public class WndHeroSerializer extends WindowSerializer<WndHero> {
         return args;
     }
 }
-
-
-

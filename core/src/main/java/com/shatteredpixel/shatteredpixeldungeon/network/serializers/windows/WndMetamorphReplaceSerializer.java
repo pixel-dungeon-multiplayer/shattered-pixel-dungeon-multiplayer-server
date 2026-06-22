@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfMetamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializationContext;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.dtos.TalentState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -24,16 +25,10 @@ public class WndMetamorphReplaceSerializer extends WindowSerializer<ScrollOfMeta
         args.put("tier", obj.tier);
         JSONArray options = new JSONArray();
         for (Talent talent : obj.replaceOptions().keySet()) {
-            JSONObject option = new JSONObject();
-            option.put("id", talent.name());
-            option.put("title", ctx.serialize(talent.title(), profile));
-            option.put("points", obj.replaceOptions().get(talent));
-            options.put(option);
+            options.put(ctx.serialize(new TalentState(talent, obj.replaceOptions().get(talent)), profile));
         }
         args.put("options", options);
         return args;
     }
 }
-
-
 

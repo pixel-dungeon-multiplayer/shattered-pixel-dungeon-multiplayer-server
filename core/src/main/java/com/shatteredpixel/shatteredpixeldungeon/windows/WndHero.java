@@ -152,29 +152,39 @@ public class WndHero extends WndTabbed {
 		ArrayList<Stat> list = new ArrayList<>();
 		Hero hero = getOwnerHero();
 		int strBonus = hero.STR() - hero.getSTR();
-		if (strBonus > 0)           list.add(new Stat(Messages.get(WndHero.class, "str"), hero.getSTR() + " + " + strBonus));
-		else if (strBonus < 0)      list.add(new Stat(Messages.get(WndHero.class, "str"), hero.getSTR() + " - " + -strBonus));
-		else                        list.add(new Stat(Messages.get(WndHero.class, "str"), String.valueOf(hero.STR())));
+		if (strBonus > 0)           list.add(new Stat(Messages.get(StatsTab.class, "str"), hero.getSTR() + " + " + strBonus));
+		else if (strBonus < 0)      list.add(new Stat(Messages.get(StatsTab.class, "str"), hero.getSTR() + " - " + -strBonus));
+		else                        list.add(new Stat(Messages.get(StatsTab.class, "str"), String.valueOf(hero.STR())));
 
-		if (hero.shielding() > 0)   list.add(new Stat(Messages.get(WndHero.class, "health"), hero.getHP() + "+" + hero.shielding() + "/" + hero.getHT()));
-		else                        list.add(new Stat(Messages.get(WndHero.class, "health"), hero.getHP() + "/" + hero.getHT()));
+		if (hero.shielding() > 0)   list.add(new Stat(Messages.get(StatsTab.class, "health"), hero.getHP() + "+" + hero.shielding() + "/" + hero.getHT()));
+		else                        list.add(new Stat(Messages.get(StatsTab.class, "health"), hero.getHP() + "/" + hero.getHT()));
 
-		list.add(new Stat(Messages.get(WndHero.class, "exp"), hero.exp + "/" + hero.maxExp()));
-		list.add(new Stat(Messages.get(WndHero.class, "gold"), String.valueOf(Statistics.goldCollected)));
-		list.add(new Stat(Messages.get(WndHero.class, "depth"), String.valueOf(Statistics.deepestFloor)));
+		list.add(new Stat(Messages.get(StatsTab.class, "exp"), hero.exp + "/" + hero.maxExp()));
+		list.add(null); //gap
+		list.add(new Stat(Messages.get(StatsTab.class, "gold"), String.valueOf(Statistics.goldCollected)));
+		list.add(new Stat(Messages.get(StatsTab.class, "depth"), String.valueOf(Statistics.deepestFloor)));
 
 		if (Dungeon.daily){
 			if (!Dungeon.dailyReplay) {
-				list.add(new Stat(Messages.get(WndHero.class, "daily_for"), "_" + Dungeon.customSeedText + "_"));
+				list.add(new Stat(Messages.get(StatsTab.class, "daily_for"), "_" + Dungeon.customSeedText + "_"));
 			} else {
-				list.add(new Stat(Messages.get(WndHero.class, "replay_for"), "_" + Dungeon.customSeedText + "_"));
+				list.add(new Stat(Messages.get(StatsTab.class, "replay_for"), "_" + Dungeon.customSeedText + "_"));
 			}
 		} else if (!Dungeon.customSeedText.isEmpty()){
-			list.add(new Stat(Messages.get(WndHero.class, "custom_seed"), "_" + Dungeon.customSeedText + "_"));
+			list.add(new Stat(Messages.get(StatsTab.class, "custom_seed"), "_" + Dungeon.customSeedText + "_"));
 		} else {
-			list.add(new Stat(Messages.get(WndHero.class, "dungeon_seed"), DungeonSeed.convertToCode(Dungeon.seed)));
+			list.add(new Stat(Messages.get(StatsTab.class, "dungeon_seed"), DungeonSeed.convertToCode(Dungeon.seed)));
 		}
 		return list;
+	}
+
+	public LocalizedString title() {
+		Hero hero = getOwnerHero();
+		if (hero.name().equals(hero.className())) {
+			return Messages.get(StatsTab.class, "title", hero.lvl, hero.className()).toUpperCase(Locale.ENGLISH);
+		} else {
+			return LocalizedString.concat(hero.name(), "\n", Messages.get(StatsTab.class, "title", hero.lvl, hero.className())).toUpperCase(Locale.ENGLISH);
+		}
 	}
 
 	@Override
@@ -303,20 +313,22 @@ public class WndHero extends WndTabbed {
 			pos = title.bottom() + 2*GAP;
 
 			for (Stat stat : stats()) {
-				statSlot(stat.label, stat.value);
+				if (stat != null) {
+					statSlot(stat.label, stat.value);
+				} else {
+					pos += GAP;
+				}
 			}
-
-			pos += GAP;
 		}
 
 		private void statSlot( LocalizedString label, String value ) {
-			statSlot(label.toString(), value);
+			statSlot(label, LocalizedString.raw(value));
 		}
 
 		private void statSlot( String label, LocalizedString value ) {
-			statSlot(label, value.toString());
+			statSlot(LocalizedString.raw(label), value);
 		}
-		private void statSlot( String label, String value ) {
+		private void statSlot( LocalizedString label, LocalizedString value ) {
 
 			int size = 8;
 			RenderedTextBlock txt;
@@ -341,11 +353,11 @@ public class WndHero extends WndTabbed {
 		}
 
 		private void statSlot( LocalizedString label, int value ) {
-			statSlot( label.toString(), value );
+			statSlot( label, Integer.toString(value) );
 		}
 
 		private void statSlot( String label, int value ) {
-			statSlot( label, Integer.toString( value ) );
+			statSlot( LocalizedString.raw(label), Integer.toString( value ) );
 		}
 		
 		public float height() {

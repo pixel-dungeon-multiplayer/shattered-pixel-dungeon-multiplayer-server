@@ -10,7 +10,7 @@ public class HeroClassActionSerializer extends NetworkActionSerializer<HeroClass
     @Override
     protected @Nullable JSONObject serializeInternal(@NotNull HeroClassAction obj, @NotNull SerializationContext ctx, @NotNull String profile) {
         JSONObject actionObj = new JSONObject();
-        actionObj.put("class", obj.className);
+        actionObj.put("class", ctx.serialize(obj.heroClass, "default"));
         return actionObj;
     }
 }

@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfMetamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializationContext;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.dtos.TalentState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -29,11 +30,7 @@ public class WndMetamorphChooseSerializer extends WindowSerializer<ScrollOfMetam
             tierObj.put("tier", tierIndex++);
             JSONArray talents = new JSONArray();
             for (Talent talent : tier.keySet()) {
-                JSONObject talentObj = new JSONObject();
-                talentObj.put("id", talent.name());
-                talentObj.put("title", ctx.serialize(talent.title(), profile));
-                talentObj.put("points", tier.get(talent));
-                talents.put(talentObj);
+                talents.put(ctx.serialize(new TalentState(talent, tier.get(talent)), profile));
             }
             tierObj.put("talents", talents);
             tiers.put(tierObj);
@@ -42,6 +39,4 @@ public class WndMetamorphChooseSerializer extends WindowSerializer<ScrollOfMetam
         return args;
     }
 }
-
-
 

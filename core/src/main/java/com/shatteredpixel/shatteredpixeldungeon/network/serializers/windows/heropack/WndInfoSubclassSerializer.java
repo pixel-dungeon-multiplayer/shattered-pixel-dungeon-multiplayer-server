@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.her
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializationContext;
+import com.shatteredpixel.shatteredpixeldungeon.network.serializers.dtos.TalentState;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.WindowSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoSubclass;
 import org.jetbrains.annotations.NotNull;
@@ -24,11 +25,7 @@ public class WndInfoSubclassSerializer extends WindowSerializer<WndInfoSubclass>
         
         JSONArray talents = new JSONArray();
         for (Talent talent : obj.subclassTalents().keySet()) {
-            JSONObject talentObj = new JSONObject();
-            talentObj.put("id", talent.name());
-            talentObj.put("title", ctx.serialize(talent.title(), profile));
-            talentObj.put("points", obj.subclassTalents().get(talent));
-            talents.put(talentObj);
+            talents.put(ctx.serialize(new TalentState(talent, obj.subclassTalents().get(talent), obj.getOwnerHero()), profile));
         }
         args.put("talents", talents);
         return args;

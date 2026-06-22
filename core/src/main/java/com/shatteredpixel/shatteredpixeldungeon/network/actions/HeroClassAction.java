@@ -5,15 +5,10 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public class HeroClassAction extends HeroPatchAction {
-    public final String className;
-
-    @Contract(pure = true)
-    public HeroClassAction(@NotNull String className) {
-        this.className = className;
-    }
+    public final @NotNull HeroClass heroClass;
 
     @Contract(pure = true)
     public HeroClassAction(@NotNull HeroClass heroClass) {
-        this(heroClass.name());
+        this.heroClass = heroClass;
     }
 }

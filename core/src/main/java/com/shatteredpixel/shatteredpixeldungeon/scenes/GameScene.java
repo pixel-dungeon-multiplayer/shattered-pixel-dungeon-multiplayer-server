@@ -1161,6 +1161,16 @@ public class GameScene extends PixelScene {
 		SendData.sendActionForAll(new DiscoverTileAction(pos, oldValue));
 	}
 
+	@Override
+	public synchronized Gizmo addToFront(Gizmo g) {
+		if (g instanceof Window && ((Window) g).getOwnerHero() != null) {
+			show((Window) g);
+			return g;
+		} else {
+			return super.addToFront(g);
+		}
+	}
+
 	public static void show(Window wnd) {
 		if (scene != null) {
 			if (wnd.getOwnerHero() != null) {

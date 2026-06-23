@@ -1,7 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializationContext;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.AlchemyScene;
 import org.jetbrains.annotations.NotNull;
@@ -19,41 +17,50 @@ public class AlchemySceneSerializer extends WindowSerializer<AlchemyScene> {
     @Override
     protected @Nullable JSONObject args(@NotNull AlchemyScene obj, @NotNull SerializationContext ctx, @NotNull String profile) {
         JSONObject args = new JSONObject();
-        args.put("energy", Dungeon.energy);
-        args.put("has_toolkit", obj.hasToolkit());
-        if (obj.hasToolkit()) {
-            args.put("toolkit_energy", obj.toolkitEnergy());
-        }
+        args.put("cancel_enabled", obj.cancel.active);
+        args.put("repeat_enabled", obj.repeat.active);
+        args.put("energy_add_enabled", obj.energyAdd.active);
 
         JSONArray inputs = new JSONArray();
-        for (Item input : obj.inputItems()) {
-            if (input != null) {
-                inputs.put(ctx.serialize(input, "inventory"));
-            }
+        for (AlchemyScene.InputButton input : obj.inputs) {
+            inputs.put(ctx.serialize(input.item(), profile));
         }
-        args.put("input", inputs);
+        args.put("inputs", inputs);
+
+        JSONArray combineButtons = new JSONArray();
+        for (AlchemyScene.CombineButton combineButton : obj.combines) {
+            JSONObject combineButtonObject = new JSONObject();
+            combineButtonObject.put("visible", combineButton.visible);
+            combineButtonObject.put("enabled", combineButton.active);
+            combineButtonObject.put("cost", combineButton.cost);
+            combineButtons.put(combineButtonObject);
+        }
+        args.put("combine_buttons", combineButtons);
 
         JSONArray outputs = new JSONArray();
-        for (int i = 0; i < obj.outputItems().size(); i++) {
-            Item output = obj.outputItems().get(i);
-            if (output == null) {
-                continue;
-            }
-            JSONObject outputObj = new JSONObject();
-            outputObj.put("cost", obj.combineCosts().get(i));
-            outputObj.put("enabled", obj.combineEnabled().get(i));
-            outputObj.put("item", ctx.serialize(output, "inventory"));
-            outputs.put(outputObj);
+        for (AlchemyScene.OutputSlot output : obj.outputs) {
+            JSONObject outputObject = new JSONObject();
+            outputObject.put("visible", output.visible);
+            outputObject.put("item", ctx.serialize(output.item(), profile));
+            outputs.put(outputObject);
         }
-        args.put("output", outputs);
+        args.put("outputs", outputs);
 
-        args.put("energyAddBlinking", obj.energyAddBlinking());
-        args.put("repeat_enabled", obj.repeatEnabled());
-        if (obj.shouldCreateEnergy()) {
-            args.put("createEnergy", true);
-        }
-        if (obj.craftedItem()) {
-            args.put("craftedItem", true);
+        args.put("energy_icon", ctx.serialize(obj.energyIcon, profile));
+        args.put("energy_text", ctx.serialize(obj.energyText, profile));
+        args.put("energy_add_blinking", obj.energyAddBlinking);
+
+
+        args.put("craft_effect", obj.craftEffect);
+        args.put("create_energy_effect", obj.createEnergyEffect);
+
+        if (obj.identifyEffect != null) {
+            JSONObject identifyEffect = new JSONObject();
+            identifyEffect.put("old_name", ctx.serialize(obj.identifyEffect.oldName, profile));
+            identifyEffect.put("new_name", ctx.serialize(obj.identifyEffect.newName, profile));
+            args.put("identify_effect", identifyEffect);
+        } else {
+            args.put("identify_effect", JSONObject.NULL);
         }
         return args;
     }

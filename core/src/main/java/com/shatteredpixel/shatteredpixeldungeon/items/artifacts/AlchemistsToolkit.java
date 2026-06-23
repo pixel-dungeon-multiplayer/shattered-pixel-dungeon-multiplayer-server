@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.Image;
 import com.nikita22007.multiplayer.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -172,7 +173,7 @@ public class AlchemistsToolkit extends Artifact {
 		return getCharge();
 	}
 
-	public int consumeEnergy(int amount, Hero hero){
+	public int consumeEnergy(int amount, @NotNull Hero hero){
 		int result = amount - getCharge();
 		setCharge(Math.max(0, getCharge() - amount), hero);
 		Talent.onArtifactUsed(hero);

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,188 +22,259 @@
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
 import com.nikita22007.multiplayer.utils.text.LocalizedString;
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Badges;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.HeroHelp;
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
-import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.Statistics;
+import com.shatteredpixel.shatteredpixeldungeon.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.LiquidMetal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
 import com.shatteredpixel.shatteredpixeldungeon.network.actions.UpdateWindowAction;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import java.util.ArrayList;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndEnergizeItem;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoItem;
-import com.nikita22007.multiplayer.noosa.audio.Sample;
-
-import com.watabou.pixeldungeon.utils.Utils;
+import com.watabou.input.GameAction;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.NinePatch;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.ui.Component;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.WeakHashMap;
 
 public class AlchemyScene extends Window {
 
+	//buttons
+	public final @NotNull IconButton cancel;
+	public final @NotNull IconButton repeat;
+	public final @NotNull IconButton energyAdd;
+	public final @NotNull ExitButton btnExit;
 	//max of 3 inputs, and 3 potential recipe outputs
-	private static final InputButton[] inputs = new InputButton[3];
-	private static final CombineButton[] combines = new CombineButton[3];
-	private static final Item[] outputs = new Item[3];
-	
-	private ArrayList<Item> lastIngredients = new ArrayList<>();
-	private static final Map<Integer,ArrayList<Item>> lastIngredientsCommon = new Hashtable<>();
+	public final InputButton[] inputs = new InputButton[3];
+	public final CombineButton[] combines = new CombineButton[3];
+	public final OutputSlot[] outputs = new OutputSlot[3];
+
+	//synchronized visual state
+	public final ItemSprite energyIcon;
+	public @NotNull LocalizedString energyText;
+	public boolean energyAddBlinking = false;
+	//triggers (hack)
+	public boolean craftEffect = false;
+	public boolean createEnergyEffect = false;
+	public @Nullable IdentifyEffect identifyEffect = null;
+
+	//logic
+	private static ArrayList<Item> lastIngredients = new ArrayList<>();
 	private static Recipe lastRecipe = null;
+	private final @Nullable AlchemistsToolkit toolkit;
 
-	private boolean energyAddBlinking = false;
-	private boolean repeat_enabled = false;
+	//network key codes
+	private static final int CONTROL_BUTTON_GROUP = 000;
+	private static final int INPUT_BUTTON_GROUP = 100;
+	private static final int COMBINE_BUTTON_GROUP = 200;
+	private static final int OUTPUT_BUTTON_GROUP = 300;
 
-	private static AlchemyScene[] activeAlchemyScene = new AlchemyScene[0];
 
-	private AlchemistsToolkit toolkit;
-
-	protected void enableAlchemyScene(Hero hero){
-		if (activeAlchemyScene.length != SPDSettings.maxPlayers()){
-			activeAlchemyScene = new AlchemyScene[SPDSettings.maxPlayers()];
-		}
-		activeAlchemyScene[HeroHelp.getHeroID(hero)] = this;
-	}
-	protected static void disableAlchemyScene(Hero hero){
-		activeAlchemyScene[HeroHelp.getHeroID(hero)] = null;
-	}
-
-	public static boolean isAlchemySceneEnabled(Hero hero) {
-		if (activeAlchemyScene.length != SPDSettings.maxPlayers()){
-			return false;
-		}
-		return activeAlchemyScene[HeroHelp.getHeroID(hero)] != null;
-	}
-
-	public static AlchemyScene getActiveAlchemyScene(Hero hero) {
-		if (activeAlchemyScene.length != SPDSettings.maxPlayers()){
-			return null;
-		}
-		return activeAlchemyScene[HeroHelp.getHeroID(hero)];
-	}
-
-	public AlchemyScene(@NotNull Hero hero, @Nullable AlchemistsToolkit toolkit){
-		super(hero);
-		enableAlchemyScene(hero);
-		this.toolkit = toolkit;
-
-		if (lastIngredientsCommon.containsKey(HeroHelp.getHeroID(hero))) {
-			lastIngredients = lastIngredientsCommon.get(HeroHelp.getHeroID(hero));
-		} else {
-			lastIngredients = new ArrayList<>();
-		}
-		this.create();
-	}
-
-	@Override
-	public void onSelect(int button, JSONObject args) {
-		boolean longClick = args != null && args.has("long_click") && args.getBoolean("long_click");
-		switch (button) {
-			case 0: { //btn exit
-				hide();
-				break;
-			}
-			case 1: {
-				//btn cancel
-				clearSlots();
-				updateState();
-				break;
-			}
-			case 2: {
-				//btn repeat
-				if (repeat_enabled && lastRecipe != null) {
-					populate(lastIngredients, getOwnerHero().belongings);
-				}
-				break;
-			}
-			case 3: {
-				//energize
-				boolean all = args.getBoolean("all");
-				List<Integer> slot = Utils.JsonArrayToListInteger(args.getJSONArray("path"));
-				Item item = getOwnerHero().belongings.getItemInSlot(slot);
-				if (all) {
-					WndEnergizeItem.energizeAll(item, getOwnerHero());
-				} else {
-					WndEnergizeItem.energizeOne(item, getOwnerHero());
-				}
-				updateState();
-				break;
-			}
-			case 100:
-			case 101:
-			case 102: {
-				if (!longClick) {
-					inputs[button - 100].onClick();
-				} else {
-					inputs[button - 100].onLongClick();
-				}
-				break;
-			}
-			case 200:
-			case 201:
-			case 202: {
-				if (!longClick) {
-					combines[button - 200].onClick();
-				}
-				break;
-			}
-			case 300:
-			case 301:
-			case 302: {
-				// output
-				// nobody should call this but we add fallback for it
-				Item item = outputs[button - 300];
-				if (item != null && item.trueName() != null)
-					GameScene.show(new WndInfoItem(getOwnerHero(), item));
-			}
-			break;
-		}
-	}
+	private static final int CANCEL_BUTTON = CONTROL_BUTTON_GROUP + 0;
+	private static final int REPEAT_BUTTON = CONTROL_BUTTON_GROUP + 1;
+	private static final int ENERGY_ADD_BUTTON = CONTROL_BUTTON_GROUP + 2;
+	private static final int EXIT_BUTTON = CONTROL_BUTTON_GROUP + 3;
 
 	@Override
 	public void hide() {
-		super.hide();
-		lastIngredientsCommon.put(HeroHelp.getHeroID(getOwnerHero()), lastIngredients);
-		clearSlots(false);
 		disableAlchemyScene(getOwnerHero());
-		destroy();
+		super.hide();
 	}
 
-	public void create() {
+	@Override
+	public void onSelect(int button, @Nullable JSONObject args) {
+		Button buttonObj = null;
+		if (button < INPUT_BUTTON_GROUP) {
+			switch (button) {
+				case CANCEL_BUTTON: {
+					buttonObj = cancel;
+					break;
+				}
+				case REPEAT_BUTTON: {
+					buttonObj = repeat;
+					break;
+				}
+				case ENERGY_ADD_BUTTON: {
+					buttonObj = energyAdd;
+					break;
+				}
+				case EXIT_BUTTON: {
+					buttonObj = btnExit;
+					break;
+				}
+			}
+		} else if (button < COMBINE_BUTTON_GROUP) {
+			int index = button - INPUT_BUTTON_GROUP;
+			if (index < inputs.length) {
+				buttonObj = inputs[index].slot;
+			}
+		} else if  (button < OUTPUT_BUTTON_GROUP) {
+			int index = button - COMBINE_BUTTON_GROUP;
+			if (index < combines.length) {
+				buttonObj = combines[index].button;
+			}
+		} else {
+			int index = button - OUTPUT_BUTTON_GROUP;
+			if (index < outputs.length) {
+				buttonObj = outputs[index].slot;
+			}
+		}
+		if (buttonObj != null) {
+			if (args != null && args.optBoolean("long_click", false)) {
+				buttonObj.onLongClickNetwork();
+			} else {
+				buttonObj.onClickNetwork();
+			}
+		}
+	}
+
+	public AlchemyScene(final @NotNull Hero hero, final @Nullable AlchemistsToolkit toolkit) {
+		super(hero);
+		this.toolkit = toolkit;
+		enableAlchemyScene(hero);
+
+	//public void create() {
+
+		btnExit = new ExitButton(){
+			@Override
+			protected void onClick() {
+				hide();
+			}
+		};
+
 
 		synchronized (inputs) {
 			for (int i = 0; i < inputs.length; i++) {
-				inputs[i] = new InputButton();
+				if (inputs[i] == null) {
+					inputs[i] = new InputButton();
+				} else {
+					//in case the scene was reset without calling destroy() for some reason
+					Item item = inputs[i].item();
+					inputs[i] = new InputButton();
+					if (item != null){
+						inputs[i].item(item);
+					}
+				}
 			}
 		}
+
+		cancel = new IconButton(Icons.CLOSE.get()){
+			@Override
+			protected void onClick() {
+				super.onClick();
+				clearSlots();
+				updateState();
+			}
+
+			@Override
+			public GameAction keyAction() {
+				return SPDAction.BACK;
+			}
+
+			@Override
+			protected LocalizedString hoverText() {
+				return Messages.get(AlchemyScene.class, "cancel");
+			}
+		};
+		cancel.enable(false);
+		add(cancel);
+
+		repeat = new IconButton(Icons.REPEAT.get()){
+			@Override
+			protected void onClick() {
+				super.onClick();
+				if (lastRecipe != null){
+					populate(lastIngredients, hero.belongings);
+				}
+			}
+
+			@Override
+			public GameAction keyAction() {
+				return SPDAction.TAG_RESUME;
+			}
+
+			@Override
+			protected LocalizedString hoverText() {
+				return Messages.get(AlchemyScene.class, "repeat");
+			}
+		};
+
 
 		lastIngredients.clear();
 		lastRecipe = null;
 
-		for (int i = 0; i < inputs.length; i++) {
+		for (int i = 0; i < inputs.length; i++){
 			combines[i] = new CombineButton(i);
 			combines[i].enable(false);
 
-			outputs[i] = null;
+			outputs[i] = new OutputSlot();
+			outputs[i].item(null);
+
+			if (i == 0){
+				//first ones are always visible
+				combines[i].visible = true;
+				outputs[i].visible = true;
+			} else {
+				combines[i].visible = false;
+				outputs[i].visible = false;
+			}
+
+			add(combines[i]);
+			add(outputs[i]);
 		}
 
+		updateEnergyText();
+
+		energyIcon = new ItemSprite( toolkit != null ? ItemSpriteSheet.ARTIFACT_TOOLKIT : ItemSpriteSheet.ENERGY);
+
+		energyAdd = new IconButton(Icons.get(Icons.PLUS)){
+
+			@Override
+			protected void onClick() {
+				WndEnergizeItem.openItemSelector(getOwnerHero());
+			}
+
+			@Override
+			public GameAction keyAction() {
+				return SPDAction.TAG_ACTION;
+			}
+
+			@Override
+			protected LocalizedString hoverText() {
+				return Messages.get(AlchemyScene.class, "energize");
+			}
+		};
+
+		//StyledButton btnGuide = new StyledButton( ...
+
+		TrinketCatalyst cata = hero.belongings.getItem(TrinketCatalyst.class);
+		if (cata != null && cata.hasRolledTrinkets()){
+			GameScene.show(new TrinketCatalyst.WndTrinket(hero, cata));
+		}
+
+		saveNeeded = false;
 		try {
 			Dungeon.saveAll();
 			Badges.saveGlobal();
@@ -211,12 +282,18 @@ public class AlchemyScene extends Window {
 		} catch (IOException e) {
 			ShatteredPixelDungeon.reportException(e);
 		}
+		//sendUpdateThis()/updateState() not needed, it will be sent inside GameScene.show();
 	}
 
 
 	@Override
 	public void onBackPressed() {
-		this.hide();
+		hide();
+	}
+
+	private void sendUpdateThis() {
+		SendData.sendLateLiveStateAction(getOwnerHero(), new UpdateWindowAction(this));
+		SendData.forceFlush(getOwnerHero());
 	}
 
 	protected WndBag.ItemSelector itemSelector = new WndBag.ItemSelector() {
@@ -232,12 +309,12 @@ public class AlchemyScene extends Window {
 		}
 
 		@Override
-		public void onSelect(Item item) {
+		public void onSelect( Item item ) {
 			synchronized (inputs) {
 				if (item != null && inputs[0] != null) {
 					for (int i = 0; i < inputs.length; i++) {
 						if (inputs[i].item() == null) {
-							if (item instanceof LiquidMetal) {
+							if (item instanceof LiquidMetal || item instanceof MissileWeapon){
 								inputs[i].item(item.detachAll(getOwner().belongings.backpack));
 							} else {
 								inputs[i].item(item.detach(getOwner().belongings.backpack));
@@ -245,81 +322,91 @@ public class AlchemyScene extends Window {
 							break;
 						}
 					}
+					updateState();
 				}
 			}
-			updateState();
 		}
 	};
 
-	private <T extends Item> ArrayList<T> filterInput(Class<? extends T> itemClass) {
+	@SuppressWarnings("unchecked")
+	private<T extends Item> ArrayList<T> filterInput(Class<? extends T> itemClass){
 		ArrayList<T> filtered = new ArrayList<>();
-		for (int i = 0; i < inputs.length; i++) {
-			if (inputs[i] != null) {
-				Item item = inputs[i].item();
-				if (item != null && itemClass.isInstance(item)) {
-					filtered.add((T) item);
-				}
+		for (int i = 0; i < inputs.length; i++){
+			Item item = inputs[i].item();
+			if (item != null && itemClass.isInstance(item)){
+				filtered.add((T)item);
 			}
 		}
 		return filtered;
 	}
 
-	private void updateState() {
-		Hero hero = getOwnerHero();
+	private void updateState(){
 
-		repeat_enabled = (false);
+		repeat.enable(false);
 
 		ArrayList<Item> ingredients = filterInput(Item.class);
 		ArrayList<Recipe> recipes = Recipe.findRecipes(ingredients);
-		for (int i = 0; i < recipes.size(); i++) {
-			outputs[i] = recipes.get(i).sampleOutput(ingredients, hero);
-		}
+
 		//disables / hides unneeded buttons
-		for (int i = recipes.size(); i < combines.length; i++) {
+		for (int i = recipes.size(); i < combines.length; i++){
 			combines[i].enable(false);
-			outputs[i] = null;
+			outputs[i].item(null);
+
+			if (i != 0){
+				combines[i].visible = false;
+				outputs[i].visible = false;
+			}
 		}
 
-		if (recipes.isEmpty() && inputs[0] == null || inputs[0].item() == null) {
+		cancel.enable(!ingredients.isEmpty());
+
+		if (recipes.isEmpty()){
+			combines[0].setPos(combines[0].left(), inputs[1].top()+5);
+			outputs[0].setPos(outputs[0].left(), inputs[1].top());
 			energyAddBlinking = false;
-		}
-		
+		} else {
 
 		//positions and enables active buttons
 		boolean promptToAddEnergy = false;
-		for (int i = 0; i < recipes.size(); i++) {
+		for (int i = 0; i < recipes.size(); i++){
 
 			Recipe recipe = recipes.get(i);
 
 			int cost = recipe.cost(ingredients);
 
-			outputs[i] = recipe.sampleOutput(ingredients, getOwnerHero());
+			outputs[i].visible = true;
+			outputs[i].item(recipe.sampleOutput(ingredients, getOwnerHero()));
 
 			int availableEnergy = Dungeon.energy;
-			if (toolkit != null) {
+			if (toolkit != null){
 				availableEnergy += toolkit.availableEnergy();
 			}
 
+			combines[i].visible = true;
 			combines[i].enable(cost <= availableEnergy, cost);
 
-			if (cost > availableEnergy && recipe instanceof TrinketCatalyst.Recipe) {
+			if (cost > availableEnergy && recipe instanceof TrinketCatalyst.Recipe){
 				promptToAddEnergy = true;
 			}
 
 		}
 
 		energyAddBlinking = promptToAddEnergy;
-		sendSelf();
+
+		}
+		sendUpdateThis();
+		craftEffect = false;
+		createEnergyEffect = false;
+		identifyEffect = null;
 	}
 
-	private void combine(int slot) {
-		Hero hero = getOwnerHero();
+	private void combine( int slot ){
 
 		ArrayList<Item> ingredients = filterInput(Item.class);
 		if (ingredients.isEmpty()) return;
 
 		lastIngredients.clear();
-		for (Item i : ingredients) {
+		for (Item i : ingredients){
 			lastIngredients.add(i.duplicate());
 		}
 
@@ -330,52 +417,64 @@ public class AlchemyScene extends Window {
 
 		Item result = null;
 
-		if (recipe != null) {
+		if (recipe != null){
 			int cost = recipe.cost(ingredients);
-			if (toolkit != null) {
-				cost = toolkit.consumeEnergy(cost, hero);
+			if (toolkit != null){
+				cost = toolkit.consumeEnergy(cost, getOwnerHero());
 			}
+			Catalog.countUses(EnergyCrystal.class, cost);
 			Dungeon.energy -= cost;
 
-			result = recipe.brew(ingredients, hero);
+			updateEnergyText();
+
+			result = recipe.brew(ingredients, getOwnerHero());
 		}
 
-		if (result != null) {
+		if (result != null){
+
 			craftItem(ingredients, result);
+
 		}
 
 		boolean foundItems = true;
-		for (Item i : lastIngredients) {
-			Item found = hero.belongings.getSimilar(i);
-			if (found == null) { //atm no quantity check as items are always loaded individually
+		for (Item i : lastIngredients){
+			Item found = getOwnerHero().belongings.getSimilar(i);
+			if (found == null){ //atm no quantity check as items are always loaded individually
 				//currently found can be true if we need, say, 3x of an item but only have 2x of it
 				foundItems = false;
 			}
 		}
 
 		lastRecipe = recipe;
-		repeat_enabled = (foundItems);
+		repeat.enable(foundItems);
+
+		cancel.enable(false);
+		synchronized (inputs) {
+			for (int i = 0; i < inputs.length; i++) {
+				if (inputs[i] != null && inputs[i].item() != null) {
+					cancel.enable(true);
+					break;
+				}
+			}
+		}
 	}
 
-	boolean craftedItem = false;
-	public void craftItem(ArrayList<Item> ingredients, Item result) {
-		Hero hero = getOwnerHero();
-		craftedItem = true;
-		//todo sendVisual
-		//bubbleEmitter.start(Speck.factory(Speck.BUBBLE), 0.01f, 100);
-		//smokeEmitter.burst(Speck.factory(Speck.WOOL), 10);
-		Sample.INSTANCE.play(Assets.Sounds.PUFF, hero);
+	public void craftItem( ArrayList<Item> ingredients, Item result ){
+		craftEffect = true;
 
 		int resultQuantity = result.quantity();
-		if (!result.collect(hero)) {
-			Dungeon.level.drop(result, hero.pos);
+		if (!result.collect(getOwnerHero())){
+			Dungeon.level.drop(result, getOwnerHero().pos);
 		}
 
 		Statistics.itemsCrafted++;
 		Badges.validateItemsCrafted();
 
+		saveNeeded = false;
 		try {
 			Dungeon.saveAll();
+			Badges.saveGlobal();
+			Journal.saveGlobal();
 		} catch (IOException e) {
 			ShatteredPixelDungeon.reportException(e);
 		}
@@ -386,27 +485,28 @@ public class AlchemyScene extends Window {
 					Item item = inputs[i].item();
 					if (item.quantity() <= 0) {
 						inputs[i].item(null);
+					} else {
+						inputs[i].slot.updateText();
 					}
 				}
 			}
 		}
 
-		updateState();
 		//we reset the quantity in case the result was merged into another stack in the backpack
 		result.quantity(resultQuantity);
-		outputs[0] = (result);
+		outputs[0].item(result);
 	}
 
-	public void populate(ArrayList<Item> toFind, Belongings inventory) {
+	public void populate(ArrayList<Item> toFind, Belongings inventory){
 		clearSlots();
 
 		int curslot = 0;
-		for (Item finding : toFind) {
+		for (Item finding : toFind){
 			int needed = finding.quantity();
 			ArrayList<Item> found = inventory.getAllSimilar(finding);
-			while (!found.isEmpty() && needed > 0) {
+			while (!found.isEmpty() && needed > 0){
 				Item detached;
-				if (finding instanceof LiquidMetal) {
+				if (finding instanceof LiquidMetal || finding instanceof MissileWeapon) {
 					detached = found.get(0).detachAll(inventory.backpack);
 				} else {
 					detached = found.get(0).detach(inventory.backpack);
@@ -422,15 +522,16 @@ public class AlchemyScene extends Window {
 		updateState();
 	}
 
+	private boolean saveNeeded = false;
+
 	@Override
 	public void destroy() {
-		synchronized (inputs) {
-			clearSlots(false);
-			for (int i = 0; i < inputs.length; i++) {
-				inputs[i] = null;
-			}
+		synchronized ( inputs ) {
+			clearSlots();
+            Arrays.fill(inputs, null);
 		}
 
+		saveNeeded = false;
 		try {
 			Dungeon.saveAll();
 			Badges.saveGlobal();
@@ -441,8 +542,8 @@ public class AlchemyScene extends Window {
 		super.destroy();
 	}
 
-	public void clearSlots(boolean send) {
-		synchronized (inputs) {
+	public void clearSlots(){
+		synchronized ( inputs ) {
 			for (int i = 0; i < inputs.length; i++) {
 				if (inputs[i] != null && inputs[i].item() != null) {
 					Item item = inputs[i].item();
@@ -453,138 +554,338 @@ public class AlchemyScene extends Window {
 				}
 			}
 		}
-		repeat_enabled = (lastRecipe != null);
-		if(send) {
-			updateState();
-		}
-	}
-	public void clearSlots(){
-		clearSlots(true);
-	}
-	boolean createEnergy = false;
-	public void createEnergy() {
-		createEnergy = true;
+		cancel.enable(false);
+		repeat.enable(lastRecipe != null);
+    }
+
+	public void createEnergy(){
+		updateEnergyText();
+
+		//todo send this as visual action
+
+		//queue a save here, as items may be in the input windows and we don't want to clear them
+		// but if the game becomes paused we do this to prevent exploits
+		saveNeeded = true;
 		updateState();
 	}
 
-	private class InputButton {
+	private void updateEnergyText() {
+		energyText = LocalizedString.concat(Messages.get(AlchemyScene.class, "energy"),  " " , Dungeon.energy);
+		if (toolkit != null){
+			energyText = LocalizedString.concat(energyText, "+", toolkit.availableEnergy());
+		}
+	}
+
+	public void showIdentify(Item item){
+		if (item.isIdentified()) return;
+
+		NinePatch BG = Chrome.get(Chrome.Type.TOAST);
+
+		IconTitle oldName = new IconTitle(item){
+			@Override
+			public synchronized void update() {
+				super.update();
+				alpha(this.alpha()-Game.elapsed);
+				if (this.alpha() <= 0){
+					killAndErase();
+				}
+			}
+		};
+		item.identify();
+		IconTitle newName = new IconTitle(item){
+
+			boolean fading;
+
+			@Override
+			public synchronized void update() {
+				super.update();
+				if (!fading) {
+					alpha(this.alpha() + Game.elapsed);
+					if (this.alpha() >= 1) {
+						fading = true;
+					}
+				} else {
+					alpha(this.alpha() - Game.elapsed);
+					BG.alpha(this.alpha());
+					if (this.alpha() <= 0){
+						killAndErase();
+						BG.killAndErase();
+					}
+				}
+			}
+		};
+		identifyEffect = new  IdentifyEffect(oldName, newName);
+	}
+
+	//----- active scene management -----
+	private static final WeakHashMap<Hero, AlchemyScene> activeAlchemyScenes = new WeakHashMap<>();
+
+	protected void enableAlchemyScene(Hero hero){
+		activeAlchemyScenes.put(hero, this);
+	}
+
+	protected static void disableAlchemyScene(Hero hero){
+		activeAlchemyScenes.remove(hero);
+	}
+
+	@Contract(pure = true)
+	public static boolean isAlchemySceneEnabled(Hero hero) {
+		return activeAlchemyScenes.containsKey(hero);
+	}
+
+	@Contract(pure = true)
+	public static @Nullable AlchemyScene getActiveAlchemyScene(Hero hero) {
+		return activeAlchemyScenes.get(hero);
+	}
+
+
+
+	//----- helper subclasses -----
+
+	public class InputButton extends Component {
+
+		protected NinePatch bg;
+		protected ItemSlot slot;
 
 		private Item item = null;
 
-		public void onClick() {
-			Item item = InputButton.this.item;
-			if (item != null) {
-				if (!item.collect(getOwnerHero())) {
-					Dungeon.level.drop(item, getOwnerHero().pos);
+		@Override
+		protected void createChildren() {
+			super.createChildren();
+
+			bg = Chrome.get( Chrome.Type.RED_BUTTON);
+			add( bg );
+
+			slot = new ItemSlot() {
+				@Override
+				protected void onPointerDown() {
+					bg.brightness( 1.2f );
+					Sample.INSTANCE.play( Assets.Sounds.CLICK );
 				}
-				//maybe I replace Item item
-				InputButton.this.item(null);
-				updateState();
-			} else {
-				AlchemyScene.this.addToFront(WndBag.getBag(itemSelector, getOwnerHero()));
-			}
+				@Override
+				protected void onPointerUp() {
+					bg.resetColor();
+				}
+				@Override
+				protected void onClick() {
+					super.onClick();
+					Item item = InputButton.this.item;
+					if (item != null) {
+						if (!item.collect(getOwnerHero())) {
+							Dungeon.level.drop(item, getOwnerHero().pos);
+						}
+						InputButton.this.item(null);
+						updateState();
+					}
+					GameScene.show(WndBag.getBag( itemSelector, getOwnerHero() ));
+				}
+
+				@Override
+				protected boolean onLongClick() {
+					Item item = InputButton.this.item;
+					if (item != null){
+						GameScene.show(new WndInfoItem(getOwnerHero(), item));
+						return true;
+					}
+					return false;
+				}
+
+				@Override
+				//only the first empty button accepts key input
+				public GameAction keyAction() {
+					for (InputButton i : inputs){
+						if (i.item == null || i.item instanceof WndBag.Placeholder) {
+							if (i == InputButton.this) {
+								return SPDAction.INVENTORY;
+							} else {
+								return super.keyAction();
+							}
+						}
+					}
+					return super.keyAction();
+				}
+
+				@Override
+				protected LocalizedString hoverText() {
+					if (item == null || item instanceof WndBag.Placeholder){
+						return Messages.get(AlchemyScene.class, "add");
+					}
+					return super.hoverText();
+				}
+
+				@Override
+				public GameAction secondaryTooltipAction() {
+					return SPDAction.INVENTORY_SELECTOR;
+				}
+			};
+			slot.enable(true);
+			add( slot );
 		}
 
-		protected boolean onLongClick() {
-			Item item = InputButton.this.item;
-			if (item != null){
-				GameScene.show(new WndInfoItem(AlchemyScene.this.getOwnerHero(), item));
-				return true;
-			}
-			return false;
+		@Override
+		protected void layout() {
+			super.layout();
+
+			bg.x = x;
+			bg.y = y;
+			bg.size( width, height );
+
+			slot.setRect( x + 2, y + 2, width - 4, height - 4 );
 		}
 
-		public Item item() {
+		public Item item(){
 			return item;
 		}
 
-		public void item(Item item) {
-			this.item = item;
+		public void item( Item item ) {
+			if (item == null){
+				this.item = null;
+				slot.item(new WndBag.Placeholder(ItemSpriteSheet.SOMETHING));
+			} else {
+				slot.item(this.item = item);
+			}
 		}
 	}
 
-	private class CombineButton {
+	public class CombineButton extends Component {
 
 		protected int slot;
-		public int cost = 0;
 
-		public boolean enabled = false;
+		protected RedButton button;
+		protected RenderedTextBlock costText;
+		public int cost;
 
-		private CombineButton(int slot) {
+		private CombineButton(int slot){
+			super();
+
 			this.slot = slot;
 		}
 
-		public void onClick() {
-			if (enabled) {
-				combine(slot);
-			}
+		@Override
+		protected void createChildren() {
+			super.createChildren();
+
+			button = new RedButton(""){
+				@Override
+				protected void onClick() {
+					super.onClick();
+					combine(slot);
+					updateState();
+				}
+
+				@Override
+				protected LocalizedString hoverText() {
+					return Messages.get(AlchemyScene.class, "craft");
+				}
+
+				@Override
+				public GameAction keyAction() {
+					if (slot == 0 && !combines[1].active && !combines[2].active){
+						return SPDAction.TAG_LOOT;
+					}
+					return super.keyAction();
+				}
+			};
+			button.icon(Icons.get(Icons.ARROW));
+			add(button);
+
+			costText = PixelScene.renderTextBlock(6);
+			add(costText);
 		}
 
-		public void enable(boolean enabled) {
+		@Override
+		protected void layout() {
+			super.layout();
+
+			button.setRect(x, y, width(), height());
+
+			costText.setPos(
+					left() + (width() - costText.width())/2,
+					top() - costText.height()
+			);
+		}
+
+		public void enable( boolean enabled ){
 			enable(enabled, 0);
 		}
 
-		public void enable(boolean enabled, int cost) {
-			this.enabled = enabled;
+		public void enable( boolean enabled, int cost ){
 			this.cost = cost;
+			button.enable(enabled);
+			if (enabled) {
+				button.icon().tint(1, 1, 0, 1);
+				button.alpha(1f);
+				costText.hardlight(0x44CCFF);
+			} else {
+				button.icon().color(0, 0, 0);
+				button.alpha(0.6f);
+				costText.hardlight(0xFF0000);
+			}
+
+			if (cost == 0){
+				costText.visible = false;
+			} else {
+				costText.visible = true;
+				costText.text(Messages.get(AlchemyScene.class, "energy") + " " + cost);
+			}
+
+			layout();
+			active = enabled;
 		}
 
 	}
-	public void sendSelf() {
-		SendData.packAndSendAction(getOwnerHero(), new UpdateWindowAction(this));
-		createEnergy = false;
-		craftedItem = false;
-	}
 
-	public List<Item> inputItems() {
-		List<Item> result = new ArrayList<>(inputs.length);
-		for (InputButton input : inputs) {
-			result.add(input != null ? input.item : null);
+	public class OutputSlot extends Component {
+
+		protected NinePatch bg;
+		protected ItemSlot slot;
+
+		@Override
+		protected void createChildren() {
+
+			bg = Chrome.get(Chrome.Type.TOAST_TR);
+			add(bg);
+
+			slot = new ItemSlot() {
+				@Override
+				protected void onClick() {
+					super.onClick();
+					if (visible && item != null && item.trueName() != null){
+						GameScene.show(new WndInfoItem(getOwnerHero(), item));
+					}
+				}
+			};
+			slot.item(null);
+			add( slot );
 		}
-		return result;
-	}
 
-	public List<Integer> combineCosts() {
-		List<Integer> result = new ArrayList<>(combines.length);
-		for (CombineButton combine : combines) {
-			result.add(combine != null ? combine.cost : 0);
+		@Override
+		protected void layout() {
+			super.layout();
+
+			bg.x = x;
+			bg.y = y;
+			bg.size(width(), height());
+
+			slot.setRect(x+2, y+2, width()-4, height()-4);
 		}
-		return result;
-	}
 
-	public List<Boolean> combineEnabled() {
-		List<Boolean> result = new ArrayList<>(combines.length);
-		for (CombineButton combine : combines) {
-			result.add(combine != null ? combine.enabled : false);
+		public void item( Item item ) {
+			slot.item(item);
 		}
-		return result;
+		public Item item() {
+			return slot.item();
+		}
 	}
 
-	public List<Item> outputItems() {
-		return java.util.List.of(outputs);
-	}
+	public static class IdentifyEffect {
+		public final @NotNull IconTitle oldName;
+		public final @NotNull IconTitle newName;
 
-	public boolean hasToolkit() {
-		return toolkit != null;
-	}
-
-	public int toolkitEnergy() {
-		return toolkit != null ? toolkit.availableEnergy() : 0;
-	}
-
-	public boolean energyAddBlinking() {
-		return energyAddBlinking;
-	}
-
-	public boolean repeatEnabled() {
-		return repeat_enabled;
-	}
-
-	public boolean shouldCreateEnergy() {
-		return createEnergy;
-	}
-
-	public boolean craftedItem() {
-		return craftedItem;
-	}
+		@Contract(pure = true)
+        private IdentifyEffect(@NotNull IconTitle oldName, @NotNull IconTitle newName) {
+            this.oldName = oldName;
+            this.newName = newName;
+        }
+    }
 }

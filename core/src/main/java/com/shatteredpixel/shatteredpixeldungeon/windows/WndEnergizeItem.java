@@ -128,6 +128,13 @@ public class WndEnergizeItem extends WndInfoItem {
 
 	}
 
+	@Override
+	protected void onSelect(int button) {
+		if (button < buttons.size()) {
+			buttons.get(button).onClickNetwork();
+		}
+	}
+
 	public Item item() {
 		return item;
 	}
@@ -184,9 +191,8 @@ public class WndEnergizeItem extends WndInfoItem {
 
 			Dungeon.energy += item.energyVal();
 			alchemyScene.createEnergy();
-			if (!item.isIdentified()) {
-				//TODO: check this
-				//AlchemyScene.showIdentify(item);
+			if (!item.isIdentified()){
+				alchemyScene.showIdentify(item);
 			}
 
 		} else {

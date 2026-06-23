@@ -54,6 +54,7 @@ import com.shatteredpixel.shatteredpixeldungeon.plants.Icecap;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Sorrowmoss;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Stormvine;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.AlchemyScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.HeroIcon;
@@ -192,9 +193,7 @@ public class SpiritForm extends ClericSpell {
 	public static void applyActiveArtifactEffect(ClassArmor armor, Artifact effect, Hero hero){
 		if (effect instanceof AlchemistsToolkit){
 			Talent.onArtifactUsed(hero);
-			//TODO: check this
-			//AlchemyScene.assignToolkit((AlchemistsToolkit) effect);
-			//Game.switchScene(AlchemyScene.class);
+			GameScene.show(new AlchemyScene(hero, (AlchemistsToolkit) effect));
 
 		} else if (effect instanceof DriedRose){
 			ArrayList<Integer> spawnPoints = new ArrayList<>();

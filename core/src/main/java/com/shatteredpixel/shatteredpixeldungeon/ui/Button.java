@@ -180,6 +180,7 @@ public class Button extends Component {
 	}
 
 	public void onClickNetwork(){this.onClick();}
+	public void onLongClickNetwork(){this.onLongClick();}
 
 	public boolean activeForNetwork() {
 		return active;

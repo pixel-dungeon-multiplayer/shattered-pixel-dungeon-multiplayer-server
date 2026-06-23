@@ -217,6 +217,10 @@ public class ItemSlot extends Button {
 		}
 	}
 
+	public Item item() {
+		return item;
+	}
+
 	public void updateText(){
 
 		if (itemIcon != null){
@@ -230,8 +234,8 @@ public class ItemSlot extends Button {
 		} else {
 			status.visible = extra.visible = level.visible = true;
 		}
-
-		status.text(item.status().toString());
+		LocalizedString statusStr = item.status();
+		status.text(statusStr!= null? statusStr.resolve():null);
 
 		//thrown weapons on their last use show quantity in orange, unless they are single-use
 		//FIXME

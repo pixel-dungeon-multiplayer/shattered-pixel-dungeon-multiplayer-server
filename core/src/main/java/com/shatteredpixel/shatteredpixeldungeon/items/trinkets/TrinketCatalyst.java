@@ -130,7 +130,7 @@ public class TrinketCatalyst extends Item {
 
 			ingredients.get(0).quantity(0);
 
-			ShatteredPixelDungeon.scene().addToFront(new WndTrinket(newCata, hero));
+			ShatteredPixelDungeon.scene().addToFront(new WndTrinket(hero, newCata));
 			try {
 				Dungeon.saveAll(); //do a save here as pausing alch scene doesn't otherwise save
 			} catch (IOException e) {
@@ -164,7 +164,7 @@ public class TrinketCatalyst extends Item {
 		private final TrinketCatalyst catalyst;
 		public IconTitle titlebar;
 
-		public WndTrinket(TrinketCatalyst cata, Hero hero) {
+		public WndTrinket(@NotNull Hero hero, TrinketCatalyst cata) {
 			super(hero);
 			this.catalyst = cata;
 			titlebar = new IconTitle();

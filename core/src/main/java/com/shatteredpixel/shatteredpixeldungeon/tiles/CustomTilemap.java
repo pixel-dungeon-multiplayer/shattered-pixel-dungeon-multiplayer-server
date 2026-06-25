@@ -38,7 +38,7 @@ public abstract class CustomTilemap implements Bundlable {
 	public int tileX, tileY;   //x and y coords for texture within a level
 	public int tileW = 1, tileH = 1; //width and height in tiles
 	
-	protected Object texture;
+	protected String texture;
 	protected Tilemap vis = null;
 
 	public void pos(int pos) {

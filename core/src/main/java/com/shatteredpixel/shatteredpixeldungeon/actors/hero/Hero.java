@@ -2729,24 +2729,4 @@ public class Hero extends Char {
 		public void onDeath();
 	}
 
-
-	public JSONArray getTalents(){
-		JSONArray[] talentsArray = new JSONArray[4];
-		for (int i =  0; i < talentsArray.length; i++) {
-			JSONArray talents = new JSONArray();
-			LinkedHashMap<Talent, Integer> heroTalents = this.talents.get(i);
-			for (Map.Entry<Talent, Integer> talentIntegerEntry : heroTalents.entrySet()) {
-				JSONObject talentObject = new JSONObject();
-				talentObject.put("icon", talentIntegerEntry.getKey().icon());
-				talentObject.put("points", talentIntegerEntry.getValue());
-				talents.put(talentObject);
-			}
-			talentsArray[i] = talents;
-		}
-		JSONArray talents = new JSONArray();
-		for (JSONArray talentArray : talentsArray) {
-			talents.put(talentArray);
-		}
-		return talents;
-	}
 }

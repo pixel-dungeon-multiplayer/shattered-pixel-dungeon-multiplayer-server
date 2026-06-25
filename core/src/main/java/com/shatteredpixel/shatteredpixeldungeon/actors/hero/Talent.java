@@ -1076,7 +1076,6 @@ public enum Talent {
 
 	public static void initSubclassTalents( Hero hero ){
 		initSubclassTalents( hero.subClass, hero.talents );
-		SendData.sendAction(hero, new HeroTalentsAction(hero.getTalents()));
 	}
 
 	public static void initSubclassTalents( HeroSubClass cls, ArrayList<LinkedHashMap<Talent, Integer>> talents ){

@@ -557,7 +557,7 @@ public class ClientThread implements Callable<String> {
         packet.addAction(new HeroSubclassAction(clientHero.subClass));
         packet.addAction(new HeroStrengthAction(clientHero.STR()));
         packet.addAction(new HeroExperienceAction(clientHero.lvl, clientHero.exp));
-        packet.addAction(new HeroTalentsAction(clientHero.getTalents()));
+        packet.addAction(new HeroTalentsAction(clientHero.talents));
         packet.addAction(new HeroGoldAction(clientHero.getGold()));
         packet.addAction(new HeroReadyAction(clientHero.isReady()));
         packet.addAction(new HeroUUIDAction(clientHero.uuid));

@@ -160,6 +160,9 @@ public abstract class LocalizedString implements JSONString {
         if (ownerClasses != null && ownerClasses.length > 0) {
             JSONArray owners = new JSONArray();
             for (String ownerClass : ownerClasses) {
+                if (ownerClass.contains("java.lang")){
+                    continue;
+                }
                 owners.put(ownerClass);
             }
             object.put("owner", owners);

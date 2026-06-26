@@ -23,7 +23,7 @@ env:
   SNAPSHOT_TITLE: "Latest Snapshot"
 
   DESKTOP_GRADLE_TASK: ":desktop:release"
-  ANDROID_GRADLE_TASK: ":android:release"
+  ANDROID_GRADLE_TASK: ":android:assembleRelease"
 
   STABLE_TAG_PATTERN: "v[0-9]*"
 

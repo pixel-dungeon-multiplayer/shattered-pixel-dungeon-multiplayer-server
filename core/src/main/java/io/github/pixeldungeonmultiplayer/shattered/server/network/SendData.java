@@ -9,8 +9,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.*;
-import io.github.pixeldungeonmultiplayer.shattered.network.actions.*;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.*;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.packets.RedirectPacket;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;

@@ -18,7 +18,6 @@ concurrency:
 
 env:
   JAVA_VERSION: "17"
-  VERSION_FILE: "version"
 
   SNAPSHOT_TAG: "latest-snapshot"
   SNAPSHOT_TITLE: "Latest Snapshot"
@@ -35,11 +34,11 @@ jobs:
 
     outputs:
       version: ${{ steps.meta.outputs.version }}
+      build_label: ${{ steps.meta.outputs.build_label }}
+      asset_suffix: ${{ steps.meta.outputs.asset_suffix }}
       is_tag_release: ${{ steps.meta.outputs.is_tag_release }}
       release_tag: ${{ steps.meta.outputs.release_tag }}
       release_title: ${{ steps.meta.outputs.release_title }}
-      build_label: ${{ steps.meta.outputs.build_label }}
-      asset_suffix: ${{ steps.meta.outputs.asset_suffix }}
 
     steps:
       - name: Checkout
@@ -47,27 +46,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Read metadata
+      - name: Prepare version metadata
         id: meta
         shell: bash
         run: |
           set -euo pipefail
 
-          VERSION="$(tr -d '\r\n ' < "$VERSION_FILE")"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
           if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
-            TAG_VERSION="${GITHUB_REF_NAME#v}"
-
-            if [[ "$VERSION" != "$TAG_VERSION" ]]; then
-              echo "Version mismatch:"
-              echo "  tag:     ${GITHUB_REF_NAME}"
-              echo "  version: ${VERSION}"
-              echo
-              echo "For tag ${GITHUB_REF_NAME}, file '${VERSION_FILE}' must contain '${TAG_VERSION}'."
-              exit 1
-            fi
-
+            APP_VERSION="${GITHUB_REF_NAME}"
             BUILD_LABEL="${GITHUB_REF_NAME}"
 
             echo "is_tag_release=true" >> "$GITHUB_OUTPUT"
@@ -75,14 +61,19 @@ jobs:
             echo "release_title=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
           else
             BUILD_LABEL="snapshot-${GITHUB_RUN_NUMBER}"
+            APP_VERSION="$BUILD_LABEL"
 
             echo "is_tag_release=false" >> "$GITHUB_OUTPUT"
             echo "release_tag=${SNAPSHOT_TAG}" >> "$GITHUB_OUTPUT"
             echo "release_title=${SNAPSHOT_TITLE}" >> "$GITHUB_OUTPUT"
           fi
 
+          echo "version=$APP_VERSION" >> "$GITHUB_OUTPUT"
           echo "build_label=$BUILD_LABEL" >> "$GITHUB_OUTPUT"
           echo "asset_suffix=$BUILD_LABEL" >> "$GITHUB_OUTPUT"
+
+          echo "APP_VERSION=$APP_VERSION"
+          echo "BUILD_LABEL=$BUILD_LABEL"
 
   build-desktop:
     name: Desktop server JAR
@@ -106,9 +97,10 @@ jobs:
 
       - name: Build desktop
         shell: bash
+        env:
+          APP_VERSION: ${{ needs.prepare.outputs.version }}
         run: |
           set -euo pipefail
-
           chmod +x ./gradlew
           ./gradlew $DESKTOP_GRADLE_TASK
 
@@ -119,7 +111,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          mkdir -p "release-artifacts"
+          mkdir -p release-artifacts
 
           index=0
 
@@ -193,13 +185,13 @@ jobs:
       - name: Build signed Android APK
         shell: bash
         env:
+          APP_VERSION: ${{ needs.prepare.outputs.version }}
           ANDROID_KEYSTORE_FILE: ${{ runner.temp }}/release.keystore
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           set -euo pipefail
-
           chmod +x ./gradlew
           ./gradlew $ANDROID_GRADLE_TASK
 
@@ -314,7 +306,6 @@ jobs:
           IS_TAG_RELEASE: ${{ needs.prepare.outputs.is_tag_release }}
           RELEASE_TAG: ${{ needs.prepare.outputs.release_tag }}
           RELEASE_TITLE: ${{ needs.prepare.outputs.release_title }}
-          BUILD_LABEL: ${{ needs.prepare.outputs.build_label }}
         run: |
           set -euo pipefail
 
@@ -323,8 +314,8 @@ jobs:
           {
             echo "# ${RELEASE_TITLE}"
             echo
-            echo "Version file: \`${VERSION}\`"
-            echo "Build label: \`${BUILD_LABEL}\`"
+            echo "Version: \`${VERSION}\`"
+            echo
             echo "Commit: \`${CURRENT_SHA}\`"
             echo
             echo "## Build artifacts"

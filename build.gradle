@@ -8,18 +8,25 @@ buildscript {
     }
 }
 
-// load version from file
-def versionFile = new File(rootProject.rootDir, "version")
+// load version from env or file
 def versionName = "Local-build"
 
-if (versionFile.exists()) {
-    try {
-        versionName = versionFile.text.trim()
-    } catch (Exception e) {
-        println("Error reading version file: ${e.message}")
-    }
+def envVersion = System.getenv("APP_VERSION")
+
+if (envVersion != null && !envVersion.isBlank()) {
+    versionName = envVersion.trim()
 } else {
-    println("Version file not found, using default: 'Local-build'")
+    def versionFile = new File(rootProject.rootDir, "version")
+
+    if (versionFile.exists()) {
+        try {
+            versionName = versionFile.text.trim()
+        } catch (Exception e) {
+            println("Error reading version file: ${e.message}")
+        }
+    } else {
+        println("Version file not found, using default: 'Local-build'")
+    }
 }
 
 allprojects {

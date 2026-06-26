@@ -72,6 +72,8 @@ public class Chasm implements Hero.Doom {
 										jumpConfirmed = true;
 										hero.resume();
 									}
+								} else {
+									hide();
 								}
 							}
 						});

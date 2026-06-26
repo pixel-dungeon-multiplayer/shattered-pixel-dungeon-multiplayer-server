@@ -201,7 +201,8 @@ public class Ghoul extends Mob {
 	private class Sleeping extends Mob.Sleeping {
 		@Override
 		public boolean act( boolean enemyInFOV, boolean justAlerted ) {
-			Ghoul partner = (Ghoul) Actor.findById( partnerID );
+			Actor partnerBase =  Actor.findById( partnerID );
+			Ghoul partner = partnerBase instanceof Ghoul ? (Ghoul) partnerBase : null;
 			if (partner != null && partner.state != partner.SLEEPING){
 				state = WANDERING;
 				target = partner.pos;
@@ -217,8 +218,9 @@ public class Ghoul extends Mob {
 		@Override
 		protected boolean continueWandering() {
 			enemySeen = false;
-			
-			Ghoul partner = (Ghoul) Actor.findById( partnerID );
+
+			Actor partnerBase =  Actor.findById( partnerID );
+			Ghoul partner = partnerBase instanceof Ghoul ? (Ghoul) partnerBase : null;
 			if (partner != null && (partner.state != partner.WANDERING || Dungeon.level.distance( pos,  partner.target) > 1)){
 				target = partner.pos;
 				int oldPos = pos;

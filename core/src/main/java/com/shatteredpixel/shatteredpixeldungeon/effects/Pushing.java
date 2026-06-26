@@ -25,6 +25,8 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
+import com.shatteredpixel.shatteredpixeldungeon.network.actions.CharSpriteAction;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.watabou.noosa.Game;
@@ -37,7 +39,7 @@ public class Pushing extends Actor {
 	private CharSprite sprite;
 	private int from;
 	private int to;
-	
+
 	private Effect effect;
 	private Char ch;
 
@@ -67,6 +69,7 @@ public class Pushing extends Actor {
 	@Override
 	protected boolean act() {
 		Actor.remove( Pushing.this );
+		SendData.sendActionForAll(new CharSpriteAction(ch.id(), "pushing", from, to));
 
 		if (sprite != null && sprite.parent != null) {
 			if (Dungeon.visibleforAnyHero(from) || Dungeon.visibleforAnyHero(to)){

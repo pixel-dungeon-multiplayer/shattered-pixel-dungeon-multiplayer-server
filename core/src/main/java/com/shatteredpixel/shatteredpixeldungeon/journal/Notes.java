@@ -21,7 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.journal;
 
-import com.nikita22007.multiplayer.utils.text.LocalizedString;
+import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Foliage;
@@ -64,6 +64,7 @@ import com.watabou.noosa.Visual;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -576,7 +577,7 @@ public class Notes {
 			boolean result = records.add(l);
 			Collections.sort(records, comparator);
 			if (result) {
-				com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendJournalSnapshotForAll();
+				SendData.sendJournalSnapshotForAll();
 			}
 			return result;
 		}
@@ -600,7 +601,7 @@ public class Notes {
 		boolean result = records.remove( l );
 		if (result) {
 			int id = (1 << 24) | (landmark.ordinal() << 8) | (depth & 0xFF);
-			com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendJournalSnapshotForAll();
+			SendData.sendJournalSnapshotForAll();
 		}
 		return result;
 	}
@@ -611,13 +612,13 @@ public class Notes {
 			boolean result = records.add(k);
 			Collections.sort(records, comparator);
 			if (result) {
-				com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendJournalSnapshotForAll();
+				SendData.sendJournalSnapshotForAll();
 			}
 			return result;
 		} else {
 			k = (KeyRecord) records.get(records.indexOf(k));
 			k.quantity(k.quantity() + key.quantity());
-			com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendJournalSnapshotForAll();
+			SendData.sendJournalSnapshotForAll();
 			return true;
 		}
 	}
@@ -631,9 +632,9 @@ public class Notes {
 			if (k.quantity() <= 0){
 				records.remove(k);
 				int id = (2 << 24) | (key.getClass().getName().hashCode() & 0x00FFFFFF);
-				com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendJournalSnapshotForAll();
+				SendData.sendJournalSnapshotForAll();
 			} else {
-				com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendJournalSnapshotForAll();
+				SendData.sendJournalSnapshotForAll();
 			}
 			return true;
 		}
@@ -656,7 +657,7 @@ public class Notes {
 			boolean result = records.add(rec);
 			Collections.sort(records, comparator);
 			if (result) {
-				com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendJournalSnapshotForAll();
+				SendData.sendJournalSnapshotForAll();
 			}
 			return result;
 		}
@@ -667,7 +668,7 @@ public class Notes {
 		if (records.contains(rec)){
 			records.remove(rec);
 			int id = (3 << 24) | (rec.ID & 0x00FFFFFF);
-			com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendJournalSnapshotForAll();
+			SendData.sendJournalSnapshotForAll();
 			return true;
 		}
 		return false;

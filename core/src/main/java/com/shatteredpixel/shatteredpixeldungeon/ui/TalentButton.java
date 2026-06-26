@@ -22,7 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.nikita22007.multiplayer.utils.text.LocalizedString;
+import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
@@ -38,8 +38,8 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoTalent;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.PointerArea;
-import com.nikita22007.multiplayer.noosa.audio.Sample;
-import com.nikita22007.multiplayer.noosa.particles.Emitter;
+import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
+import com.shatteredpixel.shatteredpixeldungeon.particles.Emitter;
 
 import java.util.LinkedHashMap;
 

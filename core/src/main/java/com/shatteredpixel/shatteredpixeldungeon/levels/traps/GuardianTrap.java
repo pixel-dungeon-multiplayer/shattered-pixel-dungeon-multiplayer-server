@@ -33,7 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.StatueSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.nikita22007.multiplayer.noosa.audio.Sample;
+import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 
 public class GuardianTrap extends Trap {
 

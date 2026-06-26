@@ -24,7 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.watabou.noosa.Image;
-import com.nikita22007.multiplayer.noosa.audio.Sample;
+import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import org.jetbrains.annotations.Nullable;
 
 public class IconButton extends Button {

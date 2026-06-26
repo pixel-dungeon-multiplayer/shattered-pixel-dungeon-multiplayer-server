@@ -27,9 +27,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.watabou.noosa.TextureFilm;
-import com.watabou.noosa.audio.Music;
-import com.nikita22007.multiplayer.noosa.audio.Sample;
-import com.nikita22007.multiplayer.noosa.particles.Emitter;
+import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
+import com.shatteredpixel.shatteredpixeldungeon.particles.Emitter;
 
 public class BlacksmithSprite extends MobSprite {
 	

@@ -21,7 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.journal;
 
-import com.nikita22007.multiplayer.utils.text.LocalizedString;
+import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.DeviceCompat;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -69,7 +70,7 @@ public enum Document {
 			pagesStates.put(page, FOUND);
 			Journal.saveNeeded = true;
 			Badges.validateCatalogBadges();
-			com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendJournalSnapshotForAll();
+			SendData.sendJournalSnapshotForAll();
 			return true;
 		}
 		return false;
@@ -83,7 +84,7 @@ public enum Document {
 		if (pagesStates.containsKey(page) && pagesStates.get(page) != NOT_FOUND){
 			pagesStates.put(page, NOT_FOUND);
 			Journal.saveNeeded = true;
-			com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendJournalSnapshotForAll();
+			SendData.sendJournalSnapshotForAll();
 			return true;
 		}
 		return false;
@@ -97,7 +98,7 @@ public enum Document {
 		if (pagesStates.containsKey(page) && pagesStates.get(page) == READ){
 			pagesStates.put(page, FOUND);
 			Journal.saveNeeded = true;
-			com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendJournalSnapshotForAll();
+			SendData.sendJournalSnapshotForAll();
 			return true;
 		}
 		return false;
@@ -138,7 +139,7 @@ public enum Document {
 			pagesStates.put(page, READ);
 			Journal.saveNeeded = true;
 			Badges.validateCatalogBadges();
-			com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendJournalSnapshotForAll();
+			SendData.sendJournalSnapshotForAll();
 			return true;
 		}
 		return false;

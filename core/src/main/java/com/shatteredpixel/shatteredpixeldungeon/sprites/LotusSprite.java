@@ -29,7 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.watabou.noosa.MovieClip;
 import com.watabou.noosa.TextureFilm;
-import com.nikita22007.multiplayer.noosa.particles.Emitter;
+import com.shatteredpixel.shatteredpixeldungeon.particles.Emitter;
 
 import java.util.ArrayList;
 

@@ -29,7 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.noosa.Game;
-import com.nikita22007.multiplayer.noosa.tweeners.AlphaTweener;
+import io.github.pixeldungeonmultiplayer.shattered.server.noosa.tweeners.AlphaTweener;
 
 public class WardSprite extends MobSprite implements TieredSprite{
 

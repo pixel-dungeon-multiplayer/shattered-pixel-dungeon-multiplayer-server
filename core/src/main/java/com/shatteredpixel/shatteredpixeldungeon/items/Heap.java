@@ -21,7 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items;
 
-import com.nikita22007.multiplayer.utils.text.LocalizedString;
+import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -47,13 +47,13 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.TippedDart;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.shatteredpixel.shatteredpixeldungeon.network.serializers.SerializationContext;
-import com.nikita22007.multiplayer.noosa.audio.Sample;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.Server;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.SerializationContext;
+import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import org.jetbrains.annotations.Contract;
@@ -64,9 +64,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
-import static com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendHeap;
-import static com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendActionForAll;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.HeapRemoveAction;
+import static io.github.pixeldungeonmultiplayer.shattered.server.network.SendData.sendHeap;
+import static io.github.pixeldungeonmultiplayer.shattered.server.network.SendData.sendActionForAll;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.HeapRemoveAction;
 
 public class Heap implements Bundlable {
 	public enum Type {
@@ -511,7 +511,7 @@ public class Heap implements Bundlable {
 
 
 	public JSONObject toJsonObject(Hero observer) {
-		SerializationContext ctx = new SerializationContext(com.shatteredpixel.shatteredpixeldungeon.network.Server.SERIALIZERS, observer);
+		SerializationContext ctx = new SerializationContext(Server.SERIALIZERS, observer);
         Object serialized = ctx.serialize(this, "default");
         return serialized instanceof JSONObject ? (JSONObject) serialized : null;
 	}

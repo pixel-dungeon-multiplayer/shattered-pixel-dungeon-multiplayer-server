@@ -26,7 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.watabou.noosa.MovieClip;
 import com.watabou.noosa.TextureFilm;
-import com.nikita22007.multiplayer.noosa.particles.Emitter;
+import com.shatteredpixel.shatteredpixeldungeon.particles.Emitter;
 
 public class RotHeartSprite extends MobSprite {
 

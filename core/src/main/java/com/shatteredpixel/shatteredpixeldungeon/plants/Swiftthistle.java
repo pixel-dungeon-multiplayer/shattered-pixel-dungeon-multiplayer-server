@@ -21,7 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.plants;
 
-import com.nikita22007.multiplayer.utils.text.LocalizedString;
+import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -36,7 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
-import com.nikita22007.multiplayer.noosa.particles.Emitter;
+import com.shatteredpixel.shatteredpixeldungeon.particles.Emitter;
 import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;

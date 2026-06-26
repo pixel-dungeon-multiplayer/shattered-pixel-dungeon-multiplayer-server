@@ -21,7 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon;
 
-import com.nikita22007.multiplayer.utils.text.LocalizedString;
+import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
@@ -45,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -269,7 +270,7 @@ public class Badges {
 	private static HashSet<Badge> local = new LocalBadgeSet();
 	
 	private static void sendBadgeUnlock(Badge badge, boolean isGlobal) {
-		com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendJournalSnapshotForAll();
+		SendData.sendJournalSnapshotForAll();
 	}
 	
 	private static boolean saveNeeded = false;

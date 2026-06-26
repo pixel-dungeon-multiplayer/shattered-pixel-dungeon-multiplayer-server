@@ -21,13 +21,10 @@
 
 package com.shatteredpixel.shatteredpixeldungeon;
 
-import com.badlogic.gdx.Gdx;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
-import com.shatteredpixel.shatteredpixeldungeon.network.Server;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.Server;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.*;
 import com.watabou.noosa.Game;
-import com.nikita22007.multiplayer.noosa.audio.Music;
-import com.nikita22007.multiplayer.noosa.audio.Sample;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.PlatformSupport;
 

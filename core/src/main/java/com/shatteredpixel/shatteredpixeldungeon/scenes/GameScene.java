@@ -21,9 +21,9 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
-import com.nikita22007.multiplayer.server.effects.Flare;
-import com.nikita22007.multiplayer.server.ui.Banner;
-import com.nikita22007.multiplayer.utils.text.LocalizedString;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
+import io.github.pixeldungeonmultiplayer.shattered.server.ui.Banner;
+import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -62,9 +62,8 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.*;
-import com.shatteredpixel.shatteredpixeldungeon.network.Server;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.Server;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.DiscardedItemSprite;
@@ -113,8 +112,9 @@ import com.watabou.noosa.NoosaScript;
 import com.watabou.noosa.NoosaScriptNoLighting;
 import com.watabou.noosa.SkinnedBlock;
 import com.watabou.noosa.Visual;
-import com.nikita22007.multiplayer.noosa.audio.Sample;
-import com.nikita22007.multiplayer.noosa.particles.Emitter;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.*;
+import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
+import com.shatteredpixel.shatteredpixeldungeon.particles.Emitter;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.Point;
@@ -1270,7 +1270,7 @@ public class GameScene extends PixelScene {
 	@Deprecated
 	public static void gameOver(Hero hero) {
 		Banner.show(hero, BannerSprites.Type.GAME_OVER, 0x000000, 1f);
-		com.nikita22007.multiplayer.noosa.audio.Sample.INSTANCE.play(Assets.Sounds.DEATH);
+		Sample.INSTANCE.play(Assets.Sounds.DEATH);
 	}
 
 	//FIXME
@@ -1279,7 +1279,7 @@ public class GameScene extends PixelScene {
 			if (hero == null) {
 				continue;
 			}
-			com.nikita22007.multiplayer.server.ui.Banner.show(hero, BannerSprites.Type.BOSS_SLAIN, 0xFFFFFF, 0.3f, 5f);
+			Banner.show(hero, BannerSprites.Type.BOSS_SLAIN, 0xFFFFFF, 0.3f, 5f);
 		}
 		Sample.INSTANCE.play(Assets.Sounds.BOSS);
 

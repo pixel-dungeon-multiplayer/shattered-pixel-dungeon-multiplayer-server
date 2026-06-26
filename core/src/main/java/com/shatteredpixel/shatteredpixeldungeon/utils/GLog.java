@@ -21,12 +21,11 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.utils;
 
-import com.nikita22007.multiplayer.utils.text.LocalizedString;
+import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.ChatMessageAction;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.GreatCrabSprite;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.ChatMessageAction;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.Signal;
 

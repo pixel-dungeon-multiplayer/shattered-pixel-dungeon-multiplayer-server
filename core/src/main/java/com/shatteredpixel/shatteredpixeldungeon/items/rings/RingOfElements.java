@@ -21,8 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.rings;
 
-import com.nikita22007.multiplayer.utils.text.LocalizedString;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Electricity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;

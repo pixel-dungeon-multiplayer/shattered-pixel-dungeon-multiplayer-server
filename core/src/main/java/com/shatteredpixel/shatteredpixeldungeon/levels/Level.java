@@ -21,14 +21,14 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels;
 
-import com.nikita22007.multiplayer.utils.text.LocalizedString;
+import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.PlantRemoveAction;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.PlantUpdateAction;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.ResizeLevelAction;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.UpdateCellsAction;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.LockedFloorStateAction;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.PlantRemoveAction;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.PlantUpdateAction;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.ResizeLevelAction;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.UpdateCellsAction;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.LockedFloorStateAction;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
@@ -100,7 +100,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -110,7 +110,7 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
-import com.nikita22007.multiplayer.noosa.audio.Sample;
+import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.BArray;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;

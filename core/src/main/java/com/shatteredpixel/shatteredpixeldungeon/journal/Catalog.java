@@ -21,7 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.journal;
 
-import com.nikita22007.multiplayer.utils.text.LocalizedString;
+import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
@@ -116,6 +116,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.TippedDart;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.utils.Bundle;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -319,7 +320,7 @@ public enum Catalog {
 			if (cat.seen.containsKey(cls) && !cat.seen.get(cls)) {
 				cat.seen.put(cls, true);
 				Journal.saveNeeded = true;
-				com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendJournalSnapshotForAll();
+				SendData.sendJournalSnapshotForAll();
 			}
 		}
 		Badges.validateCatalogBadges();
@@ -346,7 +347,7 @@ public enum Catalog {
 					cat.useCount.put(cls, Integer.MAX_VALUE);
 				}
 				Journal.saveNeeded = true;
-				com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendJournalSnapshotForAll();
+				SendData.sendJournalSnapshotForAll();
 			}
 		}
 	}

@@ -2,14 +2,13 @@ package com.shatteredpixel.shatteredpixeldungeon.texturepack;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Base64Coder;
-import com.shatteredpixel.shatteredpixeldungeon.network.Server;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.Server;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.watabou.utils.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Base64;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;

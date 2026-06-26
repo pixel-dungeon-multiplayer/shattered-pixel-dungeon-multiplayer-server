@@ -21,7 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.traps;
 
-import com.nikita22007.multiplayer.server.effects.Wound;
+import io.github.pixeldungeonmultiplayer.shattered.server.effects.Wound;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;

@@ -21,9 +21,9 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items;
 
-import com.nikita22007.multiplayer.noosa.audio.Sample;
-import com.nikita22007.multiplayer.noosa.particles.Emitter;
-import com.nikita22007.multiplayer.utils.text.LocalizedString;
+import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
+import com.shatteredpixel.shatteredpixeldungeon.particles.Emitter;
+import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -50,14 +50,13 @@ import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.ItemAction;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.ItemAction;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MissileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
-import com.watabou.pixeldungeon.utils.Utils;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
@@ -916,7 +915,7 @@ public class Item implements Bundlable {
 		topRight.put("visible", true);
 		bottomRight.put("visible", true);
 
-		topLeft.put("text", item.status());
+		topLeft.put("text", item.status().toJsonObject());
 
 		boolean isArmor = item instanceof Armor;
 		boolean isWeapon = item instanceof Weapon;
@@ -925,7 +924,7 @@ public class Item implements Bundlable {
 			if (item.levelKnown || (isWeapon && !(item instanceof MeleeWeapon))) {
 				int str = isArmor ? ((Armor) item).STRReq() : ((Weapon) item).STRReq();
 				boolean masteryBuff = isArmor ? ((Armor) item).masteryPotionBonus : ((Weapon) item).masteryPotionBonus;
-				topRight.put("text", Utils.format(TXT_STRENGTH, str));
+				topRight.put("text", Messages.format(TXT_STRENGTH, str).toJsonObject());
 				if(masteryBuff) {
 					topRight.put("color", MASTERED);
 				} else if (str > owner.STR()) {
@@ -934,9 +933,9 @@ public class Item implements Bundlable {
 					topRight.put("color", JSONObject.NULL);
 				}
 			} else {
-				topRight.put("text", Utils.format(TXT_TYPICAL_STR, isArmor ?
+				topRight.put("text", Messages.format(TXT_TYPICAL_STR, isArmor ?
 						((Armor) item).STRReq(0) :
-						((MeleeWeapon) item).STRReq(0)));
+						((MeleeWeapon) item).STRReq(0)).toJsonObject());
 				topRight.put("color", WARNING);
 			}
 		} else {
@@ -945,7 +944,7 @@ public class Item implements Bundlable {
 
 		int level = item.visiblyUpgraded(owner);
 		if (level != 0 || (item.cursed && item.cursedKnown)) {
-			bottomRight.put("text", item.levelKnown ? Utils.format(TXT_LEVEL, level) : TXT_CURSED);
+			bottomRight.put("text", item.levelKnown ? Messages.format(TXT_LEVEL, level) : TXT_CURSED);
 			boolean curseInfusionBonus = false;
 			if (isWeapon){
 				curseInfusionBonus = ((Weapon)item).curseInfusionBonus;

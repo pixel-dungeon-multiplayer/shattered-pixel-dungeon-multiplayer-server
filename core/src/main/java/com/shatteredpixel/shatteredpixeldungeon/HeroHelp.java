@@ -1,13 +1,11 @@
 package com.shatteredpixel.shatteredpixeldungeon;
 
-import com.nikita22007.multiplayer.utils.text.LocalizedString;
+import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.watabou.utils.PathFinder;
 
 import java.util.HashSet;
 
 import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.heroes;
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.level;
 
 public class HeroHelp {
     public static int HeroCount() {

@@ -21,7 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.journal;
 
-import com.nikita22007.multiplayer.utils.text.LocalizedString;
+import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.cleric.PowerOfMany;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
@@ -155,6 +155,7 @@ import com.shatteredpixel.shatteredpixeldungeon.plants.Stormvine;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Sungrass;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.watabou.utils.Bundle;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -294,7 +295,7 @@ public enum Bestiary {
 			if (cat.seen.containsKey(cls) && !cat.seen.get(cls)) {
 				cat.seen.put(cls, true);
 				Journal.saveNeeded = true;
-				com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendJournalSnapshotForAll();
+				SendData.sendJournalSnapshotForAll();
 			}
 		}
 		Badges.validateCatalogBadges();
@@ -330,7 +331,7 @@ public enum Bestiary {
 					cat.encounterCount.put(cls, Integer.MAX_VALUE);
 				}
 				Journal.saveNeeded = true;
-				com.shatteredpixel.shatteredpixeldungeon.network.SendData.sendJournalSnapshotForAll();
+				SendData.sendJournalSnapshotForAll();
 			}
 		}
 	}

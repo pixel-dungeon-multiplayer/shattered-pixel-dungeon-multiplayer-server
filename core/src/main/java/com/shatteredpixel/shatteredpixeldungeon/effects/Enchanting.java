@@ -23,10 +23,8 @@ package com.shatteredpixel.shatteredpixeldungeon.effects;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.EnchantingVisualAction;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.watabou.noosa.Game;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.EnchantingVisualAction;
 
 public class Enchanting {
 

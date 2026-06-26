@@ -37,8 +37,8 @@ public class Tilemap extends Visual {
 	protected SmartTexture texture;
 	protected TextureFilm tileset;
 
-	protected int[] data;
-	protected int mapWidth;
+	public int[] data;
+	public int mapWidth;
 	protected int mapHeight;
 	protected int size;
 

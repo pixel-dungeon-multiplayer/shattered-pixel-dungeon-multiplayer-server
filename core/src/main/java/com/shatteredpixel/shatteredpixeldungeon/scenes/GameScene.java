@@ -251,6 +251,7 @@ public class GameScene extends PixelScene {
 
 		for (CustomTilemap visual : Dungeon.level.customTiles) {
 			addCustomTile(visual);
+			SendData.sendLateLiveStateActionForAll(new CustomTilemapActions.Add(false, customTilesList.indexOf(visual), visual));
 		}
 
 		visualGrid = new GridTileMap();
@@ -304,6 +305,7 @@ public class GameScene extends PixelScene {
 
 		for (CustomTilemap visual : Dungeon.level.customWalls) {
 			addCustomWall(visual);
+			SendData.sendLateLiveStateActionForAll(new CustomTilemapActions.Add(true, customWallsList.indexOf(visual), visual));
 		}
 
 		levelWallVisuals = Dungeon.level.addWallVisuals();
@@ -840,12 +842,25 @@ public class GameScene extends PixelScene {
 	protected void onBackPressed() {
 	}
 
+	private final ArrayList<CustomTilemap> customTilesList = new ArrayList<CustomTilemap>();
+	private final ArrayList<CustomTilemap> customWallsList = new ArrayList<CustomTilemap>();
+
 	public void addCustomTile(CustomTilemap visual) {
 		customTiles.add(visual.create());
+		customTilesList.add(visual);
+		if (!Dungeon.level.customTiles.contains(visual)) {
+			Dungeon.level.customTiles.add(visual);
+			SendData.sendLateLiveStateActionForAll(new CustomTilemapActions.Add(false, customTilesList.indexOf(visual), visual));
+		}
 	}
 
 	public void addCustomWall(CustomTilemap visual) {
 		customWalls.add(visual.create());
+		customWallsList.add(visual);
+		if (!Dungeon.level.customWalls.contains(visual)) {
+			Dungeon.level.customWalls.add(visual);
+			SendData.sendLateLiveStateActionForAll(new CustomTilemapActions.Add(true, customWallsList.indexOf(visual), visual));
+		}
 	}
 
 	private void addHeapSprite(Heap heap) {

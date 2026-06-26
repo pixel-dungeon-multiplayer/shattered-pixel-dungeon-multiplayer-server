@@ -20,6 +20,7 @@ import com.shatteredpixel.shatteredpixeldungeon.network.actions.ChatMessageActio
 import com.shatteredpixel.shatteredpixeldungeon.plugins.events.ChatEvent;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TalentButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
@@ -469,6 +470,7 @@ public class ClientThread implements Callable<String> {
             packet.addAction(new SetLevelEntranceAction(level.entrance()));
             packet.addAction(new SetLevelExitAction(level.exit()));
             packet.addAction(new SetLevelTilesAction(level));
+            addCustomTilemaps(level);
             packet.addAction(new SetLevelStatesAction(level));
 
             level.heaps.values().forEach(heap -> {
@@ -481,6 +483,21 @@ public class ClientThread implements Callable<String> {
                 if (plant != null) {
                     packet.addLateLiveStateAction(new PlantUpdateAction(pos, plant));
                 }
+            }
+        }
+    }
+
+    private void addCustomTilemaps(Level level) {
+        for (int i = 0; i < level.customTiles.size(); i++) {
+            CustomTilemap tilemap = level.customTiles.get(i);
+            if (tilemap.vis != null) {
+                packet.addLateLiveStateAction(new CustomTilemapActions.Add(false, i, tilemap));
+            }
+        }
+        for (int i = 0; i < level.customWalls.size(); i++) {
+            CustomTilemap tilemap = level.customWalls.get(i);
+            if (tilemap.vis != null) {
+                packet.addLateLiveStateAction(new CustomTilemapActions.Add(true, i, tilemap));
             }
         }
     }

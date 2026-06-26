@@ -46,7 +46,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.TenguDartTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.network.SendData;
-import com.shatteredpixel.shatteredpixeldungeon.network.actions.FadingTrapsAction;
+import com.shatteredpixel.shatteredpixeldungeon.network.actions.CustomTilemapActions;
 import com.shatteredpixel.shatteredpixeldungeon.network.actions.MusicAction;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -814,7 +814,6 @@ public class PrisonBossLevel extends Level {
 			
 			v.map( data, tileW );
 			setFade();
-			sendSelf();
 			return v;
 		}
 		
@@ -840,7 +839,6 @@ public class PrisonBossLevel extends Level {
 			if (vis == null){
 				return;
 			}
-			
 			vis.alpha( initialAlpha );
 			Actor.addDelayed(new Actor() {
 				
@@ -853,6 +851,8 @@ public class PrisonBossLevel extends Level {
 					Actor.remove(this);
 					
 					if (vis != null && vis.parent != null) {
+ 
+						SendData.sendLateLiveStateActionForAll(new CustomTilemapActions.Special.PrisonTrapFade(FadingTraps.this));
 						Dungeon.level.customTiles.remove(FadingTraps.this);
 						vis.parent.add(new AlphaTweener(vis, 0f, fadeDuration) {
 							@Override
@@ -875,13 +875,8 @@ public class PrisonBossLevel extends Level {
 			if (vis != null){
 				vis.killAndErase();
 			}
+			SendData.sendLateLiveStateActionForAll(new CustomTilemapActions.Remove(this));
 			Dungeon.level.customTiles.remove(this);
-			SendData.sendActionForAll(new FadingTrapsAction.Kill());
-		}
-		boolean newInstance = true;
-		public void sendSelf(){
-			SendData.sendActionForAll(new FadingTrapsAction.Update(tileX, tileY, tileW, tileH, data, vis.alpha(), newInstance));
-			newInstance = false;
 		}
 	}
 	

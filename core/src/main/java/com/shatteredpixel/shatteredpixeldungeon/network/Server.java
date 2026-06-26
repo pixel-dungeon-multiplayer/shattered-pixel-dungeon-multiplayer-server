@@ -18,6 +18,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.spells.Alchemize;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAugmentation;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
+import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.network.actions.*;
 import com.shatteredpixel.shatteredpixeldungeon.network.actions.serializers.*;
 import com.shatteredpixel.shatteredpixeldungeon.network.NetworkPacket.SerializedAction;
@@ -78,6 +79,9 @@ import com.watabou.utils.RectF;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.ImageSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.TextureSourceSerializer;
 import com.shatteredpixel.shatteredpixeldungeon.network.serializers.windows.*;
+
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.AmbitiousImpRoom;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.windows.*;
 
 public class Server extends Thread {
@@ -106,6 +110,10 @@ public class Server extends Thread {
         SERIALIZERS.register(TextureSource.File.class, "default", new TextureSourceSerializer.FileSerializer());
         SERIALIZERS.register(TextureSource.Solid.class, "default", new TextureSourceSerializer.SolidSerializer());
         SERIALIZERS.register(TextureSource.Gradient.class, "default", new TextureSourceSerializer.GradientSerializer());
+
+        SERIALIZERS.register(CustomTilemap.class, new CustomTilemapSerializer.DefaultSerializer());
+        SERIALIZERS.register(AmbitiousImpRoom.EntranceBarrier.class, new CustomTilemapSerializer.EntranceBarrierSerializer());
+        SERIALIZERS.register(PrisonBossLevel.FadingTraps.class, new CustomTilemapSerializer.FadingTrapsSerializer());
 
         SERIALIZERS.register(SerializableParticleFactory.class, "default", new ParticleFactorySerializer());
         SERIALIZERS.register(Speck.SpeckFactory.class, "default", new SpeckFactorySerializer());
@@ -225,8 +233,11 @@ public class Server extends Thread {
         SERIALIZERS.register(SampleAction.UnloadAction.class, new SampleActionSerializers.Unload());
         SERIALIZERS.register(SampleAction.ReloadAction.class, new SampleActionSerializers.Reload());
         SERIALIZERS.register(MissileSpriteVisualAction.class, new MissileSpriteVisualActionSerializer());
-        SERIALIZERS.register(FadingTrapsAction.Update.class, new FadingTrapsActionSerializers.Update());
-        SERIALIZERS.register(FadingTrapsAction.Kill.class, new FadingTrapsActionSerializers.Kill());
+        SERIALIZERS.register(CustomTilemapActions.Add.class, new CustomTilemapActionSerializers.Add());
+        SERIALIZERS.register(CustomTilemapActions.Remove.class, new CustomTilemapActionSerializers.Remove());
+        SERIALIZERS.register(CustomTilemapActions.Update.class, new CustomTilemapActionSerializers.Update());
+        SERIALIZERS.register(CustomTilemapActions.Special.PrisonTrapFade.class, new CustomTilemapActionSerializers.PrisonTrapFade());
+
         SERIALIZERS.register(BlobUpdateAction.class, new BlobUpdateActionSerializer());
         SERIALIZERS.register(ItemAction.Add.class, new ItemActionSerializers.Add());
         SERIALIZERS.register(ItemAction.Remove.class, new ItemActionSerializers.Remove());

@@ -38,8 +38,8 @@ public abstract class CustomTilemap implements Bundlable {
 	public int tileX, tileY;   //x and y coords for texture within a level
 	public int tileW = 1, tileH = 1; //width and height in tiles
 	
-	protected String texture;
-	protected Tilemap vis = null;
+	public String texture;
+	public Tilemap vis = null;
 
 	public void pos(int pos) {
 		pos( pos, Dungeon.level );
@@ -101,6 +101,7 @@ public abstract class CustomTilemap implements Bundlable {
 		return vis;
 	}
 
+	//2026/06/25: used only in WndInfoCell. If image == null then use next tilemap image
 	//x and y here are the coordinates tapped within the tile visual
 	public Image image(int tileX, int tileY){
 		if (vis == null){

@@ -26,10 +26,10 @@ allprojects {
     def baseVersionName = "3.3.6"
     ext {
         appName = 'Shattered Pixel Dungeon Server'
-        appPackageName = 'com.shatteredpixel.shatteredpixeldungeon.multiplayer.server'
+        appPackageName = 'io.github.pixeldungeonmultiplayer.shattered.server'
 
-        appVersionCode = 891
-        appVersionName = "Server_" +versionName + "_on_v"+baseVersionName
+        appVersionCode = 1
+        appVersionName = "Server-" +versionName + "-base-v"+baseVersionName
         appShortVersionName = ((appVersionName) =~ /\d+\.\d+\.\d+/) ? ((appVersionName) =~ /\d+\.\d+\.\d+/)[0] : "0.0.0"
 
         appJavaCompatibility = JavaVersion.VERSION_11

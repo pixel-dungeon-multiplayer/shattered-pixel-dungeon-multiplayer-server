@@ -1,5 +1,24 @@
 apply plugin: 'com.android.application'
 
+def androidKeystoreFile = System.getenv("ANDROID_KEYSTORE_FILE")
+def androidKeystorePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+def androidKeyAlias = System.getenv("ANDROID_KEY_ALIAS")
+def androidKeyPassword = System.getenv("ANDROID_KEY_PASSWORD")
+
+def hasReleaseSigning =
+        androidKeystoreFile != null && !androidKeystoreFile.isBlank() &&
+                androidKeystorePassword != null && !androidKeystorePassword.isBlank() &&
+                androidKeyAlias != null && !androidKeyAlias.isBlank() &&
+                androidKeyPassword != null && !androidKeyPassword.isBlank()
+
+def isCiBuild =
+        System.getenv("CI") == "true" ||
+                System.getenv("GITHUB_ACTIONS") == "true"
+
+if (isCiBuild && !hasReleaseSigning) {
+    throw new GradleException("Release signing is required in CI, but Android signing environment variables are missing")
+}
+
 android {
     namespace 'com.shatteredpixel.shatteredpixeldungeon.android'
     compileSdk appAndroidCompileSDK
@@ -35,7 +54,14 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-            signingConfig signingConfigs.debug
+            release {
+                if (hasReleaseSigning) {
+                    storeFile = file(androidKeystoreFile)
+                    storePassword = androidKeystorePassword
+                    keyAlias = androidKeyAlias
+                    keyPassword = androidKeyPassword
+                }
+            }
         }
     }
 

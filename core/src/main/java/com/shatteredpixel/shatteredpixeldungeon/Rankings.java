@@ -170,7 +170,7 @@ public enum Rankings {
 	//assumes a ranking is loaded, or game is ending
 	public int calculateScore(Hero hero){
 
-		if (Dungeon.initialVersion > ShatteredPixelDungeon.v1_2_3){
+		if (Dungeon.initialVersion > 0){
 			Statistics.progressScore = hero.lvl * Statistics.deepestFloor * 65;
 			Statistics.progressScore = Math.min(Statistics.progressScore, 50_000);
 
@@ -349,7 +349,7 @@ public enum Rankings {
 
 		Dungeon.initialVersion = data.getInt(GAME_VERSION);
 
-		if (Dungeon.initialVersion <= ShatteredPixelDungeon.v1_2_3){
+		if (Dungeon.initialVersion <= 0){
 			Statistics.gameWon = rec.win;
 		}
 		//rec.score = calculateScore();

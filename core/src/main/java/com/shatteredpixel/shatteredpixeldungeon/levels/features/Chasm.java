@@ -21,6 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.features;
 
+import com.watabou.noosa.Game;
+import com.watabou.utils.Callback;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
 import io.github.pixeldungeonmultiplayer.shattered.server.utils.Log;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
@@ -57,17 +59,19 @@ public class Chasm implements Hero.Doom {
 	
 	public static void heroJump( final Hero hero ) {
 		heroPos = hero.pos;
+		Game.runOnRenderThread(new Callback() {
+			@Override
+			public void call() {
 				GameScene.show(
-						new WndOptions(hero,  new Image(Dungeon.level.tilesTex(), 176, 16, 16, 16),
+						new WndOptions(hero, new Image(Dungeon.level.tilesTex(), 176, 16, 16, 16),
 								Messages.get(Chasm.class, "chasm"),
 								Messages.get(Chasm.class, "jump"),
 								Messages.get(Chasm.class, "yes"),
-								Messages.get(Chasm.class, "no") ) {
-
+								Messages.get(Chasm.class, "no")) {
 
 
 							@Override
-							protected void onSelect( int index ) {
+							protected void onSelect(int index) {
 								if (index == 0) {
 									if (getOwnerHero().pos == heroPos) {
 										jumpConfirmed = true;
@@ -84,8 +88,10 @@ public class Chasm implements Hero.Doom {
 								SendData.forceFlush(hero);
 							}
 						});
+			}
+		};
 	}
-	
+
 	public static void heroFall( int pos, Hero hero ) {
 		
 		jumpConfirmed = false;

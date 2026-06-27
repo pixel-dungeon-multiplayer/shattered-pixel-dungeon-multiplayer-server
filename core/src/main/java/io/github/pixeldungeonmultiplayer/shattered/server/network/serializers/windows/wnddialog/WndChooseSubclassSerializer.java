@@ -20,14 +20,16 @@ public class WndChooseSubclassSerializer extends WndDialogSerializer<WndChooseSu
                     true,
                     button.activeForNetwork(),
                     ImageIcon.fromImage(button.icon(), ctx, profile),
-                    button.fontSize()));
+                    button.fontSize(),
+                    button.leftJustify));
         }
         contract.actions.add(new WndDialogContract.Action(
                 obj.cancelButton.LocalizedStringText(),
                 false,
                 obj.cancelButton.activeForNetwork(),
                 ImageIcon.fromImage(obj.cancelButton.icon(), ctx, profile),
-                obj.cancelButton.fontSize()));
+                obj.cancelButton.fontSize(),
+                obj.cancelButton.leftJustify));
         return contract;
     }
 }

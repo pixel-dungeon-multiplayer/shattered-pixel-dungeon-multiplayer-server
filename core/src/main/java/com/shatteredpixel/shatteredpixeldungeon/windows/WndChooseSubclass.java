@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,13 +43,13 @@ public class WndChooseSubclass extends Window {
 	
 	private static final int WIDTH		= 130;
 	private static final float GAP		= 2;
-	public final TengusMask tome;
+	public final @NotNull TengusMask tome;
 	public final IconTitle titlebar;
 	public final RenderedTextBlock message;
 	public final List<RedButton> subclassButtons = new ArrayList<>();
 	public final RedButton cancelButton;
 
-	public WndChooseSubclass(final TengusMask tome, final Hero hero ) {
+	public WndChooseSubclass(final @NotNull TengusMask tome, final Hero hero ) {
 		super(hero);
 		this.tome = tome;
 

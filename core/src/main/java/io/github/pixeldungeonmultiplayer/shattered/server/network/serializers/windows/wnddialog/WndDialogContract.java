@@ -64,6 +64,7 @@ public final class WndDialogContract {
             actionObj.put("enabled", action.enabled);
             actionObj.put("icon", action.icon.toJson());
             actionObj.put("font_size", action.fontSize);
+            actionObj.put("left_justify", action.leftJustify);
             serialized.put(actionObj);
         }
         return serialized;
@@ -96,6 +97,7 @@ public final class WndDialogContract {
         private final boolean enabled;
         private final @NotNull ImageIcon icon;
         private final int fontSize;
+        public final boolean leftJustify;
 
         public Action(@NotNull LocalizedString text) {
             this(text, false, true);
@@ -114,11 +116,16 @@ public final class WndDialogContract {
         }
 
         public Action(@NotNull LocalizedString text, boolean hasInfo, boolean enabled, @NotNull ImageIcon icon, int fontSize) {
+            this(text, hasInfo, enabled, icon, fontSize, false);
+        }
+
+        public Action(@NotNull LocalizedString text, boolean hasInfo, boolean enabled, @NotNull ImageIcon icon, int fontSize, boolean leftJustify) {
             this.text = text;
             this.hasInfo = hasInfo;
             this.enabled = enabled;
             this.icon = icon;
             this.fontSize = fontSize;
+            this.leftJustify = leftJustify;
         }
     }
 

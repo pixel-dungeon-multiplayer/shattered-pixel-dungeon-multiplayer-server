@@ -92,11 +92,11 @@ public class RenderedTextBlock extends Component {
 		build();
 	}
 
-	public void text(LocalizedString text, int maxWidth){
-		text(text.toString(), maxWidth);
+	public void text(String text, int maxWidth){
+		text(LocalizedString.raw(text), maxWidth);
 	}
 
-	public void text(String text, int maxWidth){
+	public void text(LocalizedString text, int maxWidth){
 		this.maxWidth = maxWidth;
 		multiline = true;
 		text(text);

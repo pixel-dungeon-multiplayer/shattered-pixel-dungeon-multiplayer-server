@@ -83,7 +83,7 @@ public class WndOptions extends Window {
 		}
 
 		this.message = PixelScene.renderTextBlock(6);
-		this.message.text(message.toString(), width);
+		this.message.text(message, width);
 		this.message.setPos(0, pos);
 		add(this.message);
 

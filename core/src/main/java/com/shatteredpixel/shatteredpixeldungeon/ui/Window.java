@@ -21,6 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.ui;
 
+import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.PlatformSupport;
 import io.github.pixeldungeonmultiplayer.shattered.server.utils.Log;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.HeroHelp;
@@ -301,6 +303,11 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 			Objects.requireNonNull(window);
 		} catch (NullPointerException e) {
 			Log.i("Window", "No such window.");
+			if (!DeviceCompat.isDebug()) {
+				//fallback for forgotten windows
+				SendData.sendAction(hero, new HideWindowAction(ID));
+				SendData.forceFlush(hero);
+			}
 			return;
 		}
 		if (button == -1) {

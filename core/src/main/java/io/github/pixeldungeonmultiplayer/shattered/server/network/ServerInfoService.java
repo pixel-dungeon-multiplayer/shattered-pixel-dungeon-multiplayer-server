@@ -41,6 +41,7 @@ public class ServerInfoService {
         private void handleConnection(Socket socket){
             JSONObject serverInfo = new JSONObject();
             serverInfo.put("name", SPDSettings.serverName());
+            serverInfo.put("server_id", SPDSettings.serverUUID());
             serverInfo.put("players", Server.onlinePlayers());
             serverInfo.put("max_players", Server.clients.length);
             serverInfo.put("challenges", SPDSettings.challenges());

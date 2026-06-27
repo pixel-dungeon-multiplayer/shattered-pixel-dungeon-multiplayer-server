@@ -773,6 +773,18 @@ public class GameScene extends PixelScene {
 				hero.cellSelector.enable(hero.isReady());
 			}
 		}
+
+		{
+			// We are sending all the events accumulated per frame for the hero we are currently processing.
+			// The main sending is done in Actor.update(), whereas this place is created for interactive dialogues
+			// that do not change the current actor.
+			//todo it may be worth sending events for everyone if we have an interaction of an inactive (!hero.ready()) user.
+			Hero current = Actor.getCurrentProcessingReadyHero();
+			if (current != null) {
+				SendData.forceFlush(current);
+			}
+		}
+
 		if (!toDestroy.isEmpty()) {
 			for (Gizmo g : toDestroy) {
 				g.destroy();

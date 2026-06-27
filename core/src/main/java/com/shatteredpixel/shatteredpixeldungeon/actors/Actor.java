@@ -34,6 +34,7 @@ import com.watabou.noosa.Game;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.SparseArray;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 
@@ -250,6 +251,15 @@ public abstract class Actor implements Bundlable {
 	public static boolean processing(){
 		return current != null;
 	}
+
+	public static @Nullable Hero getCurrentProcessingReadyHero(){
+		Actor c = current;
+		if ((c instanceof Hero) && ((Hero) c).isReady()) {
+			return (Hero) c;
+		}
+		return null;
+	}
+
 
 	public static int curActorPriority() {
 		return current != null ? current.actPriority : HERO_PRIO;

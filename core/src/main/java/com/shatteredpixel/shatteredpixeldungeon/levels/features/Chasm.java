@@ -89,7 +89,7 @@ public class Chasm implements Hero.Doom {
 							}
 						});
 			}
-		};
+		});
 	}
 
 	public static void heroFall( int pos, Hero hero ) {

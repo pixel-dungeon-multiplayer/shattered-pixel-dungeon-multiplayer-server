@@ -90,7 +90,7 @@ public class KeyDisplay extends Visual {
 		for (int k : keys){
 			totalKeys += k;
 		}
-		if (Arrays.equals(keys, cache)) {
+		if (!Arrays.equals(keys, cache)) {
 			SendData.sendActionForAll(new KeysIndicatorAction());
 			dirty = true;
 		}

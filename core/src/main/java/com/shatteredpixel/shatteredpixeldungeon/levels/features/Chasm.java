@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.features;
 
+import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
 import io.github.pixeldungeonmultiplayer.shattered.server.utils.Log;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
@@ -75,6 +76,12 @@ public class Chasm implements Hero.Doom {
 								} else {
 									hide();
 								}
+							}
+
+							@Override
+							public void hide() {
+								super.hide();
+								SendData.forceFlush(hero);
 							}
 						});
 	}

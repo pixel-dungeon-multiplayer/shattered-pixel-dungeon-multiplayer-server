@@ -29,8 +29,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.view.DisplayCutout;
@@ -54,8 +52,6 @@ import com.watabou.utils.RectF;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -412,29 +408,14 @@ public class AndroidPlatformSupport extends PlatformSupport {
 
 	NsdManager manager = (NsdManager) AndroidLauncher.instance.getSystemService(Context.NSD_SERVICE);
 	NsdServiceInfo service;
-	NsdManager.RegistrationListener listener =  new NsdManager.RegistrationListener() {
-		@Override
-		public void onRegistrationFailed(NsdServiceInfo serviceInfo, int errorCode) {
-
-		}
-
-		@Override
-		public void onUnregistrationFailed(NsdServiceInfo serviceInfo, int errorCode) {
-
-		}
-
-		@Override
-		public void onServiceRegistered(NsdServiceInfo serviceInfo) {
-
-		}
-
-		@Override
-		public void onServiceUnregistered(NsdServiceInfo serviceInfo) {
-
-		}
-	};
+	private Integer servicePort;
+	private Map<String, String> serviceProperties = new HashMap<>();
+	private boolean serviceRegistered = false;
+	private NsdManager.RegistrationListener serviceListener;
 	@Override
-	public void registerService(int port, Map<String, String> properties) {
+	public synchronized void registerService(int port, Map<String, String> properties) {
+		servicePort = port;
+		serviceProperties = new HashMap<>(properties);
 		service = new NsdServiceInfo();
 		service.setServiceName(SPDSettings.serverName());
 		service.setServiceType("_spdmp._tcp.");
@@ -442,31 +423,64 @@ public class AndroidPlatformSupport extends PlatformSupport {
 		for (Map.Entry<String, String> property : properties.entrySet()) {
 			service.setAttribute(property.getKey(), property.getValue());
 		}
-		WifiManager wm = (WifiManager) AndroidLauncher.instance.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-		service.setHost(getDeviceIpAddress(wm));
-		manager.registerService(service, NsdManager.PROTOCOL_DNS_SD, listener);
+		serviceListener = newRegistrationListener();
+		manager.registerService(service, NsdManager.PROTOCOL_DNS_SD, serviceListener);
 	}
 
 	@Override
-	public void unregisterService() {
-		manager.unregisterService(listener);
-	}
-	private InetAddress getDeviceIpAddress(WifiManager wifi) {
-		InetAddress result = null;
-		try {
-			// default to Android localhost
-			result = InetAddress.getByName("10.0.0.2");
-
-			// figure out our wifi address, otherwise bail
-			WifiInfo wifiinfo = wifi.getConnectionInfo();
-			int intaddr = wifiinfo.getIpAddress();
-			byte[] byteaddr = new byte[] { (byte) (intaddr & 0xff), (byte) (intaddr >> 8 & 0xff),
-					(byte) (intaddr >> 16 & 0xff), (byte) (intaddr >> 24 & 0xff) };
-			result = InetAddress.getByAddress(byteaddr);
-		} catch (UnknownHostException ex) {
-			Gdx.app.debug("NSD", String.format("getDeviceIpAddress Error: %s", ex.getMessage()));
+	public synchronized void updateService(Map<String, String> properties) {
+		if (servicePort == null) {
+			throw new IllegalStateException("Cannot update service before it is registered");
 		}
+		serviceProperties = new HashMap<>(properties);
+		NsdManager.RegistrationListener oldListener = serviceListener;
+		if (oldListener != null) {
+			try {
+				manager.unregisterService(oldListener);
+			} catch (IllegalArgumentException ignored) {
+			}
+		}
+		serviceRegistered = false;
+		serviceListener = null;
+		registerService(servicePort, serviceProperties);
+	}
 
-		return result;
+	@Override
+	public synchronized void unregisterService() {
+		NsdManager.RegistrationListener oldListener = serviceListener;
+		if (oldListener == null) {
+			return;
+		}
+		try {
+			manager.unregisterService(oldListener);
+		} catch (IllegalArgumentException ignored) {
+		}
+		serviceRegistered = false;
+		serviceListener = null;
+		servicePort = null;
+	}
+
+	private NsdManager.RegistrationListener newRegistrationListener() {
+		return new NsdManager.RegistrationListener() {
+			@Override
+			public void onRegistrationFailed(NsdServiceInfo serviceInfo, int errorCode) {
+				serviceRegistered = false;
+			}
+
+			@Override
+			public void onUnregistrationFailed(NsdServiceInfo serviceInfo, int errorCode) {
+				serviceRegistered = false;
+			}
+
+			@Override
+			public void onServiceRegistered(NsdServiceInfo serviceInfo) {
+				serviceRegistered = true;
+			}
+
+			@Override
+			public void onServiceUnregistered(NsdServiceInfo serviceInfo) {
+				serviceRegistered = false;
+			}
+		};
 	}
 }

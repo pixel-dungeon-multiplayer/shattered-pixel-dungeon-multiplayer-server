@@ -532,6 +532,7 @@ public class ClientThread implements Callable<String> {
             }
             Server.clients[threadID] = null;
             Server.used[threadID] = false;
+            Server.refreshService();
             readStream = null;
             writeStream = null;
             if (jsonCall != null) {
@@ -596,6 +597,7 @@ public class ClientThread implements Callable<String> {
         forceFlush();
 
         Server.clients[threadID] = this;
+        Server.refreshService();
     }
     private void sendTexture(String textureData){
         packet.addAction(new TexturePackAction(textureData));

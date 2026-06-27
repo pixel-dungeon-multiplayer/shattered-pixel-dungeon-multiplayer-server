@@ -41,15 +41,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -236,55 +242,185 @@ public class DesktopPlatformSupport extends PlatformSupport {
 
 	}
 
-	JmDNS dns;
+	private final Object dnsLock = new Object();
+	private final ExecutorService dnsExecutor = Executors.newCachedThreadPool(r -> {
+		Thread thread = new Thread(r, "SPDMP mDNS");
+		thread.setDaemon(true);
+		return thread;
+	});
+	private final Map<InetAddress, JmDNS> dnsByAddress = new LinkedHashMap<>();
+	private final Map<InetAddress, ServiceInfo> serviceByAddress = new LinkedHashMap<>();
+	private int dnsGeneration = 0;
+	private Integer dnsServicePort = null;
+
 	@Override
 	public void registerService(int port, Map<String, String> properties) {
-		if(dns ==null)
-		{
-            try {
-				InetAddress bindAddress = null;
-				Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-				while (interfaces.hasMoreElements()) {
-					NetworkInterface iface = interfaces.nextElement();
-					if (!iface.isLoopback() && iface.isUp()) {
-						Enumeration<InetAddress> addresses = iface.getInetAddresses();
-						while (addresses.hasMoreElements()) {
-							InetAddress addr = addresses.nextElement();
-							if (addr instanceof Inet4Address) { // Check if it's an IPv4 address
-								bindAddress = addr;
-								break; // Found the first non-loopback, up IPv4 address
-							}
-						}
-						if (bindAddress != null) {
-							break; // Exit the outer loop once an IPv4 address is found
-						}
-					}
-				}
-				if (bindAddress != null) {
-					dns = JmDNS.create(bindAddress);
-				} else {
-					dns = JmDNS.create();
-				}
-				ServiceInfo serviceInfo = ServiceInfo.create("_spdmp._tcp.local.", SPDSettings.serverName(), port, 0, 0, properties);
-				dns.registerService(serviceInfo);
-				System.out.println(serviceInfo.getHostAddresses()[0]);
-				System.out.println("Service registered: " + serviceInfo.getName() + " on port " + serviceInfo.getPort());
-				System.out.println("Service type: " + serviceInfo.getType());
-			} catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
+		synchronized (dnsLock) {
+			dnsServicePort = port;
+		}
+		scheduleServiceRegistration(port, properties);
 	}
+
+	@Override
+	public void updateService(Map<String, String> properties) {
+		Map<InetAddress, ServiceInfo> servicesSnapshot;
+		List<InetAddress> registeredAddresses;
+		int generation;
+		int port;
+		Map<String, String> propertiesSnapshot = new HashMap<>(properties);
+		synchronized (dnsLock) {
+			if (dnsServicePort == null) {
+				throw new IllegalStateException("Cannot update service before it is registered");
+			}
+			port = dnsServicePort;
+			if (dnsByAddress.isEmpty()) {
+				scheduleServiceRegistration(port, propertiesSnapshot);
+				return;
+			}
+			generation = ++dnsGeneration;
+			servicesSnapshot = new LinkedHashMap<>(serviceByAddress);
+			registeredAddresses = new ArrayList<>(dnsByAddress.keySet());
+		}
+		dnsExecutor.submit(() -> {
+			List<Future<?>> futures = new ArrayList<>();
+			for (ServiceInfo serviceInfo : servicesSnapshot.values()) {
+				futures.add(dnsExecutor.submit(() -> {
+					try {
+						serviceInfo.setText(propertiesSnapshot);
+					} catch (IllegalStateException e) {
+						Gdx.app.error("DNS", "Failed to update service TXT", e);
+					}
+				}));
+			}
+			for (InetAddress address : serviceAddresses()) {
+				if (!registeredAddresses.contains(address)) {
+					futures.add(dnsExecutor.submit(() -> registerService(address, port, propertiesSnapshot, generation)));
+				}
+			}
+			waitFor(futures);
+		});
+	}
+
 	@Override
 	public void unregisterService() {
-		dns.unregisterAllServices();
+		Map<InetAddress, JmDNS> dnsSnapshot;
+		synchronized (dnsLock) {
+			dnsGeneration++;
+			dnsServicePort = null;
+			dnsSnapshot = new LinkedHashMap<>(dnsByAddress);
+			dnsByAddress.clear();
+			serviceByAddress.clear();
+		}
+		closeServices(dnsSnapshot);
+	}
+
+	private void scheduleServiceRegistration(int port, Map<String, String> properties) {
+		Map<InetAddress, JmDNS> oldDns;
+		int generation;
+		Map<String, String> propertiesSnapshot = new HashMap<>(properties);
+		synchronized (dnsLock) {
+			generation = ++dnsGeneration;
+			oldDns = new LinkedHashMap<>(dnsByAddress);
+			dnsByAddress.clear();
+			serviceByAddress.clear();
+		}
+		dnsExecutor.submit(() -> {
+			closeServices(oldDns);
+			List<InetAddress> addresses = serviceAddresses();
+			if (addresses.isEmpty()) {
+				registerService(null, port, propertiesSnapshot, generation);
+				return;
+			}
+			List<Future<?>> futures = new ArrayList<>();
+			for (InetAddress address : addresses) {
+				futures.add(dnsExecutor.submit(() -> registerService(address, port, propertiesSnapshot, generation)));
+			}
+			waitFor(futures);
+		});
+	}
+
+	private void registerService(InetAddress bindAddress, int port, Map<String, String> properties, int generation) {
+		JmDNS dns = null;
+		try {
+			dns = bindAddress == null ? JmDNS.create() : JmDNS.create(bindAddress);
+			ServiceInfo serviceInfo = ServiceInfo.create("_spdmp._tcp.local.", SPDSettings.serverName(), port, 0, 0, properties);
+			dns.registerService(serviceInfo);
+			InetAddress registeredAddress = dns.getInetAddress();
+			boolean stale;
+			synchronized (dnsLock) {
+				stale = generation != dnsGeneration;
+				if (!stale) {
+					dnsByAddress.put(registeredAddress, dns);
+					serviceByAddress.put(registeredAddress, serviceInfo);
+				}
+			}
+			if (stale) {
+				closeService(dns);
+				return;
+			}
+			String host = registeredAddress == null ? "default interface" : registeredAddress.getHostAddress();
+			System.out.println("Service registered: " + serviceInfo.getName() + " on " + host + ":" + serviceInfo.getPort());
+		} catch (IOException e) {
+			String host = bindAddress == null ? "default interface" : bindAddress.getHostAddress();
+			Gdx.app.error("DNS", "Failed to register service on " + host, e);
+			if (dns != null) {
+				closeService(dns);
+			}
+		}
+	}
+
+	private void closeServices(Map<InetAddress, JmDNS> services) {
+		if (services.isEmpty()) {
+			return;
+		}
+		List<Future<?>> futures = new ArrayList<>();
+		for (JmDNS dns : services.values()) {
+			futures.add(dnsExecutor.submit(() -> closeService(dns)));
+		}
+		waitFor(futures);
 		System.out.println("Service unregistered");
-        try {
-            dns.close();
-        } catch (IOException e) {
-			e.printStackTrace();
-        }
-        dns = null;
+	}
+
+	private void closeService(JmDNS dns) {
+		try {
+			dns.unregisterAllServices();
+		} finally {
+			try {
+				dns.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void waitFor(List<Future<?>> futures) {
+		for (Future<?> future : futures) {
+			try {
+				future.get();
+			} catch (Exception e) {
+				Gdx.app.error("DNS", "DNS task failed", e);
+			}
+		}
+	}
+
+	private List<InetAddress> serviceAddresses() {
+		List<InetAddress> result = new ArrayList<>();
+		try {
+			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+			while (interfaces.hasMoreElements()) {
+				NetworkInterface iface = interfaces.nextElement();
+				if (iface.isLoopback() || !iface.isUp() || iface.isVirtual()) {
+					continue;
+				}
+				for (InetAddress addr : Collections.list(iface.getInetAddresses())) {
+					if ((addr instanceof Inet4Address || addr instanceof Inet6Address) && !addr.isLoopbackAddress() && !addr.isAnyLocalAddress()) {
+						result.add(addr);
+					}
+				}
+			}
+		} catch (IOException e) {
+			Gdx.app.error("DNS", "Failed to enumerate network interfaces", e);
+		}
+		return result;
 	}
 }

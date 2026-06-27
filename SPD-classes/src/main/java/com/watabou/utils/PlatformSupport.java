@@ -199,6 +199,10 @@ public abstract class PlatformSupport {
 
     }
 
+	public void updateService(Map<String, String> properties) {
+
+	}
+
 	public void unregisterService() {
 
 	}

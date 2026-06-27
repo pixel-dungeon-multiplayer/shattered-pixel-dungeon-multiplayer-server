@@ -56,6 +56,7 @@ import org.json.JSONObject;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
@@ -440,10 +441,22 @@ public class Server extends Thread {
         }
     }
 
-    protected static boolean initializeServerSocket() {
-        // Initialize a server socket on the next available port.
+    public static void refreshService() {
+        if (!started) {
+            return;
+        }
         try {
-            serverSocket = new ServerSocket(SPDSettings.serverPort());
+            ShatteredPixelDungeon.platform.updateService(serverInfoProperties());
+        } catch (Exception e) {
+            Gdx.app.error("DNS", "Failed to update dns-sd service", e);
+        }
+    }
+
+    protected static boolean initializeServerSocket() {
+        try {
+            serverSocket = new ServerSocket();
+            serverSocket.setReuseAddress(true);
+            serverSocket.bind(new InetSocketAddress(SPDSettings.serverPort()));
         } catch (Exception e) {
             return false;
         }

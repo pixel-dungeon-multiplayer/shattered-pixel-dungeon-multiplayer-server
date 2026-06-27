@@ -147,7 +147,7 @@ public class FloatingText extends RenderedTextBlock {
 	private static final SparseArray<ArrayList<FloatingText>> stacks = new SparseArray<>();
 	
 	public FloatingText() {
-		super(9*PixelScene.defaultZoom);
+		super(9);
 		setHightlighting(false);
 	}
 	

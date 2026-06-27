@@ -902,6 +902,7 @@ public class Item implements Bundlable {
 		return owner.belongings.pathOfItem(this);
 	}	
 
+	private JSONObject lstrToJson(LocalizedString localizedString) {return localizedString == null? null:localizedString.toJsonObject();}
 	@NotNull
     public JSONObject itemUI(@NotNull Hero owner) throws JSONException {
 		Objects.requireNonNull(owner);
@@ -915,7 +916,7 @@ public class Item implements Bundlable {
 		topRight.put("visible", true);
 		bottomRight.put("visible", true);
 
-		topLeft.put("text", item.status().toJsonObject());
+		topLeft.put("text",lstrToJson(item.status()));
 
 		boolean isArmor = item instanceof Armor;
 		boolean isWeapon = item instanceof Weapon;
@@ -924,7 +925,7 @@ public class Item implements Bundlable {
 			if (item.levelKnown || (isWeapon && !(item instanceof MeleeWeapon))) {
 				int str = isArmor ? ((Armor) item).STRReq() : ((Weapon) item).STRReq();
 				boolean masteryBuff = isArmor ? ((Armor) item).masteryPotionBonus : ((Weapon) item).masteryPotionBonus;
-				topRight.put("text", Messages.format(TXT_STRENGTH, str).toJsonObject());
+				topRight.put("text", lstrToJson(Messages.format(TXT_STRENGTH, str)));
 				if(masteryBuff) {
 					topRight.put("color", MASTERED);
 				} else if (str > owner.STR()) {
@@ -933,9 +934,9 @@ public class Item implements Bundlable {
 					topRight.put("color", JSONObject.NULL);
 				}
 			} else {
-				topRight.put("text", Messages.format(TXT_TYPICAL_STR, isArmor ?
+				topRight.put("text",lstrToJson(Messages.format(TXT_TYPICAL_STR, isArmor ?
 						((Armor) item).STRReq(0) :
-						((MeleeWeapon) item).STRReq(0)).toJsonObject());
+						((MeleeWeapon) item).STRReq(0))));
 				topRight.put("color", WARNING);
 			}
 		} else {

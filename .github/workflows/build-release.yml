@@ -106,48 +106,28 @@ jobs:
 
       - name: Collect desktop artifacts
         shell: bash
-        env:
-          ASSET_SUFFIX: ${{ needs.prepare.outputs.asset_suffix }}
         run: |
           set -euo pipefail
 
           mkdir -p release-artifacts
 
-          index=0
-
-          while IFS= read -r -d '' file; do
-            base="$(basename "$file")"
-
-            case "$base" in
-              *.tar.gz) ext="tar.gz" ;;
-              *.jar) ext="jar" ;;
-              *.zip) ext="zip" ;;
-              *.tar) ext="tar" ;;
-              *) ext="${base##*.}" ;;
-            esac
-
-            index=$((index + 1))
-
-            if [[ "$index" -eq 1 ]]; then
-              target="desktop-server-${ASSET_SUFFIX}.${ext}"
-            else
-              target="desktop-server-${ASSET_SUFFIX}-${index}.${ext}"
-            fi
-
-            cp -v "$file" "release-artifacts/$target"
-          done < <(
-            find . -type f \
-              \( -path "*/build/libs/*.jar" \
-              -o -path "*/build/distributions/*.zip" \
-              -o -path "*/build/distributions/*.tar" \
-              -o -path "*/build/distributions/*.tar.gz" \) \
-              -print0
+          mapfile -d '' files < <(
+            find desktop/build/libs -maxdepth 1 -type f -name "*.jar" -print0
           )
 
-          if ! find release-artifacts -type f | grep -q .; then
-            echo "No desktop artifacts found. Check DESKTOP_GRADLE_TASK and artifact paths."
+          if (( ${#files[@]} == 0 )); then
+            echo "No desktop JAR found in desktop/build/libs"
+            find desktop/build -type f || true
             exit 1
           fi
+
+          if (( ${#files[@]} > 1 )); then
+            echo "More than one desktop JAR found:"
+            printf '  %s\n' "${files[@]}"
+            exit 1
+          fi
+
+          cp -v "${files[0]}" release-artifacts/
 
       - name: Upload desktop artifacts
         uses: actions/upload-artifact@v4
@@ -338,7 +318,7 @@ jobs:
             echo
             echo "## Build artifacts"
             echo
-            find upload -type f -printf -- '- %f\n' | sort
+            find upload -type f -exec basename {} \; | sort | sed 's/^/- /'
             echo
             echo "## Changelog"
             echo

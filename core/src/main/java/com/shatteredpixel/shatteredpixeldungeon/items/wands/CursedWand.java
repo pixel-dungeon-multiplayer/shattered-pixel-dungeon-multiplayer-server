@@ -21,6 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.wands;
 
+import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
+
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
@@ -1109,6 +1111,7 @@ public class CursedWand {
 		}
 	}
 
+	//todo
 	public static class AbortRetryFail extends CursedEffect {
 
 		@Override
@@ -1127,11 +1130,11 @@ public class CursedWand {
 								public void call() {
 									GameScene.show(
 											new WndOptions(((Hero) user), Icons.get(Icons.WARNING),
-													"CURSED WAND ERROR",
-													"this application will now self-destruct",
-													"abort",
-													"retry",
-													"fail") {
+													LocalizedString.raw("CURSED WAND ERROR"),
+													LocalizedString.raw("this application will now self-destruct"),
+													LocalizedString.raw("abort"),
+													LocalizedString.raw("retry"),
+													LocalizedString.raw("fail")) {
 
 														@Override
 														protected void onSelect(int index) {

@@ -46,115 +46,77 @@ public class WndOptions extends Window {
 	protected static final int MARGIN 		= 2;
 	protected static final int BUTTON_HEIGHT	= 18;
 
-	private WndOptionsParams params;
+	public IconTitle titlebar;
+	public RenderedTextBlock message;
+	public RedButton[] optionButtons;
 
-	public WndOptions(Hero hero, Image icon, String title, String message, String... options) {
-		this(hero, icon, LocalizedString.raw(title), LocalizedString.raw(message), LocalizedString.raw(options));
-	}
 	public WndOptions(Hero hero, Image icon, LocalizedString title, LocalizedString message, LocalizedString... options) {
-		super(hero);
-		WndOptionsParams params = new WndOptionsParams();
-		params.title = title;
-		params.message = message;
-		params.options = List.of(options);
-		if (icon instanceof CharSprite) {
-			params.charSprite = (CharSprite) icon;
-		} else if (icon instanceof ItemSprite) {
-			params.itemSpriteImage = ((ItemSprite) icon).image();
-			params.itemSpriteGlowing = ((ItemSprite) icon).glowing();
-		}
-		sendWnd(params);
+		this(hero, icon, title, null, message, options);
 	}
+
 	public WndOptions(Hero owner, LocalizedString title, LocalizedString message, LocalizedString... options) {
-		super(owner);
-		WndOptionsParams params = new WndOptionsParams();
-		params.title = title;
-		params.message = message;
-		params.options = List.of(options);
-		sendWnd(params);
+		this(owner, null, title, null, message, options);
 	}
 
-
-	protected void sendWnd(Image icon, @NotNull String title, @Nullable Integer titleColor, @NotNull String message, String... options) {
-		this.sendWnd(icon, LocalizedString.raw(title), titleColor, LocalizedString.raw(message), LocalizedString.raw(options));
-	}
-
-	protected void sendWnd(Image icon, @NotNull LocalizedString title, @Nullable Integer titleColor, @NotNull LocalizedString message, LocalizedString... options) {
-		WndOptionsParams params = new WndOptionsParams();
-		params.title = title;
-		params.titleColor = titleColor;
-		params.message = message;
-		if (icon instanceof CharSprite) {
-			params.charSprite = (CharSprite) icon;
-		} else if (icon instanceof ItemSprite) {
-			params.itemSpriteImage = ((ItemSprite) icon).image();
-			params.itemSpriteGlowing = ((ItemSprite) icon).glowing();
-		}
-		params.options = List.of(options);
-		sendWnd(params);
-	}
-
-	protected void sendWnd(WndOptionsParams params) {
-		this.params = params;
-	}
-
-	public WndOptionsParams params() {
-		return params;
-	}
-
-	public WndOptions( Hero hero, String title, String message, String... options ) {
+	public WndOptions(Hero hero, Image icon, LocalizedString title, Integer titleColor, LocalizedString message, LocalizedString... options) {
 		super(hero);
 
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 
 		float pos = MARGIN;
-		if (title != null) {
-			RenderedTextBlock tfTitle = PixelScene.renderTextBlock(title, 9);
-			tfTitle.hardlight(TITLE_COLOR);
-			tfTitle.setPos(MARGIN, pos);
-			tfTitle.maxWidth(width - MARGIN * 2);
-			add(tfTitle);
+		if (title != null || icon != null) {
+			titlebar = new IconTitle();
+			if (icon != null) {
+				titlebar.icon(icon);
+			}
+			if (title != null) {
+				if (titleColor != null) {
+					titlebar.label(title, titleColor);
+				} else {
+					titlebar.label(title);
+				}
+			}
+			titlebar.setRect(0, 0, width, 0);
+			add(titlebar);
 
-			pos = tfTitle.bottom() + 2*MARGIN;
+			pos = titlebar.bottom() + 2 * MARGIN;
 		}
-		
-		layoutBody(pos, message, options);
-	}
 
-	protected void layoutBody(float pos, String message, String... options){
-		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
+		this.message = PixelScene.renderTextBlock(6);
+		this.message.text(message.toString(), width);
+		this.message.setPos(0, pos);
+		add(this.message);
 
-		RenderedTextBlock tfMesage = PixelScene.renderTextBlock( 6 );
-		tfMesage.text(message, width);
-		tfMesage.setPos( 0, pos );
-		add( tfMesage );
+		pos = this.message.bottom() + 2 * MARGIN;
 
-		pos = tfMesage.bottom() + 2*MARGIN;
-
-		for (int i=0; i < options.length; i++) {
+		optionButtons = new RedButton[options.length];
+		for (int i = 0; i < options.length; i++) {
 			final int index = i;
-			RedButton btn = new RedButton( options[i] ) {
+			RedButton btn = new RedButton(options[i]) {
 				@Override
 				protected void onClick() {
 					hide();
-					onSelect( index );
+					onSelect(index);
 				}
 			};
-			if (hasIcon(i)) btn.icon(getIcon(i));
+			if (hasIcon(i)) {
+				btn.icon(getIcon(i));
+			}
 			btn.multiline = true;
-			add( btn );
+			add(btn);
+			optionButtons[i] = btn;
 
 			if (!hasInfo(i)) {
 				btn.setRect(0, pos, width, BUTTON_HEIGHT);
 			} else {
 				btn.setRect(0, pos, width - BUTTON_HEIGHT, BUTTON_HEIGHT);
-				IconButton info = new IconButton(Icons.get(Icons.INFO)){
+				IconButton info = new IconButton(Icons.get(Icons.INFO)) {
 					@Override
 					protected void onClick() {
-						onInfo( index );
+						onInfo(index);
 					}
 				};
-				info.setRect(width-BUTTON_HEIGHT, pos, BUTTON_HEIGHT, BUTTON_HEIGHT);
+				info.setRect(width - BUTTON_HEIGHT, pos, BUTTON_HEIGHT, BUTTON_HEIGHT);
 				add(info);
 			}
 
@@ -163,17 +125,14 @@ public class WndOptions extends Window {
 			pos += BUTTON_HEIGHT + MARGIN;
 		}
 
-		resize( width, (int)(pos - MARGIN) );
+		resize(width, (int) (pos - MARGIN));
 	}
-	public static final class WndOptionsParams {
-		public @Nullable Integer itemSpriteImage;
-		public @Nullable ItemSprite.Glowing itemSpriteGlowing;
-		public @Nullable CharSprite charSprite;
-		public @NotNull LocalizedString title = LocalizedString.raw("Untitled");
-		public @Nullable Integer titleColor = null;
-		public @NotNull LocalizedString message = LocalizedString.raw("MissingNo");
-		public List<LocalizedString> options = new ArrayList<LocalizedString>(3);
 
+	@Override
+	protected void onSelect(int button) {
+		if (button >= 0 && button < optionButtons.length) {
+			optionButtons[button].onClickNetwork();
+		}
 	}
 
 	protected boolean enabled( int index ){
@@ -184,7 +143,8 @@ public class WndOptions extends Window {
 		return enabled(index);
 	}
 	
-	protected void onSelect( int index ) {}
+	
+	
 
 	protected boolean hasInfo( int index ) {
 		return false;

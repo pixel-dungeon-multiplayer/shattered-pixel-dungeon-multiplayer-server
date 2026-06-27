@@ -15,36 +15,19 @@ public class WndOptionsSerializer<T extends WndOptions> extends WndDialogSeriali
 
     @Override
     protected @NotNull WndDialogContract getContract(@NotNull T obj, @NotNull SerializationContext ctx, @NotNull String profile) {
-        WndOptions.WndOptionsParams params = Objects.requireNonNull(obj.params());
-
         WndDialogContract contract = new WndDialogContract();
-        contract.titleText = params.title;
-        contract.titleColor = params.titleColor;
-        contract.message = params.message;
+        contract.fillFromTitlebar(obj.titlebar, ctx, profile);
+        contract.message = obj.message.LocalizedStringText();
         contract.layout = WndDialogContract.Layout.options();
-        contract.titleIcon = titleIcon(params);
-        for (int i = 0; i < params.options.size(); i++) {
-            LocalizedString option = params.options.get(i);
+        for (int i = 0; i < obj.optionButtons.length; i++) {
             contract.actions.add(new WndDialogContract.Action(
-                    option,
+                    obj.optionButtons[i].LocalizedStringText(),
                     obj.hasInfoForNetwork(i),
                     obj.enabledForNetwork(i),
                     optionIcon(obj, i, ctx, profile)));
         }
 
         return contract;
-    }
-
-    private @NotNull ImageIcon titleIcon(@NotNull WndOptions.WndOptionsParams params) {
-        if (params.itemSpriteImage != null) {
-            return ImageIcon.itemSprite(params.itemSpriteImage, params.itemSpriteGlowing);
-        }
-        if (params.charSprite != null) {
-            return ImageIcon.charSprite(
-                    params.charSprite.getSpriteAsset(),
-                    params.charSprite.spriteName());
-        }
-        return ImageIcon.none();
     }
 
     private @NotNull ImageIcon optionIcon(

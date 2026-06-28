@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.shatteredpixel.shatteredpixeldungeon.items.optional.FragmentOfUpgrade;
 import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -536,6 +537,12 @@ public class WndUpgrade extends Window {
 				} else if (upgrader instanceof MagicalInfusion) {
 					((MagicalInfusion) upgrader).useAnimation();
 					upgraded = ((MagicalInfusion) upgrader).upgradeItem(toUpgrade);
+				}
+				//Make upgradeItem take a hero or keep it like this?
+				else if (upgrader instanceof FragmentOfUpgrade){
+					((ScrollOfUpgrade) upgrader).readAnimation();
+					upgraded = ((FragmentOfUpgrade) upgrader).upgradeItem(toUpgrade, getOwnerHero());
+					Sample.INSTANCE.play(Assets.Sounds.READ);
 				}
 
 				if (!force) upgrader.detach(getOwnerHero().belongings.backpack);

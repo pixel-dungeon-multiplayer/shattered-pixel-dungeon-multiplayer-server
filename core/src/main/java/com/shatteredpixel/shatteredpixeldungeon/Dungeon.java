@@ -514,6 +514,7 @@ public class Dungeon {
 				SendData.sendAction(hero, new HeroActorIdAction(hero.id()));
 			}
 		}
+		// SendData.sendActionForAll(new UpdateCellsAction(level, oldLevelMappedChache)); //not needed because "visible" and "mapped" must be false by default after level resize
 		SendData.sendActionForAll(new UpdateFloorInfoAction(Dungeon.depth, Dungeon.branch, Dungeon.level.feeling));
 		SendData.sendActionForAll(new LockedFloorStateAction(Dungeon.level.locked));
 		SendData.sendAllActors();
@@ -927,6 +928,7 @@ public class Dungeon {
 		observe( hero, dist+1, send );
 	}
 
+	//this cache is not actual cahce. It is helper array that clears each observe call
 	private static boolean[] oldLevelVisitedChache = new boolean[0]; //reduce GC usage
 	private static boolean[] oldLevelMappedChache = new boolean[0]; //reduce GC usage
 

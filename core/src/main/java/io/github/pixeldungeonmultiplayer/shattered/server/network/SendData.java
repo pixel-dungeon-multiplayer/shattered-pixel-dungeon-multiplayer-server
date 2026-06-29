@@ -26,6 +26,9 @@ public class SendData {
     //---------------------------Level
 
     public static void sendLevel(Level level, Hero hero) { //keep because of observer
+        if (hero == null) {
+            return;
+        }
         int ID = hero.networkID;
         if ((ID != -1) && (clients[ID] != null)) {
             clients[ID].packAndAddLevel(level);

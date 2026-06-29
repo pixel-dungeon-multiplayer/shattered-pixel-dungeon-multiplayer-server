@@ -65,11 +65,11 @@ class NetworkPacketCompressor {
             } else if (action instanceof SetLevelTilesAction) {
                 currentTiles = ((SetLevelTilesAction) action).tiles;
                 pendingTiles.clear();
-                actions.add(action);
+                //actions.add(action);
             } else if (action instanceof SetLevelStatesAction) {
                 currentStates = ((SetLevelStatesAction) action).states;
                 pendingStates.clear();
-                actions.add(action);
+                //actions.add(action);
             } else if (action instanceof UpdateCellsAction) {
                 addCellsUpdate((UpdateCellsAction) action);
             } else if (action instanceof ChatMessageAction) {
@@ -134,6 +134,12 @@ class NetworkPacketCompressor {
 
         @Contract("->new")
         @NotNull List<LiveStateNetworkAction> toActions() {
+            if (currentStates != null) {
+                actions.add(new SetLevelStatesAction(currentStates));
+            }
+            if (currentTiles != null) {
+                actions.add(new SetLevelTilesAction(currentTiles));
+            }
             addPendingUpdates();
             if (pendingJournalSnapshot != null) {
                 actions.add(pendingJournalSnapshot);

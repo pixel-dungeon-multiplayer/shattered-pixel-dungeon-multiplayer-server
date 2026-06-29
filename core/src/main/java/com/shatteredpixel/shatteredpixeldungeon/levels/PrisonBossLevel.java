@@ -46,8 +46,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.TenguDartTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
-import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.CustomTilemapActions;
-import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.MusicAction;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.*;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
@@ -379,6 +378,8 @@ public class PrisonBossLevel extends Level {
 		
 		GameScene.resetMap();
 		Dungeon.observe();
+		SendData.sendActionForAll(new SetLevelStatesAction(Dungeon.level));
+		SendData.sendActionForAll(new SetLevelTilesAction(Dungeon.level));
 	}
 
 	//randomly places up to 5 cages on tiles that are aside walls (but not torches or doors!)
@@ -467,7 +468,7 @@ public class PrisonBossLevel extends Level {
 				mobs.remove(tengu);
 				tengu.clearTime();
 				TargetHealthIndicator.instance.target(null);
-				tengu.getSprite().kill();
+				tengu.getSprite().kill(); //todo fix this.
 				if (d != null) tengu.add(d);
 				
 				GameScene.flash(0x80FFFFFF);

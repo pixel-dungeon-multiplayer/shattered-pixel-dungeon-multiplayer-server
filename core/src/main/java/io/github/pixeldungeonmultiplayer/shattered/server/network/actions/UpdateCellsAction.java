@@ -1,28 +1,30 @@
 package io.github.pixeldungeonmultiplayer.shattered.server.network.actions;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class UpdateCellsAction implements ImmutableNetworkAction {
-    public final int[] positions;
-    @Nullable
-    public final int[] tiles;
-    @Nullable
-    public final int[] states;
+    public final int @NotNull [] positions;
+    public final int @Nullable [] tiles;
+    public final int @Nullable [] states;
 
-    public UpdateCellsAction(int[] positions, @Nullable int[] tiles, @Nullable int[] states) {
+    @Contract(pure = true)
+    public UpdateCellsAction(int @NotNull [] positions, int @Nullable [] tiles, int @Nullable [] states) {
         this.positions = positions;
         this.tiles = tiles;
         this.states = states;
     }
 
+    @Contract(pure = true)
     public UpdateCellsAction(int cell, int tile, int state) {
         this.positions = new int[]{cell};
         this.tiles = new int[]{tile};
         this.states = new int[]{state};
     }
 
+    @Contract(pure = true)
     public UpdateCellsAction(int cell, @NotNull Level level) {
         this.positions = new int[]{cell};
         this.tiles = new int[]{level.map[cell]};
@@ -32,7 +34,7 @@ public class UpdateCellsAction implements ImmutableNetworkAction {
         this.states = new int[]{state};
     }
 
-    public UpdateCellsAction(@NotNull Level level, boolean[] diff) {
+    public UpdateCellsAction(@NotNull Level level, boolean @NotNull [] diff) {
         int count = 0;
         for (int i = 0; i < diff.length; i++) {
             if (diff[i]) {

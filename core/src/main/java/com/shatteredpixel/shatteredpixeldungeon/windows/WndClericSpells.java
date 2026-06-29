@@ -136,42 +136,24 @@ public class WndClericSpells extends Window {
 
 	@Override
 	public void onSelect(int button, @Nullable JSONObject args) {
-		if (args != null && args.has("action")) {
-			String action = args.getString("action");
-			if ("toggle_info".equals(action)) {
-				GameScene.show(new WndClericSpells(tome, getOwnerHero(), !info));
+		if (button == spellButtons.size()) {
+			GameScene.show(new WndClericSpells(tome, getOwnerHero(), !info));
+			hide();
+		} else if (button >= 0 && button < spellButtons.size()) {
+			ClericSpell spell = spellButtons.get(button).spell;
+			boolean isLongClick = args != null && args.optBoolean("is_long_click", false);
+			if (info) {
+				GameScene.show(new WndTitledMessage(getOwnerHero(), new HeroIcon(spell), Messages.titleCase(spell.name()), spell.desc(getOwnerHero())));
+			} else {
 				hide();
-			} else if ("click_spell".equals(action)) {
-				String spellId = args.getString("id");
-				boolean isLongClick = args.optBoolean("is_long_click", false);
-				ClericSpell foundSpell = null;
-				for (int i = 1; i <= Talent.MAX_TALENT_TIERS; i++) {
-					for (ClericSpell spell : ClericSpell.getSpellList(getOwnerHero(), i)) {
-						if (spell.name().equals(spellId) || String.valueOf(ClericSpell.getSpellID(spell)).equals(spellId)) {
-							foundSpell = spell;
-							break;
-						}
-					}
-					if (foundSpell != null) break;
-				}
-				if (foundSpell != null) {
-					if (info) {
-						GameScene.show(new WndTitledMessage(getOwnerHero(), new HeroIcon(foundSpell), Messages.titleCase(foundSpell.name()), foundSpell.desc(getOwnerHero())));
-					} else {
-						if (isLongClick) {
-							hide();
-							tome.setQuickSpell(foundSpell, getOwnerHero());
-						} else {
-							hide();
-							if (!tome.canCast(getOwnerHero(), foundSpell)) {
-								GLog.w(Messages.get(HolyTome.class, "no_spell"));
-							} else {
-								foundSpell.onCast(tome, getOwnerHero());
-								if (foundSpell.targetingFlags() != -1 && Dungeon.quickslot.contains(tome)) {
-									tome.targetingSpell = foundSpell;
-								}
-							}
-						}
+				if (isLongClick) {
+					tome.setQuickSpell(spell, getOwnerHero());
+				} else if (!tome.canCast(getOwnerHero(), spell)) {
+					GLog.w(Messages.get(HolyTome.class, "no_spell"));
+				} else {
+					spell.onCast(tome, getOwnerHero());
+					if (spell.targetingFlags() != -1 && Dungeon.quickslot.contains(tome)) {
+						tome.targetingSpell = spell;
 					}
 				}
 			}

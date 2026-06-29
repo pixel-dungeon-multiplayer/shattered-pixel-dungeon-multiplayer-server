@@ -37,8 +37,6 @@ public class WndClericSpellsSerializer extends WindowSerializer<WndClericSpells>
         for (WndClericSpells.SpellButton button : obj.spellButtons) {
             JSONObject btnObj = new JSONObject();
             btnObj.put("info", obj.infoMode());
-            btnObj.put("id", button.spell.name());
-            btnObj.put("spell_id", ClericSpell.getSpellID(button.spell));
             btnObj.put("spell_name", ctx.serialize(button.spell.name(), profile));
             btnObj.put("spell_short_desc", ctx.serialize(button.spell.shortDesc(cleric), profile));
             btnObj.put("spell_desc", ctx.serialize(button.spell.desc(cleric), profile));

@@ -298,12 +298,10 @@ public class PrisonBossLevel extends Level {
 		
 		CustomTilemap vis = new ExitVisual();
 		vis.pos(11, 10);
-		customTiles.add(vis);
 		GameScene.add(vis, false);
 		
 		vis = new ExitVisualWalls();
 		vis.pos(11, 10);
-		customWalls.add(vis);
 		GameScene.add(vis, true);
 		
 		Painter.set(this, tenguCell.left+4, tenguCell.top, Terrain.DOOR);

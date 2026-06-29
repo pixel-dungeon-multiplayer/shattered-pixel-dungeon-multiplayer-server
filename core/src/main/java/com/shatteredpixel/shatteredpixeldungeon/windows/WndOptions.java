@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.watabou.utils.DeviceCompat;
 import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -34,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.Image;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +98,9 @@ public class WndOptions extends Window {
 				@Override
 				protected void onClick() {
 					hide();
-					onSelect(index);
+					if (DeviceCompat.isDebug()) {
+						throw new RuntimeException("This never should happen");
+					}
 				}
 			};
 			if (hasIcon(i)) {
@@ -129,13 +133,20 @@ public class WndOptions extends Window {
 	}
 
 	@Override
-	protected void onSelect(int button) {
-		if (button >= 0 && button < optionButtons.length) {
-			optionButtons[button].onClickNetwork();
-		}
+	public void onSelect(int button) {
+		hide();
 	}
 
-	protected boolean enabled( int index ){
+	@Override
+	public void onSelect(int button, @Nullable final JSONObject args) {
+		if (args!= null && args.optBoolean("info")) {
+			onInfo(button);
+			return;
+		}
+		super.onSelect(button, args);
+	}
+
+	protected boolean enabled(int index ){
 		return true;
 	}
 

@@ -85,7 +85,9 @@ public class MagicMissile extends Emitter {
 
 	public void reset( int type, int from, int to, Callback callback ) {
 		sendSelf(type, from, to);
-		callback.call();
+		if (callback != null) {
+			callback.call();
+		}
 	}
 
 	public void reset( int type, Visual from, Visual to, Callback callback ) {

@@ -1,6 +1,7 @@
 package io.github.pixeldungeonmultiplayer.shattered.server.network;
 
 import com.badlogic.gdx.Gdx;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import io.github.pixeldungeonmultiplayer.shattered.server.utils.Log;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
@@ -590,10 +591,16 @@ public class ClientThread implements Callable<String> {
         packet.addLateLiveStateAction(new UpdateFovAction(clientHero));
 
         addAllActors();
+        forceFlush(); //Let client process previous data while we're creating journal
+
         packet.packAndAdd(new JournalSnapshotAction(true), clientHero);
         forceFlush();
 
         packet.addAction(new InterlevelSceneAction("fade_out"));
+        forceFlush();
+
+        //these actions use client GameScene
+        packet.addAction(BossHealthBar.createAction());
         forceFlush();
 
         Server.clients[threadID] = this;

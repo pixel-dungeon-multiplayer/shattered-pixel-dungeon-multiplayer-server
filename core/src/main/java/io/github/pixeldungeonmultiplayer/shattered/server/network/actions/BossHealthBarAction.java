@@ -2,13 +2,14 @@ package io.github.pixeldungeonmultiplayer.shattered.server.network.actions;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class BossHealthBarAction implements ImmutableNetworkAction {
-    public final int id;
+    public final @Nullable Integer id;
     public final boolean bleeding;
 
     @Contract(pure = true)
-    public BossHealthBarAction(int id, boolean bleeding) {
+    public BossHealthBarAction(@Nullable Integer id, boolean bleeding) {
         this.id = id;
         this.bleeding = bleeding;
     }

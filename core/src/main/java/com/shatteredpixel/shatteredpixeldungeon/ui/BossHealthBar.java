@@ -22,9 +22,13 @@
 package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.BossHealthBarAction;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.ImmutableNetworkAction;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 public class BossHealthBar {
 	private static Mob boss;
@@ -52,16 +56,20 @@ public class BossHealthBar {
 
 	public static void bleed(boolean value){
 		bleeding = value;
-		if (boss != null) {
-			sendSelf();
-		}
+		sendSelf();
 	}
 
 	public static boolean isBleeding(){
 		return isAssigned() && bleeding;
 	}
 	public static void sendSelf(){
-		SendData.sendActionForAll(new BossHealthBarAction(boss.id(), bleeding));
+		SendData.sendActionForAll(createAction());
 	}
+
+	@Contract(pure = true)
+	public static @NotNull BossHealthBarAction createAction(){
+		return new BossHealthBarAction(boss == null? null: boss.id(), bleeding);
+	}
+
 
 }

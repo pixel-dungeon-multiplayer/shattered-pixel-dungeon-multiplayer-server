@@ -90,7 +90,7 @@ public class Sunray extends TargetedClericSpell {
 		hero.getSprite().zap(target);
 
 		hero.getSprite().parent.add(
-				new Beam.SunRay(hero.getSprite().center(), DungeonTilemap.raisedTileCenterToWorld(aim.collisionPos)));
+				new Beam.SunRay(hero.getSprite(), aim.collisionPos));
 
 		Char ch = Actor.findChar( aim.collisionPos );
 		if (ch != null) {

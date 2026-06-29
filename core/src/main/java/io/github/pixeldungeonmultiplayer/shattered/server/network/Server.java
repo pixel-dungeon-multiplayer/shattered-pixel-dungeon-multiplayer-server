@@ -77,6 +77,7 @@ import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.em
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.dtos.emitters.EmitterAnchor;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.dtos.KeyIndicatorDTO;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.dtos.ArmorAbilityState;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.dtos.BeamAnchor;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.dtos.TalentState;
 
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -128,6 +129,7 @@ public class Server extends Thread {
         SERIALIZERS.register(Splash.SplashFactory.class, "default", new SplashFactorySerializer());
         SERIALIZERS.register(EmitterAnchor.class, "default", new EmitterAnchorSerializer());
         SERIALIZERS.register(MissileSprite.Anchor.class, "default", new MissileAnchorSerializer());
+        SERIALIZERS.register(BeamAnchor.class, "default", new BeamAnchorSerializer());
 
         //windows
         SERIALIZERS.register(AlchemyScene.class, new AlchemySceneSerializer());
@@ -195,6 +197,7 @@ public class Server extends Thread {
         SERIALIZERS.register(EnchantingVisualAction.class, new EnchantingVisualActionSerializer());
         SERIALIZERS.register(MagicMissileVisualAction.class, new MagicMissileVisualActionSerializer());
         SERIALIZERS.register(WoundVisualAction.class, new WoundVisualActionSerializer());
+        SERIALIZERS.register(BeamVisualAction.class, new BeamVisualActionSerializer());
         SERIALIZERS.register(DiscoverTileAction.class, new DiscoverTileActionSerializer());
         SERIALIZERS.register(UpdateFovAction.class, new UpdateFovActionSerializer());
         SERIALIZERS.register(SetLevelEntranceAction.class, new SetLevelEntranceActionSerializer());

@@ -175,7 +175,7 @@ public class WandOfTransfusion extends DamageWand {
 	@Override
 	public void fx(Ballistica beam, Callback callback) {
 		curUser.getSprite().parent.add(
-				new Beam.HealthRay(curUser.getSprite().center(), DungeonTilemap.raisedTileCenterToWorld(beam.collisionPos)));
+				new Beam.HealthRay(curUser.getSprite(), beam.collisionPos));
 		callback.call();
 	}
 

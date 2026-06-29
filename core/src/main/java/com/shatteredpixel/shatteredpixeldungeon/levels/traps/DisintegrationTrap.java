@@ -85,7 +85,7 @@ public class DisintegrationTrap extends Trap {
 			}
 			if (Dungeon.visibleforAnyHero(pos) || Dungeon.visibleforAnyHero(target.pos)) {
 						Sample.INSTANCE.play(Assets.Sounds.RAY);
-						ShatteredPixelDungeon.scene().add(new Beam.DeathRay(DungeonTilemap.tileCenterToWorld(pos), target.getSprite().center()));
+						ShatteredPixelDungeon.scene().add(new Beam.DeathRay(pos, target.getSprite()));
 					}
 				}
 

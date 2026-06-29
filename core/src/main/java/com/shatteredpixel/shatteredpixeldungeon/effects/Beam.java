@@ -22,9 +22,13 @@
 package com.shatteredpixel.shatteredpixeldungeon.effects;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.watabou.glwrap.Blending;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.BeamVisualAction;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.dtos.BeamAnchor;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.PointF;
 
@@ -35,6 +39,10 @@ public class Beam extends Image {
 	private  float duration;
 	
 	private float timeLeft;
+
+	private BeamAnchor from;
+
+	private BeamAnchor to;
 
 	private Beam(PointF s, PointF e, Effects.Type asset, float duration) {
 		super( Effects.get( asset ) );
@@ -54,15 +62,33 @@ public class Beam extends Image {
 		timeLeft = this.duration = duration;
 	}
 
+	private Beam(BeamAnchor s, BeamAnchor e, Effects.Type asset, float duration) {
+		this(s.toPointF(), e.toPointF(), asset, duration);
+		from = s;
+		to = e;
+	}
+
 	public static class DeathRay extends Beam{
 		public DeathRay(PointF s, PointF e){
 			super(s, e, Effects.Type.DEATH_RAY, 0.5f);
+		}
+		public DeathRay(CharSprite s, CharSprite e){
+			super(BeamAnchor.target(s), BeamAnchor.target(e), Effects.Type.DEATH_RAY, 0.5f);
+		}
+		public DeathRay(CharSprite s, int raisedCell){
+			super(BeamAnchor.target(s), BeamAnchor.raisedCell(raisedCell), Effects.Type.DEATH_RAY, 0.5f);
+		}
+		public DeathRay(int cell, CharSprite e){
+			super(BeamAnchor.cell(cell), BeamAnchor.target(e), Effects.Type.DEATH_RAY, 0.5f);
 		}
 	}
 
 	public static class LightRay extends Beam{
 		public LightRay(PointF s, PointF e){
 			super(s, e, Effects.Type.LIGHT_RAY, 1f);
+		}
+		public LightRay(CharSprite s, int raisedCell){
+			super(BeamAnchor.target(s), BeamAnchor.raisedCell(raisedCell), Effects.Type.LIGHT_RAY, 1f);
 		}
 	}
 
@@ -71,11 +97,37 @@ public class Beam extends Image {
 			super(s, e, Effects.Type.LIGHT_RAY, 1f);
 			tint(1, 1, 0.25f, 1);
 		}
+		public SunRay(CharSprite s, int raisedCell){
+			super(BeamAnchor.target(s), BeamAnchor.raisedCell(raisedCell), Effects.Type.LIGHT_RAY, 1f);
+			tint(1, 1, 0.25f, 1);
+		}
 	}
 
 	public static class HealthRay extends Beam{
 		public HealthRay(PointF s, PointF e){
 			super(s, e, Effects.Type.HEALTH_RAY, 0.75f);
+		}
+		public HealthRay(CharSprite s, CharSprite e){
+			super(BeamAnchor.target(s), BeamAnchor.target(e), Effects.Type.HEALTH_RAY, 0.75f);
+		}
+		public HealthRay(CharSprite s, CharSprite e, boolean useDestination){
+			super(useDestination ? BeamAnchor.targetDestination(s) : BeamAnchor.target(s),
+					useDestination ? BeamAnchor.targetDestination(e) : BeamAnchor.target(e),
+					Effects.Type.HEALTH_RAY, 0.75f);
+		}
+		public HealthRay(CharSprite s, int raisedCell){
+			super(BeamAnchor.target(s), BeamAnchor.raisedCell(raisedCell), Effects.Type.HEALTH_RAY, 0.75f);
+		}
+		public HealthRay(int cell, CharSprite e){
+			super(BeamAnchor.cell(cell), BeamAnchor.target(e), Effects.Type.HEALTH_RAY, 0.75f);
+		}
+	}
+
+	@Override
+	public void onAdd() {
+		super.onAdd();
+		if (from != null && to != null) {
+			SendData.sendActionForAll(new BeamVisualAction(this, from, to, duration));
 		}
 	}
 	

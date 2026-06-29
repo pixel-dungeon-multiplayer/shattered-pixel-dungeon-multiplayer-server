@@ -44,7 +44,7 @@ public class VaultLaser extends NPC {
 				}
 			}
 			if (visible){
-				getSprite().parent.add(new Beam.DeathRay(getSprite().center(), DungeonTilemap.raisedTileCenterToWorld(beam.collisionPos)));
+				getSprite().parent.add(new Beam.DeathRay(getSprite(), beam.collisionPos));
 			}
 
 			laserDirIdx++;

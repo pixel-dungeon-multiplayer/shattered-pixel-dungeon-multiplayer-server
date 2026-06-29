@@ -73,7 +73,7 @@ public class LifeLinkSpell extends ClericSpell {
 		if (ally != null) {
 			hero.getSprite().zap(ally.pos);
 			hero.getSprite().parent.add(
-					new Beam.HealthRay(hero.getSprite().center(), ally.getSprite().center()));
+					new Beam.HealthRay(hero.getSprite(), ally.getSprite()));
 
 			LifeLink lifeLink = Buff.prolong(hero, LifeLink.class, duration);
 			lifeLink.source = hero;
@@ -82,7 +82,7 @@ public class LifeLinkSpell extends ClericSpell {
 			ally = Stasis.getStasisAlly(hero);
 			hero.getSprite().operate(hero.pos);
 			hero.getSprite().parent.add(
-					new Beam.HealthRay(DungeonTilemap.tileCenterToWorld(hero.pos), hero.getSprite().center()));
+					new Beam.HealthRay(hero.pos, hero.getSprite()));
 		}
 
 		LifeLink lifeLink = Buff.prolong(ally, LifeLink.class, duration);

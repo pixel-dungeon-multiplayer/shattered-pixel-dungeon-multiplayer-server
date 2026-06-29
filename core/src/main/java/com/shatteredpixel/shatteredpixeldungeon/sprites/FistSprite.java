@@ -269,7 +269,7 @@ public abstract class FistSprite extends MobSprite {
 			super.zap( cell, null );
 
 			((YogFist)ch).onZapComplete();
-			parent.add( new Beam.LightRay(center(), DungeonTilemap.raisedTileCenterToWorld(cell)));
+			parent.add( new Beam.LightRay(this, cell));
 		}
 		@Override
 		public int blood() {

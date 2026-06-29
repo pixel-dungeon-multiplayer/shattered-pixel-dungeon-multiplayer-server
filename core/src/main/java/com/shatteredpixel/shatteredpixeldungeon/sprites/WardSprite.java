@@ -66,9 +66,9 @@ public class WardSprite extends MobSprite implements TieredSprite{
 		flash();
 		emitter().burst(MagicMissile.WardParticle.UP, 2);
 		if (Actor.findChar(pos) != null){
-			parent.add(new Beam.DeathRay(center(), Actor.findChar(pos).getSprite().center()));
+			parent.add(new Beam.DeathRay(this, Actor.findChar(pos).getSprite()));
 		} else {
-			parent.add(new Beam.DeathRay(center(), DungeonTilemap.raisedTileCenterToWorld(pos)));
+			parent.add(new Beam.DeathRay(this, pos));
 		}
 		((WandOfWarding.Ward)ch).onZapComplete();
 	}

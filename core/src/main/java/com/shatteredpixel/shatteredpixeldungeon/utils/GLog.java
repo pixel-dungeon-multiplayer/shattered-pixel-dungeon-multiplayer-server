@@ -56,9 +56,7 @@ public class GLog {
 			str = LocalizedString.raw(text);
 		}
 
-		DeviceCompat.log(TAG, str.toString());
-		update.dispatch(str.toString());
-		SendData.sendActionForAll(new ChatMessageAction(text));
+        i(str);
 	}
 
 	public static void i(LocalizedString text) {

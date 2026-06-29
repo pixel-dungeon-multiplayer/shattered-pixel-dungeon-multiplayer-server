@@ -97,9 +97,12 @@ public class Beam extends Image {
 			super(s, e, Effects.Type.LIGHT_RAY, 1f);
 			tint(1, 1, 0.25f, 1);
 		}
-		public SunRay(CharSprite s, int raisedCell){
+		private SunRay(CharSprite s, int raisedCell){
 			super(BeamAnchor.target(s), BeamAnchor.raisedCell(raisedCell), Effects.Type.LIGHT_RAY, 1f);
 			tint(1, 1, 0.25f, 1);
+		}
+		public static SunRay toRaisedCell(CharSprite s, int raisedCell) {
+			return new SunRay(s, raisedCell);
 		}
 	}
 

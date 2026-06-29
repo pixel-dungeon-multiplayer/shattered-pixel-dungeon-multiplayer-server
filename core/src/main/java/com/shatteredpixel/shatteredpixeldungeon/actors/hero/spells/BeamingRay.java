@@ -136,7 +136,7 @@ public class BeamingRay extends TargetedClericSpell {
 			GameScene.add((Mob) ally);
 			hero.buff(Stasis.StasisBuff.class).detach();
 			hero.getSprite().parent.add(
-					new Beam.SunRay(hero.getSprite(), telePos));
+					Beam.SunRay.toRaisedCell(hero.getSprite(), telePos));
 
 			if (ally.buff(LifeLink.class) != null){
 				LifeLink lifeLink = Buff.prolong(hero, LifeLink.class, ally.buff(LifeLink.class).cooldown());
@@ -145,7 +145,7 @@ public class BeamingRay extends TargetedClericSpell {
 			}
 		} else {
 			hero.getSprite().parent.add(
-					new Beam.SunRay(ally.getSprite(), telePos));
+					Beam.SunRay.toRaisedCell(ally.getSprite(), telePos));
 		}
 
 		hero.getSprite().zap(telePos);

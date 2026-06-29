@@ -23,21 +23,13 @@ import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.*;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.serializers.*;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.NetworkPacket.SerializedAction;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.*;
-import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.*;
-import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.serializers.*;
-import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.*;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.windows.*;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.windows.wnddialog.*;
-import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.*;
-import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.serializers.*;
-import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.*;
-import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.windows.*;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.windows.heropack.WndHeroInfoSerializer;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.windows.heropack.WndHeroSerializer;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.windows.heropack.WndInfoSubclassSerializer;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.windows.journalpack.WndBadgeSerializer;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.windows.menupack.WndChallengesSerializer;
-import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.windows.wnddialog.*;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.windows.wnddialog.wndoptions.*;
 import com.shatteredpixel.shatteredpixeldungeon.plugins.PluginLoader;
 import com.shatteredpixel.shatteredpixeldungeon.plugins.PluginManager;
@@ -46,9 +38,6 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.texturepack.TexturePackManager;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Game;
-import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.windows.wnddialog.wndoptions.*;
-import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.windows.wnddialog.*;
-import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.windows.wnddialog.wndoptions.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -78,6 +67,7 @@ import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.dt
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.dtos.KeyIndicatorDTO;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.dtos.ArmorAbilityState;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.dtos.BeamAnchor;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.dtos.FloatingTextAnchor;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.dtos.LightningAnchor;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.dtos.TalentState;
 
@@ -88,7 +78,6 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.particles.SerializableParticleFactory;
 import com.watabou.utils.Rect;
 import com.watabou.utils.RectF;
-import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.windows.*;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.AmbitiousImpRoom;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
@@ -132,6 +121,7 @@ public class Server extends Thread {
         SERIALIZERS.register(MissileSprite.Anchor.class, "default", new MissileAnchorSerializer());
         SERIALIZERS.register(BeamAnchor.class, "default", new BeamAnchorSerializer());
         SERIALIZERS.register(LightningAnchor.class, "default", new LightningAnchorSerializer());
+        SERIALIZERS.register(FloatingTextAnchor.class, "default", new FloatingTextAnchorSerializer());
 
         //windows
         SERIALIZERS.register(AlchemyScene.class, new AlchemySceneSerializer());
@@ -223,7 +213,7 @@ public class Server extends Thread {
         SERIALIZERS.register(SetLevelTilesAction.class, new SetLevelTilesActionSerializer());
         SERIALIZERS.register(SetLevelVisualsAction.class, new SetLevelVisualsActionSerializer());
         SERIALIZERS.register(ResizeLevelAction.class, new ResizeLevelActionSerializer());
-        SERIALIZERS.register(ShowStatusAction.class, new ShowStatusActionSerializer());
+        SERIALIZERS.register(ShowFloatingTextAction.class, new ShowFloatingTextActionSerializer());
         SERIALIZERS.register(ShakeCameraAction.class, new ShakeCameraActionSerializer());
         SERIALIZERS.register(HeroReadyAction.class, new HeroReadyActionSerializer());
         SERIALIZERS.register(HeroGoldAction.class, new HeroGoldActionSerializer());

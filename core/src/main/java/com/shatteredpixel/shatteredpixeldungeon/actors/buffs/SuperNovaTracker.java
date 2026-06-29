@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Halo;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.dtos.FloatingTextAnchor;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Point;
 import com.watabou.utils.PointF;
@@ -76,7 +77,7 @@ public class SuperNovaTracker extends Buff {
 
 		if (turnsLeft > 0){
 
-			FloatingText.show(p.x, p.y, pos, turnsLeft + "...", CharSprite.WARNING);
+			FloatingText.show(FloatingTextAnchor.raisedCell(pos), turnsLeft + "...", CharSprite.WARNING);
 			halo.radius(5 + 2*(10-turnsLeft));
 			halo.alpha(1.25f - 0.075f*turnsLeft);
 			halo.point(p.x, p.y);

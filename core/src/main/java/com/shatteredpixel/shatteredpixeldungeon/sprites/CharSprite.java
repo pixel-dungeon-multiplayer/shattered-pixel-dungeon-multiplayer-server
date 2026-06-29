@@ -22,6 +22,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import static io.github.pixeldungeonmultiplayer.shattered.server.network.SendData.sendActionForAll;
+
+import com.watabou.utils.*;
 import io.github.pixeldungeonmultiplayer.shattered.server.utils.Log;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.CharSpriteAction;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.CharEmoAction;
@@ -47,6 +49,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SnowParticle;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.dtos.FloatingTextAnchor;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.texturepack.TexturePackManager;
@@ -63,9 +66,6 @@ import com.shatteredpixel.shatteredpixeldungeon.particles.Emitter;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.tweeners.AlphaTweener;
 import com.watabou.noosa.tweeners.PosTweener;
 import com.watabou.noosa.tweeners.Tweener;
-import com.watabou.utils.Callback;
-import com.watabou.utils.PointF;
-import com.watabou.utils.Random;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.Buffer;
@@ -258,13 +258,14 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 
 	public void showStatusWithIcon( int color, LocalizedString text, int icon ) {
 		if (visible) {
-			float x = destinationCenter().x;
-			float y = destinationCenter().y - height()/2f;
-			int pos = DungeonTilemap.worldToTile(x, y + height(), Dungeon.level.width());
 			if (ch != null) {
-				FloatingText.show( x, y, pos, text, color, icon, true );
+				FloatingText.show( FloatingTextAnchor.targetDestination(this), text, color, icon, true );
 			} else {
-				FloatingText.show( x, y, -1, text, color, icon, true );
+				if (DeviceCompat.isDebug()) {
+					throw new IllegalStateException("Trying to show floating_text on sprite with null char");
+				} else {
+					Log.e("CharSprite","Trying to show floating_text on sprite with null char");
+				}
 			}
 		}
 	}

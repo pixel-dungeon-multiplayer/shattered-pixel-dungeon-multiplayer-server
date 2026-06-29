@@ -22,6 +22,9 @@
 package com.shatteredpixel.shatteredpixeldungeon.effects;
 
 import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.ShowFloatingTextAction;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.dtos.FloatingTextAnchor;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -49,7 +52,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.FerretTuft;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Quarterstaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Scimitar;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
@@ -58,7 +60,6 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.RenderedText;
 import com.watabou.noosa.TextureFilm;
-import com.watabou.utils.Callback;
 import com.watabou.utils.SparseArray;
 
 import java.util.ArrayList;
@@ -247,29 +248,16 @@ public class FloatingText extends RenderedTextBlock {
 	
 	/* STATIC METHODS */
 
-	public static void show( float x, float y, LocalizedString text, int color) {
-		show(x, y, -1, text, color, -1, false);
+	public static void show(FloatingTextAnchor anchor, String text, int color) {
+		show(anchor, LocalizedString.raw(text), color);
 	}
 
-	public static void show( float x, float y, int key, String text, int color) {
-		show(x, y, key, LocalizedString.raw(text), color);
+	public static void show(FloatingTextAnchor anchor, LocalizedString text, int color) {
+		show(anchor, text, color, -1, false);
 	}
 
-	public static void show( float x, float y, int key, LocalizedString text, int color) {
-		show(x, y, key, text, color, -1, false);
-	}
-	
-	public static void show(float x, float y, int key, LocalizedString text, int color, int iconIdx, boolean left ) {
-		Game.runOnRenderThread(new Callback() {
-			@Override
-			public void call() {
-				FloatingText txt = GameScene.status();
-				if (txt != null){
-					txt.reset(x, y, text, color, iconIdx, left);
-					if (key != -1) push(txt, key);
-				}
-			}
-		});
+	public static void show(FloatingTextAnchor anchor, LocalizedString text, int color, int iconIdx, boolean left ) {
+		SendData.sendActionForAll(new ShowFloatingTextAction(anchor, text, color, iconIdx, left));
 	}
 	
 	private static void push( FloatingText txt, int key ) {

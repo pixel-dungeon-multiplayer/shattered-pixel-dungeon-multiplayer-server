@@ -39,7 +39,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.PylonSprite;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -118,8 +117,7 @@ public class Pylon extends Mob {
 
 		if (visible) {
 			for (int cell : shockCells){
-				getSprite().parent.add(new Lightning(getSprite().center(),
-						DungeonTilemap.raisedTileCenterToWorld(cell), null));
+				getSprite().parent.add(new Lightning(getSprite(), cell, null));
 				CellEmitter.get(cell).burst(SparkParticle.FACTORY, 3);
 			}
 			Sample.INSTANCE.play( Assets.Sounds.LIGHTNING );

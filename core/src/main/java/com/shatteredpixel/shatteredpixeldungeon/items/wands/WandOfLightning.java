@@ -38,7 +38,6 @@ import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Image;
@@ -165,7 +164,7 @@ public class WandOfLightning extends DamageWand {
 		
 		affected.addAll(hitThisArc);
 		for (Char hit : hitThisArc){
-			arcs.add(new Lightning.Arc(ch.getSprite().center(), hit.getSprite().center()));
+			arcs.add(new Lightning.Arc(ch.getSprite(), hit.getSprite()));
 			arc(hit);
 		}
 	}
@@ -185,10 +184,10 @@ public class WandOfLightning extends DamageWand {
 			}
 
 			affected.add( ch );
-			arcs.add( new Lightning.Arc(curUser.getSprite().center(), ch.getSprite().center()));
+			arcs.add( new Lightning.Arc(curUser.getSprite(), ch.getSprite()));
 			arc(ch);
 		} else {
-			arcs.add( new Lightning.Arc(curUser.getSprite().center(), DungeonTilemap.raisedTileCenterToWorld(bolt.collisionPos)));
+			arcs.add( new Lightning.Arc(curUser.getSprite(), bolt.collisionPos));
 			CellEmitter.center( cell ).burst( SparkParticle.FACTORY, 3 );
 		}
 

@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.effects;
 
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.glwrap.Blending;
 import com.watabou.noosa.Game;
@@ -29,6 +30,9 @@ import com.watabou.noosa.Image;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.LightningVisualAction;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.dtos.LightningAnchor;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,6 +42,7 @@ public class Lightning extends Group {
 	private static final float DURATION = 0.3f;
 	
 	private float life;
+	private float duration;
 
 	private List<Arc> arcs;
 	
@@ -58,8 +63,28 @@ public class Lightning extends Group {
 	public Lightning(PointF from, PointF to, Callback callback){
 		this(Arrays.asList(new Arc(from, to)), callback);
 	}
+
+	public Lightning(CharSprite from, CharSprite to, Callback callback){
+		this(Arrays.asList(new Arc(from, to)), callback);
+	}
+
+	public Lightning(CharSprite from, int raisedCell, Callback callback){
+		this(Arrays.asList(new Arc(from, raisedCell)), callback);
+	}
+
+	public Lightning(CharSprite from, float xFactor, float yFactor, float shiftX, float shiftY, CharSprite to, Callback callback){
+		this(Arrays.asList(Arc.fromTargetPointToTarget(from, xFactor, yFactor, shiftX, shiftY, to)), callback);
+	}
+
+	public Lightning(CharSprite from, float xFactor, float yFactor, float shiftX, float shiftY, int raisedCell, Callback callback){
+		this(Arrays.asList(Arc.fromTargetPointToRaisedCell(from, xFactor, yFactor, shiftX, shiftY, raisedCell)), callback);
+	}
 	
 	public Lightning( List<Arc> arcs, Callback callback ) {
+		this(arcs, callback, DURATION);
+	}
+
+	public Lightning( List<Arc> arcs, Callback callback, float duration ) {
 		
 		super();
 
@@ -68,11 +93,23 @@ public class Lightning extends Group {
 			add(arc);
 
 		this.callback = callback;
+		this.duration = duration;
 		
-		life = DURATION;
+		life = duration;
 	}
 	
 	private static final double A = 180 / Math.PI;
+
+	@Override
+	public void onAdd() {
+		super.onAdd();
+		for (Arc arc : arcs) {
+			if (!arc.hasNetworkAnchors()) {
+				return;
+			}
+		}
+		SendData.sendActionForAll(new LightningVisualAction(arcs, duration));
+	}
 	
 	@Override
 	public void update() {
@@ -85,7 +122,7 @@ public class Lightning extends Group {
 			
 		} else {
 			
-			float alpha = life / DURATION;
+			float alpha = life / duration;
 			
 			for (Arc arc : arcs) {
 				arc.alpha(alpha);
@@ -110,10 +147,10 @@ public class Lightning extends Group {
 
 		//starting and ending x/y values
 		private PointF start, end;
+		private LightningAnchor fromAnchor, toAnchor;
 
 		public Arc(int from, int to){
-			this( DungeonTilemap.tileCenterToWorld(from),
-					DungeonTilemap.tileCenterToWorld(to));
+			this( LightningAnchor.cell(from), LightningAnchor.cell(to));
 		}
 
 		public Arc(PointF from, int to){
@@ -122,6 +159,42 @@ public class Lightning extends Group {
 
 		public Arc(int from, PointF to){
 			this( DungeonTilemap.tileCenterToWorld(from), to);
+		}
+
+		public Arc(CharSprite from, CharSprite to){
+			this( LightningAnchor.target(from), LightningAnchor.target(to));
+		}
+
+		public Arc(CharSprite from, int raisedCell){
+			this( LightningAnchor.target(from), LightningAnchor.raisedCell(raisedCell));
+		}
+
+		public Arc(int cell, CharSprite to){
+			this( LightningAnchor.cell(cell), LightningAnchor.target(to));
+		}
+
+		public static Arc targetPoint(CharSprite target, float fromXFactor, float fromYFactor, float toXFactor, float toYFactor) {
+			return new Arc(
+					LightningAnchor.targetPoint(target, fromXFactor, fromYFactor),
+					LightningAnchor.targetPoint(target, toXFactor, toYFactor));
+		}
+
+		public static Arc fromTargetPointToTarget(CharSprite from, float xFactor, float yFactor, float shiftX, float shiftY, CharSprite to) {
+			return new Arc(
+					LightningAnchor.targetPoint(from, xFactor, yFactor, shiftX, shiftY),
+					LightningAnchor.targetDestination(to));
+		}
+
+		public static Arc fromTargetPointToRaisedCell(CharSprite from, float xFactor, float yFactor, float shiftX, float shiftY, int raisedCell) {
+			return new Arc(
+					LightningAnchor.targetPoint(from, xFactor, yFactor, shiftX, shiftY),
+					LightningAnchor.raisedCell(raisedCell));
+		}
+
+		private Arc(LightningAnchor from, LightningAnchor to){
+			this(from.toPointF(), to.toPointF());
+			fromAnchor = from;
+			toAnchor = to;
 		}
 
 		public Arc(PointF from, PointF to){
@@ -139,6 +212,18 @@ public class Lightning extends Group {
 			add( arc2 );
 
 			update();
+		}
+
+		public boolean hasNetworkAnchors() {
+			return fromAnchor != null && toAnchor != null;
+		}
+
+		public LightningAnchor fromAnchor() {
+			return fromAnchor;
+		}
+
+		public LightningAnchor toAnchor() {
+			return toAnchor;
 		}
 
 		public void alpha(float alpha) {

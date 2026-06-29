@@ -101,7 +101,6 @@ import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterLevelSceneServer;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TargetHealthIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -550,9 +549,9 @@ public class CursedWand {
 		public void FX(Item origin, Char user, Ballistica bolt, Callback callback) {
 			Char ch = Actor.findChar( bolt.collisionPos );
 			if (ch != null){
-				user.getSprite().parent.addToFront(new Lightning(user.getSprite().center(), ch.getSprite().center(), null));
+				user.getSprite().parent.addToFront(new Lightning(user.getSprite(), ch.getSprite(), null));
 			} else {
-				user.getSprite().parent.addToFront(new Lightning(user.getSprite().center(), DungeonTilemap.raisedTileCenterToWorld(bolt.collisionPos), null));
+				user.getSprite().parent.addToFront(new Lightning(user.getSprite(), bolt.collisionPos, null));
 			}
 			Sample.INSTANCE.play( Assets.Sounds.LIGHTNING );
 			callback.call();

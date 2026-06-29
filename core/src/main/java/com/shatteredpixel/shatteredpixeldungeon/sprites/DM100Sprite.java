@@ -29,7 +29,6 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Lightning;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.watabou.noosa.TextureFilm;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
-import com.watabou.utils.PointF;
 
 public class DM100Sprite extends MobSprite {
 	
@@ -63,18 +62,19 @@ public class DM100Sprite extends MobSprite {
 		Char enemy = Actor.findChar(pos);
 
 		//shoot lightning from eye, not sprite center.
-		PointF origin = center();
+		float shiftX;
+		float shiftY;
 		if (flipHorizontal){
-			origin.y -= 6*scale.y;
-			origin.x -= 1*scale.x;
+			shiftX = -1f;
+			shiftY = -6f;
 		} else {
-			origin.y -= 8*scale.y;
-			origin.x += 1*scale.x;
+			shiftX = 1f;
+			shiftY = -8f;
 		}
 		if (enemy != null) {
-			parent.add(new Lightning(origin, enemy.getSprite().destinationCenter(), (DM100) ch));
+			parent.add(new Lightning(this, 0.5f, 0.5f, shiftX, shiftY, enemy.getSprite(), (DM100) ch));
 		} else {
-			parent.add(new Lightning(origin, pos, (DM100) ch));
+			parent.add(new Lightning(this, 0.5f, 0.5f, shiftX, shiftY, pos, (DM100) ch));
 		}
 		Sample.INSTANCE.play( Assets.Sounds.LIGHTNING );
 		

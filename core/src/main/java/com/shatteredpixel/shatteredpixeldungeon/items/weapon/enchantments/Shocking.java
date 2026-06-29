@@ -98,7 +98,7 @@ public class Shocking extends Weapon.Enchantment {
 
 		affected.addAll(hitThisArc);
 		for (Char hit : hitThisArc){
-			arcs.add(new Lightning.Arc(defender.getSprite().center(), hit.getSprite().center()));
+			arcs.add(new Lightning.Arc(defender.getSprite(), hit.getSprite()));
 			arc(attacker, hit, (Dungeon.level.water[hit.pos] && !hit.flying) ? 2 : 1, affected, arcs);
 		}
 

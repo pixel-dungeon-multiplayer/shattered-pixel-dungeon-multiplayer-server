@@ -29,7 +29,6 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Lightning;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
-import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -50,8 +49,8 @@ public class ShockingDart extends TippedDart {
 			CharSprite s = defender.getSprite();
 			if (s != null && s.parent != null) {
 				ArrayList<Lightning.Arc> arcs = new ArrayList<>();
-				arcs.add(new Lightning.Arc(new PointF(s.x, s.y + s.height / 2), new PointF(s.x + s.width, s.y + s.height / 2)));
-				arcs.add(new Lightning.Arc(new PointF(s.x + s.width / 2, s.y), new PointF(s.x + s.width / 2, s.y + s.height)));
+				arcs.add(Lightning.Arc.targetPoint(s, 0f, 0.5f, 1f, 0.5f));
+				arcs.add(Lightning.Arc.targetPoint(s, 0.5f, 0f, 0.5f, 1f));
 				s.parent.add(new Lightning(arcs, null));
 				Sample.INSTANCE.play(Assets.Sounds.LIGHTNING);
 			}

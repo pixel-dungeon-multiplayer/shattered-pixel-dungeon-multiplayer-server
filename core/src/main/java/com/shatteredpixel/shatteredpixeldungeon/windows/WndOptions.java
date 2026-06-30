@@ -133,7 +133,7 @@ public class WndOptions extends Window {
 	}
 
 	@Override
-	public void onSelect(int button) {
+    protected void onSelect(int button) {
 		hide();
 	}
 

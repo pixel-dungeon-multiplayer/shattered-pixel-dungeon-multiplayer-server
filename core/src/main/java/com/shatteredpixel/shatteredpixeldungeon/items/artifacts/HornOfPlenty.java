@@ -130,9 +130,16 @@ public class HornOfPlenty extends Artifact {
 		if (Dungeon.isChallenged(Challenges.NO_FOOD)){
 			satietyPerCharge /= 3;
 		}
+		if (Dungeon.balance.foodSatisfiesEveryHero) {
+			for(Hero h : Dungeon.heroes) {
+				if (h != null) {
+					Buff.affect(h, Hunger.class).satisfy(satietyPerCharge * chargesToUse);
 
-		Buff.affect(hero, Hunger.class).satisfy(satietyPerCharge * chargesToUse);
-
+				}
+			}
+		} else {
+			Buff.affect(hero, Hunger.class).satisfy(satietyPerCharge * chargesToUse);
+		}
 		Statistics.foodEaten++;
 
 		setCharge(getCharge() - chargesToUse);
@@ -171,7 +178,7 @@ public class HornOfPlenty extends Artifact {
 	protected ArtifactBuff passiveBuff() {
 		return new hornRecharge();
 	}
-	
+
 	@Override
 	public void charge(Hero target, float amount) {
 		if (getCharge() < chargeCap && !cursed && target.buff(MagicImmune.class) == null){
@@ -179,7 +186,7 @@ public class HornOfPlenty extends Artifact {
 			while (partialCharge >= 1){
 				partialCharge--;
 				setCharge(getCharge() + 1);
-				
+
 				if (getCharge() == chargeCap){
 					GLog.p( Messages.get(HornOfPlenty.class, "full") );
 					partialCharge = 0;
@@ -194,7 +201,7 @@ public class HornOfPlenty extends Artifact {
 			}
 		}
 	}
-	
+
 	@Override
 	public LocalizedString desc(Hero hero) {
 		LocalizedString desc = super.desc();
@@ -223,10 +230,10 @@ public class HornOfPlenty extends Artifact {
 		chargeCap = 5 + level()/2;
 		return this;
 	}
-	
+
 	public void gainFoodValue( Food food ){
 		if (level() >= 10) return;
-		
+
 		storedFoodEnergy += food.energy;
 		//Pasties and phantom meat are worth two upgrades instead of 1.5, meat pies are worth 4 instead of 3!
 		if (food instanceof Pasty || food instanceof PhantomMeat){
@@ -250,21 +257,21 @@ public class HornOfPlenty extends Artifact {
 			GLog.i( Messages.get(this, "feed") );
 		}
 	}
-	
+
 	private static final String STORED = "stored";
-	
+
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put( STORED, storedFoodEnergy );
 	}
-	
+
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 
 		storedFoodEnergy = bundle.getInt(STORED);
-		
+
 		if (getCharge() >= 8)       image = ItemSpriteSheet.ARTIFACT_HORN4;
 		else if (getCharge() >= 5)  image = ItemSpriteSheet.ARTIFACT_HORN3;
 		else if (getCharge() >= 2)   image = ItemSpriteSheet.ARTIFACT_HORN2;
@@ -274,7 +281,7 @@ public class HornOfPlenty extends Artifact {
 
 		public void gainCharge(float levelPortion) {
 			if (cursed || target.buff(MagicImmune.class) != null) return;
-			
+
 			if (getCharge() < chargeCap) {
 
 				//generates 0.25x max hunger value every hero level, +0.125x max value per horn level

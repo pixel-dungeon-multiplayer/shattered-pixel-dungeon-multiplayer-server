@@ -2277,7 +2277,7 @@ public class Hero extends Char {
 				}
 			}
 			Collections.shuffle( passable );
-			ArrayList<Item> items = new ArrayList<>(hero.belongings.backpack.items);
+			ArrayList<Item> items = new ArrayList<>(hero.belongings.backpack.items());
 			for (Integer cell : passable) {
 				if (items.isEmpty()) {
 					break;

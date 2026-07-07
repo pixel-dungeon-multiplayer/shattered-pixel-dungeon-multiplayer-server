@@ -33,11 +33,11 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.DeviceCompat;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public abstract class Bag extends Item implements Iterable<Item> {
 	public Item getItemInSlot(List<Integer> slot) {
@@ -87,8 +87,15 @@ public abstract class Bag extends Item implements Iterable<Item> {
 	
 	public Hero owner;
 
-	public ArrayList<Item> items = new ArrayList<>();
+	@NotNull
+	private final ArrayList<@NotNull Item> items = new ArrayList<>();
 
+	@Contract(pure = true)
+	public final @UnmodifiableView @NotNull List<@NotNull Item> items() {
+		return Collections.unmodifiableList(items);
+	}
+
+	@Contract(pure = true)
 	public int capacity(){
 		return 20; // default container size
 	}
@@ -255,6 +262,19 @@ public abstract class Bag extends Item implements Iterable<Item> {
 	}
 
 	public abstract @NotNull Icons getBagIcon();
+
+	public boolean addItemDirect(Item item) {
+		if (items.contains(item)) {
+			return false;
+		}
+		items.add(item);
+		items.sort(itemComparator);
+		return true;
+	}
+
+	public boolean removeItemDirect(Item item) {
+		return items.remove(item);
+	}
 
 	private class ItemIterator implements Iterator<Item> {
 

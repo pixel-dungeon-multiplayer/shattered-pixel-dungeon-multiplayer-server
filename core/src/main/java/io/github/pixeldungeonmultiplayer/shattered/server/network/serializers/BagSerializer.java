@@ -28,7 +28,7 @@ public class BagSerializer implements Serializer<Bag> {
         try {
             JSONArray bagItems = new JSONArray();
 
-            for (Item item : bag.items) {
+            for (Item item : bag.items()) {
                 // Pass the same profile down (e.g. "inventory") to inner items
                 // This will make sure inner items serialize appropriately
                 JSONObject serializedItem = (JSONObject) ctx.serialize(item, profile);

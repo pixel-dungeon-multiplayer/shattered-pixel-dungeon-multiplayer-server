@@ -575,7 +575,7 @@ public class MeleeWeapon extends Weapon {
                 return;
             }
 
-            if (hero.belongings.secondWep == null && hero.belongings.backpack.items.size() >= hero.belongings.backpack.capacity()) {
+            if (hero.belongings.secondWep == null && hero.belongings.backpack.items().size() >= hero.belongings.backpack.capacity()) {
                 GLog.w(Messages.get(MeleeWeapon.class, "swap_full"));
                 return;
             }
@@ -593,4 +593,3 @@ public class MeleeWeapon extends Weapon {
         }
     }
 }
-

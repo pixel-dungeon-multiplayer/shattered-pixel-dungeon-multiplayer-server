@@ -189,8 +189,8 @@ public class Belongings implements Iterable<Item> {
 	public static class Backpack extends Bag {
 		public List<Integer> pathOfItem(Item item) {
 			assert (item != null) : "path of null item";
-			for (int i = 0; i < items.size(); i++) {
-				Item cur_item = items.get(i);
+			for (int i = 0; i < items().size(); i++) {
+				Item cur_item = items().get(i);
 				if (cur_item == null) {
 					continue;
 				}
@@ -220,7 +220,7 @@ public class Belongings implements Iterable<Item> {
 		}
 		public int capacity(Hero hero){
 			int cap = super.capacity();
-			for (Item item : items){
+			for (Item item : items()){
 				if (item instanceof Bag){
 					cap++;
 				}
@@ -231,9 +231,10 @@ public class Belongings implements Iterable<Item> {
 			}
 			return cap;
 		}
+		@Contract(pure = true)
 		public int capacity(){
 			int cap = super.capacity();
-			for (Item item : items){
+			for (Item item : items()){
 				if (item instanceof Bag){
 					cap++;
 				}
@@ -577,7 +578,7 @@ public class Belongings implements Iterable<Item> {
 	public Item randomUnequipped() {
 		if (owner.buff(LostInventory.class) != null) return null;
 
-		return Random.element( backpack.items );
+		return Random.element( backpack.items() );
 	}
 	
 	public int charge( float charge ) {

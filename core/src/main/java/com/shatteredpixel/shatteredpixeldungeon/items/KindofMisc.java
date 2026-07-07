@@ -34,6 +34,8 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.utils.Random;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.ItemAction;
 
 
 public abstract class KindofMisc extends EquipableItem {
@@ -97,12 +99,10 @@ public abstract class KindofMisc extends EquipableItem {
 						protected void onSelect(int index) {
 
 							KindofMisc equipped = miscs[index];
-							//we directly remove the item because we want to have inventory capacity
-							// to unequip the equipped one, but don't want to trigger any other
-							// item detaching logic
 							int slot = Dungeon.quickslot.getSlot(KindofMisc.this);
 							slotOfUnequipped = -1;
-							getOwnerHero().belongings.backpack.items.remove(KindofMisc.this);
+							SendData.packAndSendAction(hero, new ItemAction.Remove(KindofMisc.this.getSlot(hero)));
+							getOwnerHero().belongings.backpack.removeItemDirect(KindofMisc.this);
 							if (equipped.doUnequip(hero, true, false)) {
 								//swap out equip in misc slot if needed
 								if (index == 0 && KindofMisc.this instanceof Ring){
@@ -112,10 +112,10 @@ public abstract class KindofMisc extends EquipableItem {
 									hero.belongings.setRing((Ring) hero.belongings.getRealMisc());
 									hero.belongings.setMisc(null);
 								}
-								getOwnerHero().belongings.backpack.items.add(KindofMisc.this);
 								doEquip(hero);
 							} else {
-								getOwnerHero().belongings.backpack.items.add(KindofMisc.this);
+								getOwnerHero().belongings.backpack.addItemDirect(KindofMisc.this);
+								SendData.packAndSendAction(hero, new ItemAction.Add(KindofMisc.this));
 							}
 							if (slot != -1) {
 								Dungeon.quickslot.setSlot(slot, KindofMisc.this);

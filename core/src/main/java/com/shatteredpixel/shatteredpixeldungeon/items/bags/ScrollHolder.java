@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.spells.Spell;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public class ScrollHolder extends Bag {
@@ -54,14 +55,15 @@ public class ScrollHolder extends Bag {
         return Icons.SCROLL_HOLDER;
     }
 
-    public int capacity(){
+    @Contract(pure = true)
+	public int capacity(){
 		return 19;
 	}
 	
 	@Override
 	public void onDetach( ) {
 		super.onDetach();
-		for (Item item : items) {
+		for (Item item : items()) {
 			if (item instanceof BeaconOfReturning && ((BeaconOfReturning) item).returnDepth != -1) {
 				Notes.remove(Notes.Landmark.BEACON_LOCATION, ((BeaconOfReturning) item).returnDepth);
 				((BeaconOfReturning) item).returnDepth = -1;

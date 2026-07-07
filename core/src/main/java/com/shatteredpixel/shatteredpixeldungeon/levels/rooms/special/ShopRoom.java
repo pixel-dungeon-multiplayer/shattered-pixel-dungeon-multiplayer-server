@@ -385,7 +385,7 @@ public class ShopRoom extends SpecialRoom {
 		for(Hero hero: Dungeon.heroes) {
 			if(hero != null) {
                 Belongings pack = hero.belongings;
-                for (Item item : pack.backpack.items) {
+                for (Item item : pack.backpack.items()) {
                     for (Bag bag : bags.keySet()) {
                         if (bag.canHold(item)) {
                             bags.put(bag, bags.get(bag) + 1);

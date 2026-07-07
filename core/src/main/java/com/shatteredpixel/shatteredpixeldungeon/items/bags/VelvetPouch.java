@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.stones.Runestone;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public class VelvetPouch extends Bag {
@@ -51,6 +52,7 @@ public class VelvetPouch extends Bag {
         return Icons.SEED_POUCH;
     }
 
+    @Contract(pure = true)
     public int capacity(){
 		return 19;
 	}

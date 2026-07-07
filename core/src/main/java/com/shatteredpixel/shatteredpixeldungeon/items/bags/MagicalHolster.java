@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public class MagicalHolster extends Bag {
@@ -52,6 +53,7 @@ public class MagicalHolster extends Bag {
         return Icons.WAND_HOLSTER;
     }
 
+    @Contract(pure = true)
     public int capacity(){
 		return 19;
 	}
@@ -60,7 +62,7 @@ public class MagicalHolster extends Bag {
 	public boolean collect( Bag container ) {
 		if (super.collect( container )) {
 			if (owner != null) {
-				for (Item item : items) {
+				for (Item item : items()) {
 					if (item instanceof Wand) {
 						((Wand) item).charge(owner, HOLSTER_SCALE_FACTOR);
 					} else if (item instanceof MissileWeapon){
@@ -77,7 +79,7 @@ public class MagicalHolster extends Bag {
 	@Override
 	public void onDetach( ) {
 		super.onDetach();
-		for (Item item : items) {
+		for (Item item : items()) {
 			if (item instanceof Wand) {
 				((Wand)item).stopCharging();
 			} else if (item instanceof MissileWeapon){

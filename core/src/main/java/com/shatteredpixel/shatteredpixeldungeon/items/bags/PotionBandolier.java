@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public class PotionBandolier extends Bag {
@@ -49,6 +50,7 @@ public class PotionBandolier extends Bag {
         return Icons.POTION_BANDOLIER;
     }
 
+    @Contract(pure = true)
     public int capacity(){
 		return 19;
 	}

@@ -246,7 +246,7 @@ public class Item implements Bundlable {
 			return null;
 		}
 
-		ArrayList<Item> items = container.items;
+		final List<Item> items = container.items();
 
 		{
 			int index = items.indexOf(this);
@@ -317,9 +317,10 @@ public class Item implements Bundlable {
 			}
 		}
 
-		items.add( this );
+		if (!container.addItemDirect(this)) {
+			return null;
+		}
 		Dungeon.quickslot.replacePlaceholder(this);
-		Collections.sort( items, itemComparator );
 		path.add(items.indexOf(this));
 		SendData.packAndSendAction(container.owner, new ItemAction.Add(this));
 		updateQuickslot();
@@ -396,12 +397,12 @@ public class Item implements Bundlable {
 		if (container.owner instanceof Hero) {
 			owner = (Hero) container.owner;
 		}
-		for (Item item : container.items) {
+		for (Item item : container.items()) {
 			if (item == this) {
 				if (owner != null) {
 					SendData.packAndSendAction(owner, new ItemAction.Remove(getSlot(owner)));
 				}
-				container.items.remove(this);
+				container.removeItemDirect(this);
 				item.onDetach();
 				container.grabItems(); //try to put more items into the bag as it now has free space
 				updateQuickslot();

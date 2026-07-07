@@ -105,9 +105,11 @@ public class MagesStaff extends MeleeWeapon {
 	@Override
 	public ArrayList<String> actions(Hero hero) {
 		ArrayList<String> actions = super.actions( hero );
-		actions.add(AC_IMBUE);
-		if (wand!= null && wand.getCurCharges() > 0 && canUse(hero)) {
-			actions.add( AC_ZAP );
+		if (canUse(hero)) {
+			actions.add(AC_IMBUE);
+			if (wand != null && wand.getCurCharges() > 0 && canUse(hero)) {
+				actions.add(AC_ZAP);
+			}
 		}
 		return actions;
 	}
@@ -254,7 +256,8 @@ public class MagesStaff extends MeleeWeapon {
 		if (wand.trueLevel() >= this.trueLevel() && this.trueLevel() > 0) targetLevel++;
 
 		level(targetLevel);
-		this.wand = wand;
+		fragmentUpgrades = (ArrayList<com.shatteredpixel.shatteredpixeldungeon.items.optional.FragmentOfUpgrade.Upgrade>) wand.fragmentUpgrades.clone();
+        this.wand = wand;
 		wand.levelKnown = wand.curChargeKnown = true;
 		updateWand(false);
 		wand.setCurCharges(Math.min(wand.maxCharges, wand.getCurCharges() +oldStaffcharges));
@@ -318,6 +321,7 @@ public class MagesStaff extends MeleeWeapon {
 		return this;
 	}
 
+
 	@Override
 	public Item degrade() {
 		super.degrade();
@@ -330,7 +334,7 @@ public class MagesStaff extends MeleeWeapon {
     @Override
     public Item upgradeFragmented(Hero hero) {
         super.upgradeFragmented(hero);
-        updateWand(true);
+        updateWand(true, hero);
         return this;
     }
 
@@ -343,6 +347,17 @@ public class MagesStaff extends MeleeWeapon {
 			wand.setCurCharges(Math.min(curCharges + (levelled ? 1 : 0), wand.maxCharges));
 			updateQuickslot();
             sendSelfUpdate();
+		}
+	}
+	public void updateWand(boolean levelled, Hero hero){
+		if (wand != null) {
+			int curCharges = wand.getCurCharges();
+			wand.level(level(hero));
+			//gives the wand one additional max charge
+			wand.maxCharges = Math.min(wand.maxCharges + 1, 10);
+			wand.setCurCharges(Math.min(curCharges + (levelled ? 1 : 0), wand.maxCharges));
+			updateQuickslot();
+			sendSelfUpdate(hero);
 		}
 	}
 
@@ -410,7 +425,7 @@ public class MagesStaff extends MeleeWeapon {
 	public int value() {
 		return 0;
 	}
-	
+
 	@Override
 	public Weapon enchant(Enchantment ench) {
 		if (curseInfusionBonus && (ench == null || !ench.curse())){
@@ -419,7 +434,7 @@ public class MagesStaff extends MeleeWeapon {
 		}
 		return super.enchant(ench);
 	}
-	
+
 	private final WndBag.ItemSelector itemSelector = new WndBag.ItemSelector() {
 
 		@Override

@@ -532,17 +532,11 @@ public class WndUpgrade extends Window {
 				Item upgraded = toUpgrade;
 				if (upgrader instanceof ScrollOfUpgrade) {
 					((ScrollOfUpgrade) upgrader).readAnimation();
-					upgraded = ((ScrollOfUpgrade) upgrader).upgradeItem(toUpgrade);
+					upgraded = ((ScrollOfUpgrade) upgrader).upgradeItem(toUpgrade, getOwnerHero());
 					Sample.INSTANCE.play(Assets.Sounds.READ);
 				} else if (upgrader instanceof MagicalInfusion) {
 					((MagicalInfusion) upgrader).useAnimation();
 					upgraded = ((MagicalInfusion) upgrader).upgradeItem(toUpgrade);
-				}
-				//Make upgradeItem take a hero or keep it like this?
-				else if (upgrader instanceof FragmentOfUpgrade){
-					((ScrollOfUpgrade) upgrader).readAnimation();
-					upgraded = ((FragmentOfUpgrade) upgrader).upgradeItem(toUpgrade, getOwnerHero());
-					Sample.INSTANCE.play(Assets.Sounds.READ);
 				}
 
 				if (!force) upgrader.detach(getOwnerHero().belongings.backpack);
@@ -674,4 +668,10 @@ public class WndUpgrade extends Window {
 		return message.bottom();
 	}
 
+	@Override
+	protected void onSelect(int button) {
+		if (button == 0) {
+			btnUpgrade.onClickNetwork();
+		}
+	}
 }

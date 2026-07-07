@@ -25,7 +25,7 @@ import com.watabou.utils.Bundle;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class FragmentOfUpgrade extends Item {
+public class FragmentOfUpgrade extends ScrollOfUpgrade {
     private static final String AC_USE = "USE";
     public static int image = new ScrollOfUpgrade().image();
     {
@@ -80,10 +80,11 @@ public class FragmentOfUpgrade extends Item {
     public void onUse(Hero hero) {
         GameScene.selectItem(selector, hero);
     }
+    @Override
     public Item upgradeItem( Item item, Hero hero ){
-        upgradeAnimation( curUser );
+        upgradeAnimation( hero );
         detach(hero.belongings.backpack);
-        Degrade.detach( curUser, Degrade.class );
+        Degrade.detach( hero, Degrade.class );
 
         //logic for telling the user when item properties change from upgrades
         //...yes this is rather messy
@@ -97,9 +98,9 @@ public class FragmentOfUpgrade extends Item {
             item = w.upgradeFragmented(hero);
 
             if (w.cursedKnown && hadCursedEnchant && !w.hasCurseEnchant()){
-                removeCurse(curUser);
+                removeCurse(hero);
             } else if (w.cursedKnown && wasCursed && !w.cursed){
-                weakenCurse(curUser);
+                weakenCurse(hero);
             }
             if (wasHardened && !w.enchantHardened){
                 GLog.w( Messages.get(Weapon.class, "hardening_gone") );
@@ -117,9 +118,9 @@ public class FragmentOfUpgrade extends Item {
             item = a.upgradeFragmented(hero);
 
             if (a.cursedKnown && hadCursedGlyph && !a.hasCurseGlyph()){
-                removeCurse( curUser );
+                removeCurse( hero );
             } else if (a.cursedKnown && wasCursed && !a.cursed){
-                weakenCurse( curUser );
+                weakenCurse( hero );
             }
             if (wasHardened && !a.glyphHardened){
                 GLog.w( Messages.get(Armor.class, "hardening_gone") );
@@ -133,7 +134,7 @@ public class FragmentOfUpgrade extends Item {
             item = item.upgradeFragmented(hero);
 
             if (item.cursedKnown && wasCursed && !item.cursed){
-                removeCurse( curUser );
+                removeCurse( hero );
             }
 
         } else {

@@ -530,7 +530,11 @@ public class WndUpgrade extends Window {
 				ScrollOfUpgrade.upgradeVisual(getOwnerHero());
 
 				Item upgraded = toUpgrade;
-				if (upgrader instanceof ScrollOfUpgrade) {
+				if (upgrader instanceof FragmentOfUpgrade){
+					((FragmentOfUpgrade) upgrader).readAnimation(getOwnerHero());
+					upgraded = ((FragmentOfUpgrade) upgrader).upgradeItem(toUpgrade, getOwnerHero());
+					Sample.INSTANCE.play(Assets.Sounds.READ);
+				} else if (upgrader instanceof ScrollOfUpgrade) {
 					((ScrollOfUpgrade) upgrader).readAnimation();
 					upgraded = ((ScrollOfUpgrade) upgrader).upgradeItem(toUpgrade, getOwnerHero());
 					Sample.INSTANCE.play(Assets.Sounds.READ);
@@ -557,7 +561,9 @@ public class WndUpgrade extends Window {
 			protected void onClick() {
 				super.onClick();
 				hide();
-				if (upgrader instanceof ScrollOfUpgrade) {
+				if (upgrader instanceof FragmentOfUpgrade) {
+					((FragmentOfUpgrade) upgrader).reShowSelector(getOwnerHero());
+				} else if (upgrader instanceof ScrollOfUpgrade) {
 					((ScrollOfUpgrade) upgrader).reShowSelector(force, getOwnerHero());
 				} else if (upgrader instanceof MagicalInfusion) {
 					((MagicalInfusion) upgrader).reShowSelector(getOwnerHero());
@@ -590,7 +596,9 @@ public class WndUpgrade extends Window {
 	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
-		if (upgrader instanceof ScrollOfUpgrade) {
+		if (upgrader instanceof FragmentOfUpgrade) {
+			((FragmentOfUpgrade) upgrader).reShowSelector(getOwnerHero());
+		} else if (upgrader instanceof ScrollOfUpgrade) {
 			((ScrollOfUpgrade) upgrader).reShowSelector(force, getOwnerHero());
 		} else if (upgrader instanceof MagicalInfusion) {
 			((MagicalInfusion) upgrader).reShowSelector(getOwnerHero());
@@ -598,7 +606,9 @@ public class WndUpgrade extends Window {
 	}
 
 	public WndBag.ItemSelector getItemSelector() {
-		if (upgrader instanceof ScrollOfUpgrade) {
+		if (upgrader instanceof FragmentOfUpgrade) {
+			return ((FragmentOfUpgrade) upgrader).getSelector();
+		} else if (upgrader instanceof ScrollOfUpgrade) {
 			return ((ScrollOfUpgrade) upgrader).getSelector(force);
 		} else if (upgrader instanceof MagicalInfusion) {
 			return ((MagicalInfusion) upgrader).getSelector();

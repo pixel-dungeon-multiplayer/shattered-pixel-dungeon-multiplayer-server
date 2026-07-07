@@ -4,6 +4,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.optional;
 import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
@@ -16,6 +17,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndUpgrade;
@@ -25,8 +27,9 @@ import com.watabou.utils.Bundle;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class FragmentOfUpgrade extends ScrollOfUpgrade {
+public class FragmentOfUpgrade extends Item {
     private static final String AC_USE = "USE";
+    private static final float TIME_TO_USE = 1f;
     public static int image = new ScrollOfUpgrade().image();
     {
         stackable = true;
@@ -80,10 +83,37 @@ public class FragmentOfUpgrade extends ScrollOfUpgrade {
     public void onUse(Hero hero) {
         GameScene.selectItem(selector, hero);
     }
+
     @Override
+    public boolean isUpgradable() {
+        return false;
+    }
+
+    @Override
+    public boolean canUse(Hero hero){
+        return hero != null && super.canUse(hero);
+    }
+
+    public void reShowSelector(Hero hero){
+        curItem = this;
+        GameScene.selectItem(selector, hero);
+    }
+
+    public WndBag.ItemSelector getSelector(){
+        curItem = this;
+        return selector;
+    }
+
+    public void readAnimation(Hero hero) {
+        Invisibility.dispel(hero);
+        hero.spend(TIME_TO_USE);
+        hero.busy();
+        ((HeroSprite) hero.getSprite()).read();
+        Catalog.countUse(getClass());
+    }
+
     public Item upgradeItem( Item item, Hero hero ){
         upgradeAnimation( hero );
-        detach(hero.belongings.backpack);
         Degrade.detach( hero, Degrade.class );
 
         //logic for telling the user when item properties change from upgrades

@@ -125,15 +125,19 @@ public abstract class ExoticScroll extends Scroll {
 		
 		@Override
 		public boolean testIngredients(ArrayList<Item> ingredients) {
+			if (ingredients.size() != 1) {
+				return false;
+			}
+			Item ingredient = ingredients.get(0);
 			if (Dungeon.balance.useFragments){
-				if (ingredients.get(0) instanceof ScrollOfUpgrade){
+				if (ingredient instanceof ScrollOfUpgrade){
 						return false;
 				}
-				if (ingredients.get(0) instanceof FragmentOfUpgrade && ingredients.size() == 1){
+				if (ingredient instanceof FragmentOfUpgrade){
 					return true;
 				}
 			}
-			if (ingredients.size() == 1 && regToExo.containsKey(ingredients.get(0).getClass())){
+			if (regToExo.containsKey(ingredient.getClass())){
 				return true;
 			}
 
@@ -147,6 +151,11 @@ public abstract class ExoticScroll extends Scroll {
 		
 		@Override
 		public Item brew(ArrayList<Item> ingredients, Hero hero) {
+			if (!testIngredients(ingredients)) return null;
+			if (ingredients.get(0) instanceof FragmentOfUpgrade
+					&& (hero == null || !ingredients.get(0).canUse(hero))){
+				return null;
+			}
 			for (Item i : ingredients){
 				i.quantity(i.quantity()-1);
 			}
@@ -158,6 +167,13 @@ public abstract class ExoticScroll extends Scroll {
 		
 		@Override
 		public Item sampleOutput(ArrayList<Item> ingredients, Hero hero) {
+			if (!testIngredients(ingredients)) return null;
+			if (ingredients.get(0) instanceof FragmentOfUpgrade){
+				if (hero == null || !ingredients.get(0).canUse(hero)){
+					return null;
+				}
+				return new ScrollOfEnchantment();
+			}
 			return Reflection.newInstance(regToExo.get(ingredients.get(0).getClass()));
 		}
 	}

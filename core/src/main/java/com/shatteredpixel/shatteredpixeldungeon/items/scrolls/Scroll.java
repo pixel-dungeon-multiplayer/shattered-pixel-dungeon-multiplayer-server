@@ -351,10 +351,11 @@ public abstract class Scroll extends Item {
 		public Item brew(ArrayList<Item> ingredients, Hero hero) {
 			if (!testIngredients(ingredients)) return null;
 			if (ingredients.get(0) instanceof FragmentOfUpgrade){
-				if (!ingredients.get(0).canUse(hero))
+				if (hero == null || !ingredients.get(0).canUse(hero))
 				{
 					return null;
 				}
+				ingredients.get(0).quantity(ingredients.get(0).quantity() - 1);
 				return new StoneOfEnchantment().quantity(2, false);
 			}
 			Scroll s = (Scroll) ingredients.get(0);
@@ -375,7 +376,7 @@ public abstract class Scroll extends Item {
                 } else {
                     return Reflection.newInstance(stones.get(s.getClass())).quantity(2);
                 }
-            } else if (ingredients.get(0) instanceof FragmentOfUpgrade && ingredients.get(0).canUse(hero)){
+            } else if (ingredients.get(0) instanceof FragmentOfUpgrade && hero != null && ingredients.get(0).canUse(hero)){
                 return new StoneOfEnchantment().quantity(2);
             }
             return null;

@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WndChooseSubclass extends Window {
-	
+
 	private static final int WIDTH		= 130;
 	private static final float GAP		= 2;
 	public final @NotNull TengusMask tome;
@@ -78,9 +78,13 @@ public class WndChooseSubclass extends Window {
 						@Override
 						protected void onSelect(int index) {
 							hide();
-							if (index == 0 && WndChooseSubclass.this.parent != null){
-								WndChooseSubclass.this.hide();
+							if (index == 0){
+								if(WndChooseSubclass.this.parent != null) {
+									WndChooseSubclass.this.hide();
+								}
 								tome.choose( subCls );
+								hide();
+								WndChooseSubclass.this.hide();
 							}
 						}
 					});

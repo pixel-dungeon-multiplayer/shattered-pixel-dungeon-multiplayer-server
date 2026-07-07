@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -37,7 +38,7 @@ public class WndWandmaker extends Window {
 	public final LocalizedString message;
 
 	public WndWandmaker(final Wandmaker wandmaker, final Item item, Hero hero) {
-		
+
 		super(hero);
 
 		this.wandmaker = wandmaker;
@@ -75,6 +76,9 @@ public class WndWandmaker extends Window {
 		reward.identify(false, getOwnerHero());
 		if(Dungeon.balance.multipleWandmakerReward){
 			reward.bind(getOwnerHero());
+			if (reward instanceof Wand) {
+				((Wand) reward).updateLevel(new Hero());
+			}
 		}
 		if (reward.doPickUp( getOwnerHero())) {
 			GLog.i( Messages.capitalize(Messages.get(getOwnerHero(), "you_now_have", reward.name())) );

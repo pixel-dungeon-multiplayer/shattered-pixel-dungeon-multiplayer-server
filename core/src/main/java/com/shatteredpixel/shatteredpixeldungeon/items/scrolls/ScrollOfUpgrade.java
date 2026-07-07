@@ -45,7 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndUpgrade;
 
 public class ScrollOfUpgrade extends InventoryScroll {
-	
+
 	{
 		icon = ItemSpriteSheet.Icons.SCROLL_UPGRADE;
 		preferredBag = Belongings.Backpack.class;
@@ -78,10 +78,10 @@ public class ScrollOfUpgrade extends InventoryScroll {
 		return itemSelector;
 	}
 
-	public Item upgradeItem( Item item ){
-		ScrollOfUpgrade.upgradeAnimation( curUser );
+	public Item upgradeItem(Item item, Hero ownerHero){
+		ScrollOfUpgrade.upgradeAnimation( ownerHero );
 
-		Degrade.detach( curUser, Degrade.class );
+		Degrade.detach( ownerHero, Degrade.class );
 
 		//logic for telling the user when item properties change from upgrades
 		//...yes this is rather messy
@@ -95,9 +95,9 @@ public class ScrollOfUpgrade extends InventoryScroll {
 			item = w.upgrade();
 
 			if (w.cursedKnown && hadCursedEnchant && !w.hasCurseEnchant()){
-				removeCurse(curUser);
+				removeCurse(ownerHero);
 			} else if (w.cursedKnown && wasCursed && !w.cursed){
-				weakenCurse(curUser);
+				weakenCurse(ownerHero);
 			}
 			if (wasHardened && !w.enchantHardened){
 				GLog.w( Messages.get(Weapon.class, "hardening_gone") );
@@ -115,9 +115,9 @@ public class ScrollOfUpgrade extends InventoryScroll {
 			item = a.upgrade();
 
 			if (a.cursedKnown && hadCursedGlyph && !a.hasCurseGlyph()){
-				removeCurse( curUser );
+				removeCurse( ownerHero );
 			} else if (a.cursedKnown && wasCursed && !a.cursed){
-				weakenCurse( curUser );
+				weakenCurse( ownerHero );
 			}
 			if (wasHardened && !a.glyphHardened){
 				GLog.w( Messages.get(Armor.class, "hardening_gone") );
@@ -131,7 +131,7 @@ public class ScrollOfUpgrade extends InventoryScroll {
 			item = item.upgrade();
 
 			if (item.cursedKnown && wasCursed && !item.cursed){
-				removeCurse( curUser );
+				removeCurse( ownerHero );
 			}
 
 		} else {
@@ -146,7 +146,7 @@ public class ScrollOfUpgrade extends InventoryScroll {
 
 		return item;
 	}
-	
+
 	public static void upgradeAnimation(Hero hero){
 		hero.getSprite().emitter().start( Speck.factory( Speck.UP ), 0.2f, 3 );
 	}
@@ -167,7 +167,7 @@ public class ScrollOfUpgrade extends InventoryScroll {
 	public LocalizedString desc() {
 		return Dungeon.balance.useFragments && isKnown() ? Messages.get(this, "fragment") : super.desc();
 	}
-	
+
 	@Override
 	public int value() {
 		return isKnown() ? 50 * quantity() : super.value();

@@ -48,7 +48,7 @@ public class ItemSerializer implements Serializer<Item> {
             itemObj.put("cursed", item.visiblyCursed());
             itemObj.put("identified", item.isIdentified());
             itemObj.put("level_known", item.levelKnown);
-            itemObj.put("level", item.visiblyUpgraded());
+            itemObj.put("level", item.visiblyUpgraded(hero));
             itemObj.put("energy_value", item.energyVal());
 
             ItemSprite.Glowing glowing = item.glowing();

@@ -436,7 +436,17 @@ public class Item implements Bundlable {
 		return level;
 	}
     public int trueLevel(Hero hero){
-        return trueLevel();
+		int level = trueLevel();
+		if(hero != null) {
+			if (Dungeon.balance.useFragments) {
+				for (FragmentOfUpgrade.Upgrade upgrade : fragmentUpgrades) {
+					if (upgrade.uuid.equals(hero.uuid)) {
+						level++;
+					}
+				}
+			}
+		}
+		return level;
     }
 
 	//returns the persistant level of the item, only affected by modifiers which are persistent (e.g. curse infusion)

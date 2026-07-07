@@ -81,6 +81,9 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Image;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.HeroSubclassAction;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.HeroTalentsAction;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.GameMath;
@@ -1074,6 +1077,7 @@ public enum Talent {
 
 	public static void initSubclassTalents( Hero hero ){
 		initSubclassTalents( hero.subClass, hero.talents );
+		SendData.sendAction( hero, new HeroTalentsAction(hero.talents) );
 	}
 
 	public static void initSubclassTalents( HeroSubClass cls, ArrayList<LinkedHashMap<Talent, Integer>> talents ){
@@ -1128,7 +1132,6 @@ public enum Talent {
 			talents.get(2).put(talent, 0);
 		}
 		tierTalents.clear();
-
 	}
 
 	public static void initArmorTalents( Hero hero ){

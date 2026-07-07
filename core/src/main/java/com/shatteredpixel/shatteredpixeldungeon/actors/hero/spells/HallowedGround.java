@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells;
 
+import com.watabou.utils.Bundle;
 import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -166,10 +167,13 @@ public class HallowedGround extends TargetedClericSpell {
 	}
 
 	public static class HallowedTerrain extends Blob {
+		int points = 1;
+		private static final String POINTS = "points";
 		Hero source;
 
 		public void setSource(Hero source) {
 			this.source = source;
+			this.points = source.pointsInTalent(Talent.HALLOWED_GROUND);
 		}
 
 		@Override
@@ -182,7 +186,7 @@ public class HallowedGround extends TargetedClericSpell {
 			ArrayList<Char> affected = new ArrayList<>();
 
 			// on avg, hallowed ground produces 9/17/25 tiles of grass, 100/67/50% of total tiles
-			int chance = 10 + 10*source.pointsInTalent(Talent.HALLOWED_GROUND);
+			int chance = 10 + 10*points;
 
 			for (int i = area.left-1; i <= area.right; i++) {
 				for (int j = area.top-1; j <= area.bottom; j++) {
@@ -269,6 +273,20 @@ public class HallowedGround extends TargetedClericSpell {
 		@Override
 		public LocalizedString tileDesc() {
 			return Messages.get(this, "desc");
+		}
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(POINTS, points);
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			if (bundle.contains(POINTS)) {
+				points = bundle.getInt(POINTS);
+			}
 		}
 	}
 

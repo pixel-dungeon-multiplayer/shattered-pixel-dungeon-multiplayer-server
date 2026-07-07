@@ -169,8 +169,7 @@ public class GuidingLight extends TargetedClericSpell {
 		@Override
 		public LocalizedString desc() {
 			LocalizedString desc = super.desc();
-
-			if (source.subClass == HeroSubClass.PRIEST){
+			if (source == null || source.subClass == HeroSubClass.PRIEST){
 				desc = LocalizedString.concat(desc, LocalizedString.concat("\n\n", Messages.get(this, "desc_priest")));
 			} else if (source.heroClass != HeroClass.CLERIC){
 				desc = LocalizedString.concat(desc, LocalizedString.concat("\n\n", Messages.get(this, "desc_generic")));

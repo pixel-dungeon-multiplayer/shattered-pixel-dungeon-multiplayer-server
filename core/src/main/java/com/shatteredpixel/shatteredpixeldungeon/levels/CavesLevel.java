@@ -90,21 +90,21 @@ public class CavesLevel extends RegularLevel {
 	protected ArrayList<Room> initRooms() {
 		return Blacksmith.Quest.spawn(super.initRooms());
 	}
-	
+
 	@Override
 	protected int standardRooms(boolean forceMax) {
 		if (forceMax) return 7;
 		//6 to 7, average 6.333
 		return 6+Random.chances(new float[]{2, 1});
 	}
-	
+
 	@Override
 	protected int specialRooms(boolean forceMax) {
 		if (forceMax) return 3;
 		//2 to 3, average 2.2
 		return 2+Random.chances(new float[]{4, 1});
 	}
-	
+
 	@Override
 	protected Painter painter() {
 		return new CavesPainter()
@@ -112,7 +112,7 @@ public class CavesLevel extends RegularLevel {
 				.setGrass(feeling == Feeling.GRASS ? 0.65f : 0.15f, 3)
 				.setTraps(nTraps(), trapClasses(), trapChances());
 	}
-	
+
 	@Override
 	public boolean activateTransition(Hero hero, LevelTransition transition) {
 		if (transition.type == LevelTransition.Type.BRANCH_EXIT
@@ -136,19 +136,22 @@ public class CavesLevel extends RegularLevel {
 							Messages.get(Blacksmith.class, "lost_pick"))
 					);
 				} else {
-					GameScene.show(new WndOptions(hero, new BlacksmithSprite(),
-							Messages.titleCase(Messages.get(Blacksmith.class, "name")),
-							Messages.get(Blacksmith.class, "quest_start_prompt"),
-							Messages.get(Blacksmith.class, "enter_yes"),
-							Messages.get(Blacksmith.class, "enter_no")) {
-						@Override
-						protected void onSelect(int index) {
-							if (index == 0) {
-								Blacksmith.Quest.start();
-								CavesLevel.super.activateTransition(hero, transition);
+					Game.runOnRenderThread(()-> {
+						GameScene.show(new WndOptions(hero, new BlacksmithSprite(),
+								Messages.titleCase(Messages.get(Blacksmith.class, "name")),
+								Messages.get(Blacksmith.class, "quest_start_prompt"),
+								Messages.get(Blacksmith.class, "enter_yes"),
+								Messages.get(Blacksmith.class, "enter_no")) {
+							@Override
+							protected void onSelect(int index) {
+								if (index == 0) {
+									Blacksmith.Quest.start();
+									CavesLevel.super.activateTransition(hero, transition);
+								}
 							}
-						}
+						});
 					});
+
 				}
 			}
 			return false;
@@ -162,12 +165,12 @@ public class CavesLevel extends RegularLevel {
 	public String tilesTex() {
 		return Assets.Environment.TILES_CAVES;
 	}
-	
+
 	@Override
 	public String waterTex() {
 		return Assets.Environment.WATER_CAVES;
 	}
-	
+
 	@Override
 	protected Class<?>[] trapClasses() {
 		return new Class[]{
@@ -183,7 +186,7 @@ public class CavesLevel extends RegularLevel {
 				2, 2, 2,
 				1, 1, 1, 1, 1, 1 };
 	}
-	
+
 	@Override
 	public LocalizedString tileName(int tile ) {
 		switch (tile) {
@@ -200,7 +203,7 @@ public class CavesLevel extends RegularLevel {
 				return super.tileName( tile );
 		}
 	}
-	
+
 	@Override
 	public LocalizedString tileDesc(int tile ) {
 		switch (tile) {
@@ -222,7 +225,7 @@ public class CavesLevel extends RegularLevel {
 				return super.tileDesc( tile );
 		}
 	}
-	
+
 	@Override
 	public Group addVisuals() {
 		super.addVisuals();
@@ -233,7 +236,7 @@ public class CavesLevel extends RegularLevel {
 	public static void addCavesVisuals( Level level, Group group ) {
 		addCavesVisuals(level, group, false);
 	}
-	
+
 	public static void addCavesVisuals( Level level, Group group, boolean overHang ) {
 		for (int i=0; i < level.length(); i++) {
 			if (level.map[i] == Terrain.WALL_DECO) {
@@ -241,13 +244,13 @@ public class CavesLevel extends RegularLevel {
 			}
 		}
 	}
-	
+
 	private static class Vein extends Group {
-		
+
 		private int pos;
 
 		private boolean includeOverhang;
-		
+
 		private float delay;
 
 		public Vein( int pos ) {
@@ -256,18 +259,18 @@ public class CavesLevel extends RegularLevel {
 
 		public Vein( int pos, boolean includeOverhang ) {
 			super();
-			
+
 			this.pos = pos;
 			this.includeOverhang = includeOverhang;
-			
+
 			delay = Random.Float( 2 );
 		}
-		
+
 		@Override
 		public void update() {
-			
+
 			if (visible = (pos < Dungeon.level.length && Dungeon.visibleforAnyHero(pos))) {
-				
+
 				super.update();
 
 				if ((delay -= Game.elapsed) <= 0) {
@@ -277,7 +280,7 @@ public class CavesLevel extends RegularLevel {
 						kill();
 						return;
 					}
-					
+
 					delay = Random.Float();
 
 					PointF p = DungeonTilemap.tileToWorld( pos );
@@ -297,22 +300,22 @@ public class CavesLevel extends RegularLevel {
 			}
 		}
 	}
-	
+
 	public static final class Sparkle extends PixelParticle {
-		
+
 		public void reset( float x, float y ) {
 			revive();
-			
+
 			this.x = x;
 			this.y = y;
-			
+
 			left = lifespan = 0.5f;
 		}
-		
+
 		@Override
 		public void update() {
 			super.update();
-			
+
 			float p = left / lifespan;
 			size( (am = p < 0.5f ? p * 2 : (1 - p) * 2) * 2 );
 		}

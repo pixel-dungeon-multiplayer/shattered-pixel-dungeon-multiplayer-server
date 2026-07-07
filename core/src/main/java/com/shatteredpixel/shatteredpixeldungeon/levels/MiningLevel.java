@@ -261,7 +261,7 @@ public class MiningLevel extends CavesLevel {
 			}
 
 			LocalizedString finalWarnText = warnText;
-			GameScene.show(new WndOptions(hero, new BlacksmithSprite(),
+			Game.runOnRenderThread(() -> {GameScene.show(new WndOptions(hero, new BlacksmithSprite(),
 					Messages.titleCase(Messages.get(Blacksmith.class, "name")),
 					finalWarnText,
 					Messages.get(Blacksmith.class, "exit_yes"),
@@ -273,12 +273,14 @@ public class MiningLevel extends CavesLevel {
 						MiningLevel.super.activateTransition(hero, transition);
 					}
 				}
-			} );
+			} );});
+
 			return false;
 
 		} else {
 			return super.activateTransition(hero, transition);
 		}
+
 	}
 
 	@Override

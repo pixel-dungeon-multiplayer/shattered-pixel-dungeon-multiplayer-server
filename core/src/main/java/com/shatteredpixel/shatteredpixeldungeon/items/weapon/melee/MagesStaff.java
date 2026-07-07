@@ -245,9 +245,7 @@ public class MagesStaff extends MeleeWeapon {
 		this.wand = null;
 
 		wand.resinBonus = 0;
-		if (owner instanceof Hero ) {
-			wand.updateLevel((Hero) owner);
-		}
+
 
 		//syncs the level of the two items.
 		int targetLevel = Math.max(this.trueLevel(), wand.trueLevel());
@@ -259,7 +257,11 @@ public class MagesStaff extends MeleeWeapon {
 		fragmentUpgrades = (ArrayList<com.shatteredpixel.shatteredpixeldungeon.items.optional.FragmentOfUpgrade.Upgrade>) wand.fragmentUpgrades.clone();
         this.wand = wand;
 		wand.levelKnown = wand.curChargeKnown = true;
-		updateWand(false);
+		if (owner instanceof Hero ) {
+			wand.updateLevel((Hero) owner);
+		} else {
+			updateWand(false);
+		}
 		wand.setCurCharges(Math.min(wand.maxCharges, wand.getCurCharges() +oldStaffcharges));
 		if (owner != null){
 			applyWandChargeBuff(owner);

@@ -170,8 +170,8 @@ public abstract class Bag extends Item implements Iterable<Item> {
 			if (canHold( item )) {
 				int slot = Dungeon.quickslot.getSlot(item);
 				item.detachAll(container);
-				if (!item.collect((Hero) owner)) {
-					item.collect((Hero) owner);
+				if (!item.collect(this)) {
+					item.collect(container);
 				}
 				if (slot != -1) {
 					Dungeon.quickslot.setSlot(slot, item);
@@ -216,11 +216,9 @@ public abstract class Bag extends Item implements Iterable<Item> {
 		loading = true;
 		for (Bundlable item : bundle.getCollection( ITEMS )) {
 			if (item != null){
-				if (owner instanceof Hero) {
-					if (!((Item) item).collect((Hero) owner)) {
-						//force-add the item if necessary, such as if its item category changed after an update
-						items.add((Item) item);
-					}
+				if (!((Item)item).collect( this )){
+					//force-add the item if necessary, such as if its item category changed after an update
+					items.add((Item) item);
 				}
 			}
 		}

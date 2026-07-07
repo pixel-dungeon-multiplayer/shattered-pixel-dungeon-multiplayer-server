@@ -218,7 +218,9 @@ public class Belongings implements Iterable<Item> {
         {
 			image = ItemSpriteSheet.BACKPACK;
 		}
-		public int capacity(Hero hero){
+		@Contract(pure = true)
+		public int capacity() {
+			final Hero hero = owner;
 			int cap = super.capacity();
 			for (Item item : items()){
 				if (item instanceof Bag){
@@ -226,20 +228,6 @@ public class Belongings implements Iterable<Item> {
 				}
 			}
 			if (hero != null && hero.belongings.secondWep != null){
-				//secondary weapons still occupy an inv. slot
-				cap--;
-			}
-			return cap;
-		}
-		@Contract(pure = true)
-		public int capacity(){
-			int cap = super.capacity();
-			for (Item item : items()){
-				if (item instanceof Bag){
-					cap++;
-				}
-			}
-			if (owner != null && owner.belongings.secondWep != null){
 				//secondary weapons still occupy an inv. slot
 				cap--;
 			}

@@ -82,6 +82,7 @@ import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -445,6 +446,7 @@ public class Armor extends EquipableItem {
 		
 	}
 
+	@Contract(pure = true)
 	@Override
 	public int level() {
 		int level = super.level();

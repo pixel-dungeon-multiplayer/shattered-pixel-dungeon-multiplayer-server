@@ -432,10 +432,13 @@ public class Item implements Bundlable {
 	}
 
 	//returns the true level of the item, ignoring all modifiers aside from upgrades
+	@Contract(pure = true)
 	public final int trueLevel(){
 		return level;
 	}
-    public int trueLevel(Hero hero){
+
+	@Contract(pure = true)
+    public final int trueLevel(Hero hero){
 		int level = trueLevel();
 		if(hero != null) {
 			if (Dungeon.balance.useFragments) {
@@ -450,6 +453,7 @@ public class Item implements Bundlable {
     }
 
 	//returns the persistant level of the item, only affected by modifiers which are persistent (e.g. curse infusion)
+	@Contract(pure = true)
 	public int level(){
 		return level;
 	}
@@ -1007,7 +1011,8 @@ public class Item implements Bundlable {
 		return getClass().getName() + "name";
 	}
 	//Only use when owner can't be found in any other way
-	public final Hero findOwner() {
+	@Contract(pure = true)
+	public final @Nullable Hero findOwner() {
 		if (Dungeon.heroes != null) {
 		for (Hero hero : Dungeon.heroes) {
 			if (hero != null && hero.belongings.contains(this)) {

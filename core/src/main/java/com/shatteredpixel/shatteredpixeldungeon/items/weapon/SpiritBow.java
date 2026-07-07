@@ -53,6 +53,7 @@ import com.shatteredpixel.shatteredpixeldungeon.particles.Emitter;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 
@@ -284,6 +285,7 @@ public class SpiritBow extends Weapon {
 		return speed;
 	}
 
+	@Contract(pure = true)
 	@Override
 	//FIXME
 	public int level() {

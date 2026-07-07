@@ -46,6 +46,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -456,7 +457,8 @@ public class Belongings implements Iterable<Item> {
 
 		return result;
 	}
-	
+
+	@Contract(pure = true)
 	public boolean contains( Item contains ){
 
 		boolean lostInvent = lostInventory();

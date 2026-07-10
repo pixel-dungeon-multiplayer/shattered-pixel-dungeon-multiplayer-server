@@ -340,9 +340,19 @@ public class Server extends Thread {
             relay.interrupt();
             relay = null;
         }
-        serverStepThread.interrupt();
+        if (serverStepThread != null) {
+            serverStepThread.interrupt();
+            serverStepThread = null;
+        }
         //ClientThread.sendAll(Codes.SERVER_CLOSED); //todo
         unregisterService();
+        if (serverSocket != null) {
+            try {
+                serverSocket.close();
+            } catch (IOException ignored) {
+            }
+            serverSocket = null;
+        }
 
         return true;
     }
@@ -366,7 +376,14 @@ public class Server extends Thread {
         queryThread.start();
     }
 
-    public static void joinClient(Socket client, String heroClass, String uuid, int protocolVersion) throws IOException {
+    public static void joinClient(Socket client, JSONObject joinPacket) throws IOException {
+        int protocolVersion = joinProtocolVersion(joinPacket);
+        if (!isCompatibleJoin(joinPacket, protocolVersion)) {
+            rejectClient(client, "unsupported_protocol", "Unsupported client protocol");
+            client.close();
+            return;
+        }
+
         synchronized (clients) {
             for (int i = 0; i <= clients.length; i++) {   //search not connected
                 if (i == clients.length) { //If we test last and it's connected too
@@ -374,13 +391,23 @@ public class Server extends Thread {
                     client.close();
                 } else if ((clients[i] == null) && !used[i])  {
                     client.setSoTimeout(0);
-                    ClientThread thread = new ClientThread(i, client, null, protocolVersion);
-                    //clients[i] = thread;
-                    thread.InitPlayerHero(heroClass, uuid);
+                    ClientThread thread = new ClientThread(i, client, null, protocolVersion, joinPacket.toString());
+                    clients[i] = thread;
+                    used[i] = true;
                     break;
                 }
             }
         }
+    }
+
+    private static boolean isCompatibleJoin(JSONObject joinPacket, int protocolVersion) {
+        return Protocol.NAME.equals(joinPacket.optString(Protocol.FIELD_PROTOCOL, ""))
+                && protocolVersion >= Protocol.MIN_VERSION
+                && protocolVersion <= Protocol.VERSION;
+    }
+
+    private static int joinProtocolVersion(JSONObject joinPacket) {
+        return joinPacket.optInt(Protocol.FIELD_VERSION, -1);
     }
 
     static void rejectClient(@NotNull Socket client, String reason, String message) throws IOException {

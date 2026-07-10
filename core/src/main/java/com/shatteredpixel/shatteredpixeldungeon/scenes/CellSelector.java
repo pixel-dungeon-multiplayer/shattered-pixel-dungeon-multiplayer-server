@@ -72,7 +72,7 @@ public class CellSelector extends ScrollArea {
 	
 	public CellSelector( DungeonTilemap map ) {
 		super( map );
-		camera = map.camera();
+		camera = Camera.createFullscreen(1);
 		
 		dragThreshold = PixelScene.defaultZoom * DungeonTilemap.SIZE / 2;
 		
@@ -554,7 +554,7 @@ public class CellSelector extends ScrollArea {
 	}
 	public CellSelector(Hero owner ) {
         super(GameScene.tiles);
-		camera = GameScene.tiles.camera();
+		camera = Camera.createFullscreen(1);
 
 		mouseZoom = camera.zoom;
 		KeyEvent.addKeyListener( keyListener );

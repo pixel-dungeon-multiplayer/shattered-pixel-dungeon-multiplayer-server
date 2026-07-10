@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SimulatedClientParserTest {
 
@@ -86,6 +87,21 @@ class SimulatedClientParserTest {
     }
 
     @Test
+    void rejectsUpdateForMissingItem() throws Exception {
+        InMemorySocketPair sockets = InMemorySocketPair.create();
+        SimulatedClient client = new SimulatedClient().connect(sockets.client());
+        client.parse(handshakePacket());
+
+        JSONObject packet = new JSONObject();
+        packet.put(Protocol.FIELD_PACKET_TYPE, Protocol.PACKET_ACTIONS_BATCH);
+        packet.put("actions", new JSONArray()
+                .put(inventoryRebuildWithEmptySpecialSlotAction())
+                .put(itemUpdatePatchAction(new JSONArray().put(-1), new JSONObject().put("quantity", 2))));
+
+        assertThrows(IllegalArgumentException.class, () -> client.parse(packet));
+    }
+
+    @Test
     void runsBeforeAfterAndInsteadActionHooks() throws Exception {
         InMemorySocketPair sockets = InMemorySocketPair.create();
         SimulatedClient client = new SimulatedClient().connect(sockets.client());
@@ -154,6 +170,21 @@ class SimulatedClientParserTest {
         action.put("backpack", backpack);
         action.put("special_slots", new JSONArray()
                 .put(new JSONObject().put("id", 0).put("item", weaponBag)));
+        return action;
+    }
+
+    private static JSONObject inventoryRebuildWithEmptySpecialSlotAction() {
+        JSONObject backpack = item("Backpack", 1);
+        backpack.put("bag_icon", 7);
+        backpack.put("size", 20);
+        backpack.put("owner", JSONObject.NULL);
+        backpack.put("items", new JSONArray().put(item("Sword", 1)));
+
+        JSONObject action = new JSONObject();
+        action.put("action_name", "inventory_rebuild");
+        action.put("backpack", backpack);
+        action.put("special_slots", new JSONArray()
+                .put(new JSONObject().put("id", 0).put("item", JSONObject.NULL)));
         return action;
     }
 

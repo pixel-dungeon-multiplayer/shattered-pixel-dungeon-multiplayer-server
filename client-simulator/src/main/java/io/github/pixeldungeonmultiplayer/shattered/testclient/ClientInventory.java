@@ -61,7 +61,7 @@ public final class ClientInventory {
     }
 
     public void updateItem(List<Integer> path, JSONObject patch) {
-        replaceExisting(path, itemAtPath(path).update(patch));
+        replaceExisting(path, requireExisting(path).update(patch));
     }
 
     public void replaceItem(List<Integer> path, ClientItem item) {
@@ -91,6 +91,14 @@ public final class ClientInventory {
             return itemInBag((ClientBag) item, path, 1);
         }
         return itemInBag(backpack, path, 0);
+    }
+
+    private ClientItem requireExisting(List<Integer> path) {
+        ClientItem item = itemAtPath(path);
+        if (item == null) {
+            throw new IllegalArgumentException("Cannot update missing item at path " + path);
+        }
+        return item;
     }
 
     private ClientItem itemInBag(ClientBag bag, List<Integer> path, int offset) {

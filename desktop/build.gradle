@@ -187,3 +187,17 @@ tasks.register('bagTransferSmoke', JavaExec) {
         jvmArgs '-XstartOnFirstThread'
     }
 }
+
+tasks.register('inventoryFuzzSmoke', JavaExec) {
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'io.github.pixeldungeonmultiplayer.shattered.server.desktop.DesktopInventoryFuzzSmoke'
+
+    systemProperty 'Specification-Title', appName + ' Inventory Fuzz Smoke'
+    systemProperty 'Implementation-Title', appPackageName
+    systemProperty 'Specification-Version', appVersionName + "-INDEV"
+    systemProperty 'Implementation-Version', appVersionCode
+
+    if (osName.contains('mac')) {
+        jvmArgs '-XstartOnFirstThread'
+    }
+}

@@ -4,7 +4,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public final class ClientBag extends ClientItem {
@@ -27,7 +26,7 @@ public final class ClientBag extends ClientItem {
 
     private static List<ClientItem> parseItems(JSONArray array) {
         if (array == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
         ArrayList<ClientItem> result = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {
@@ -35,6 +34,6 @@ public final class ClientBag extends ClientItem {
                 result.add(ClientItem.fromJson(array.getJSONObject(i)));
             }
         }
-        return Collections.unmodifiableList(result);
+        return result;
     }
 }

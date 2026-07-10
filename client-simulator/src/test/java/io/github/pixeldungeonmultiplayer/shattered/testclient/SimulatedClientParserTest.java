@@ -38,6 +38,54 @@ class SimulatedClientParserTest {
     }
 
     @Test
+    void appliesListInventoryItemActions() throws Exception {
+        InMemorySocketPair sockets = InMemorySocketPair.create();
+        SimulatedClient client = new SimulatedClient().connect(sockets.client());
+        client.parse(handshakePacket());
+
+        JSONObject packet = new JSONObject();
+        packet.put(Protocol.FIELD_PACKET_TYPE, Protocol.PACKET_ACTIONS_BATCH);
+        packet.put("actions", new JSONArray()
+                .put(inventoryRebuildAction())
+                .put(itemAddAction(1, item("Scroll", 1)))
+                .put(itemAddAction(3, item("Bomb", 2)))
+                .put(itemUpdatePatchAction(2, new JSONObject().put("quantity", 10)))
+                .put(itemReplaceAction(0, item("Axe", 1)))
+                .put(itemRemoveAction(1)));
+
+        client.parse(packet);
+
+        assertEquals(3, client.inventory().backpack.items.size());
+        assertEquals("Axe", client.inventory().itemAt(Arrays.asList(0)).name);
+        assertEquals("Potion", client.inventory().itemAt(Arrays.asList(1)).name);
+        assertEquals(10, client.inventory().itemAt(Arrays.asList(1)).quantity);
+        assertEquals("Bomb", client.inventory().itemAt(Arrays.asList(2)).name);
+        assertEquals(2, client.inventory().itemAt(Arrays.asList(2)).quantity);
+    }
+
+    @Test
+    void addressesSpecialSlotsAndNestedSpecialSlotBags() throws Exception {
+        InMemorySocketPair sockets = InMemorySocketPair.create();
+        SimulatedClient client = new SimulatedClient().connect(sockets.client());
+        client.parse(handshakePacket());
+
+        JSONObject packet = new JSONObject();
+        packet.put(Protocol.FIELD_PACKET_TYPE, Protocol.PACKET_ACTIONS_BATCH);
+        packet.put("actions", new JSONArray()
+                .put(inventoryRebuildWithSpecialSlotBagAction())
+                .put(itemUpdatePatchAction(new JSONArray().put(-1), new JSONObject().put("quantity", 2)))
+                .put(itemAddAction(new JSONArray().put(-1).put(1), item("Ring", 1)))
+                .put(itemRemoveAction(new JSONArray().put(-1).put(0))));
+
+        client.parse(packet);
+
+        assertEquals("Weapon Bag", client.inventory().itemAt(Arrays.asList(-1)).name);
+        assertEquals(2, client.inventory().itemAt(Arrays.asList(-1)).quantity);
+        assertEquals("Ring", client.inventory().itemAt(Arrays.asList(-1, 0)).name);
+        assertEquals("Sword", client.inventory().itemAt(Arrays.asList(0)).name);
+    }
+
+    @Test
     void runsBeforeAfterAndInsteadActionHooks() throws Exception {
         InMemorySocketPair sockets = InMemorySocketPair.create();
         SimulatedClient client = new SimulatedClient().connect(sockets.client());
@@ -88,11 +136,75 @@ class SimulatedClientParserTest {
         return action;
     }
 
+    private static JSONObject inventoryRebuildWithSpecialSlotBagAction() {
+        JSONObject backpack = item("Backpack", 1);
+        backpack.put("bag_icon", 7);
+        backpack.put("size", 20);
+        backpack.put("owner", JSONObject.NULL);
+        backpack.put("items", new JSONArray().put(item("Sword", 1)));
+
+        JSONObject weaponBag = item("Weapon Bag", 1);
+        weaponBag.put("bag_icon", 8);
+        weaponBag.put("size", 5);
+        weaponBag.put("owner", JSONObject.NULL);
+        weaponBag.put("items", new JSONArray().put(item("Dagger", 1)));
+
+        JSONObject action = new JSONObject();
+        action.put("action_name", "inventory_rebuild");
+        action.put("backpack", backpack);
+        action.put("special_slots", new JSONArray()
+                .put(new JSONObject().put("id", 0).put("item", weaponBag)));
+        return action;
+    }
+
     private static JSONObject itemUpdateAction() {
         JSONObject action = new JSONObject();
         action.put("action_name", "item_update");
         action.put("path", new JSONArray().put(1));
         action.put("item", item("Potion", 10));
+        return action;
+    }
+
+    private static JSONObject itemAddAction(int index, JSONObject item) {
+        return itemAddAction(new JSONArray().put(index), item);
+    }
+
+    private static JSONObject itemAddAction(JSONArray path, JSONObject item) {
+        JSONObject action = new JSONObject();
+        action.put("action_name", "item_add");
+        action.put("path", path);
+        action.put("item", item);
+        return action;
+    }
+
+    private static JSONObject itemUpdatePatchAction(int index, JSONObject patch) {
+        return itemUpdatePatchAction(new JSONArray().put(index), patch);
+    }
+
+    private static JSONObject itemUpdatePatchAction(JSONArray path, JSONObject patch) {
+        JSONObject action = new JSONObject();
+        action.put("action_name", "item_update");
+        action.put("path", path);
+        action.put("item", patch);
+        return action;
+    }
+
+    private static JSONObject itemReplaceAction(int index, JSONObject item) {
+        JSONObject action = new JSONObject();
+        action.put("action_name", "item_replace");
+        action.put("path", new JSONArray().put(index));
+        action.put("item", item);
+        return action;
+    }
+
+    private static JSONObject itemRemoveAction(int index) {
+        return itemRemoveAction(new JSONArray().put(index));
+    }
+
+    private static JSONObject itemRemoveAction(JSONArray path) {
+        JSONObject action = new JSONObject();
+        action.put("action_name", "item_remove");
+        action.put("path", path);
         return action;
     }
 

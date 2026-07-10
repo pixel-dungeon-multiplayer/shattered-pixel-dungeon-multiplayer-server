@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 public class ClientItem {
@@ -30,7 +31,7 @@ public class ClientItem {
     public final Object emitter;
 
     protected ClientItem(JSONObject json) {
-        raw = json;
+        raw = new JSONObject(json.toString());
         spriteSheet = json.optInt("sprite_sheet", -1);
         image = json.optInt("image", -1);
         icon = json.optInt("icon", -1);
@@ -57,6 +58,25 @@ public class ClientItem {
             return ClientBag.fromJson(json);
         }
         return new ClientItem(json);
+    }
+
+    public ClientItem update(JSONObject patch) {
+        return fromJson(merge(raw, patch));
+    }
+
+    private static JSONObject merge(JSONObject base, JSONObject patch) {
+        JSONObject merged = new JSONObject(base.toString());
+        for (Iterator<String> it = patch.keys(); it.hasNext(); ) {
+            String key = it.next();
+            Object value = patch.get(key);
+            Object previous = merged.opt(key);
+            if (previous instanceof JSONObject && value instanceof JSONObject) {
+                merged.put(key, merge((JSONObject) previous, (JSONObject) value));
+            } else {
+                merged.put(key, value);
+            }
+        }
+        return merged;
     }
 
     private static List<String> strings(JSONArray array) {

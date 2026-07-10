@@ -2,6 +2,9 @@ package io.github.pixeldungeonmultiplayer.shattered.testclient;
 
 import io.github.pixeldungeonmultiplayer.shattered.server.network.ClientThread;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.Protocol;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -33,20 +36,24 @@ public final class SimulatedClient implements Closeable {
     private final Map<String, List<ActionHook>> afterActionHooks = new HashMap<>();
     private final Map<String, List<ActionHook>> insteadActionHooks = new HashMap<>();
 
+    @Contract(pure = true)
     public ClientState state() {
         return state;
     }
 
+    @Contract(pure = true)
     public JSONObject helloPacket() {
         requireState(ClientState.HELLO_RECEIVED);
         return helloPacket;
     }
 
+    @Contract(pure = true)
     public ClientInventory inventory() {
         return inventory;
     }
 
-    public Map<Integer, ClientWindow> windows() {
+    @Contract(pure = true)
+    public @UnmodifiableView @NotNull Map<@NotNull Integer, @NotNull ClientWindow> windows() {
         return Collections.unmodifiableMap(windows);
     }
 
@@ -64,6 +71,7 @@ public final class SimulatedClient implements Closeable {
         return this;
     }
 
+    @Contract("->this")
     public SimulatedClient parseNext() throws IOException {
         requireConnected();
         String line = reader.readLine();
@@ -120,10 +128,18 @@ public final class SimulatedClient implements Closeable {
                 inventory = ClientInventory.fromJson(action);
                 break;
             case "item_add":
+                if (inventory != null) {
+                    inventory.addItem(intList(action.getJSONArray("path")), ClientItem.fromJson(action.getJSONObject("item")));
+                }
+                break;
             case "item_update":
+                if (inventory != null) {
+                    inventory.updateItem(intList(action.getJSONArray("path")), action.getJSONObject("item"));
+                }
+                break;
             case "item_replace":
                 if (inventory != null) {
-                    inventory.putItem(intList(action.getJSONArray("path")), ClientItem.fromJson(action.getJSONObject("item")));
+                    inventory.replaceItem(intList(action.getJSONArray("path")), ClientItem.fromJson(action.getJSONObject("item")));
                 }
                 break;
             case "item_remove":

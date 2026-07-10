@@ -127,4 +127,21 @@ dependencies {
 
     implementation project(':services:updates:githubUpdates')
     implementation project(':services:news:shatteredNews')
+
+    testImplementation project(':client-simulator')
+    testImplementation "org.json:json:20170516"
+}
+
+tasks.register('gameLoopSmoke', JavaExec) {
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'io.github.pixeldungeonmultiplayer.shattered.server.desktop.DesktopGameLoopSmoke'
+
+    systemProperty 'Specification-Title', appName + ' Game Loop Smoke'
+    systemProperty 'Implementation-Title', appPackageName
+    systemProperty 'Specification-Version', appVersionName + "-INDEV"
+    systemProperty 'Implementation-Version', appVersionCode
+
+    if (osName.contains('mac')) {
+        jvmArgs '-XstartOnFirstThread'
+    }
 }

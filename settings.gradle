@@ -1,6 +1,7 @@
 //core game code modules
 include ':SPD-classes'
 include ':core'
+include ':client-simulator'
 
 //platform modules
 include ':android'

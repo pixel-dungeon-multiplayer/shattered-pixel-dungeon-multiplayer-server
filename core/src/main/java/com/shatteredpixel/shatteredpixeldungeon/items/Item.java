@@ -320,7 +320,7 @@ public class Item implements Bundlable {
 		}
 		Dungeon.quickslot.replacePlaceholder(this);
 		path.add(items.indexOf(this));
-		SendData.packAndSendAction(container.owner, new ItemAction.Add(this));
+		SendData.packAndSendAction(container.owner, new ItemAction.Add(this, path));
 		updateQuickslot();
 		return path;
 

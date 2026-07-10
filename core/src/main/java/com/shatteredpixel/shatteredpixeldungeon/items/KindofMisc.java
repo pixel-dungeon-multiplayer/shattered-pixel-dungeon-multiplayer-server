@@ -97,6 +97,7 @@ public abstract class KindofMisc extends EquipableItem {
 
 						@Override
 						protected void onSelect(int index) {
+							super.onSelect(index);
 
 							KindofMisc equipped = miscs[index];
 							int slot = Dungeon.quickslot.getSlot(KindofMisc.this);
@@ -115,7 +116,8 @@ public abstract class KindofMisc extends EquipableItem {
 								doEquip(hero);
 							} else {
 								getOwnerHero().belongings.backpack.addItemDirect(KindofMisc.this);
-								SendData.packAndSendAction(hero, new ItemAction.Add(KindofMisc.this));
+								SendData.packAndSendAction(hero,
+										new ItemAction.Add(KindofMisc.this, KindofMisc.this.getSlot(hero)));
 							}
 							if (slot != -1) {
 								Dungeon.quickslot.setSlot(slot, KindofMisc.this);

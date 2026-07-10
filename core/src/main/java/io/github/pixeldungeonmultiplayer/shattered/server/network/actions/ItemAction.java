@@ -16,10 +16,12 @@ public final class ItemAction {
 
     public static class Add implements LiveStateNetworkAction {
         public final @NotNull Item item;
+        public final @NotNull List<Integer> path;
 
         @Contract(pure = true)
-        public Add(@NotNull Item item) {
+        public Add(@NotNull Item item, @NotNull List<Integer> path) {
             this.item = item;
+            this.path = path;
         }
 
         @Override

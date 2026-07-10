@@ -112,7 +112,7 @@ public class Belongings implements Iterable<Item> {
 	public KindOfWeapon setWeapon(KindOfWeapon weapon) {
 		this.weapon = weapon;
 		if (weapon != null) {
-			weapon.sendSelfUpdate(owner);
+			SendData.packAndSendAction(owner, new ItemAction.Replace(weapon));
 		} else {
 			List<Integer> path = new ArrayList<>(1);
 			path.add(-1);
@@ -128,7 +128,7 @@ public class Belongings implements Iterable<Item> {
 	public Armor setArmor(Armor armor) {
 		this.armor = armor;
 		if (armor != null) {
-			armor.sendSelfUpdate(owner);
+			SendData.packAndSendAction(owner, new ItemAction.Replace(armor));
 			owner.sendSelf();
 		} else {
 			List<Integer> path = new ArrayList<>(1);
@@ -145,7 +145,7 @@ public class Belongings implements Iterable<Item> {
 	public Artifact setArtifact(Artifact artifact) {
 		this.artifact = artifact;
 		if (artifact != null) {
-			artifact.sendSelfUpdate(owner);
+			SendData.packAndSendAction(owner, new ItemAction.Replace(artifact));
 		} else {
 			List<Integer> path = new ArrayList<>(1);
 			path.add(-3);
@@ -161,7 +161,7 @@ public class Belongings implements Iterable<Item> {
 	public KindofMisc setMisc(KindofMisc misc) {
 		this.misc = misc;
 		if (misc != null) {
-			misc.sendSelfUpdate(owner);
+			SendData.packAndSendAction(owner, new ItemAction.Replace(misc));
 		} else {
 			List<Integer> path = new ArrayList<>(1);
 			path.add(-4);
@@ -177,7 +177,7 @@ public class Belongings implements Iterable<Item> {
 	public Ring setRing(Ring ring) {
 		this.ring = ring;
 		if (ring != null) {
-			ring.sendSelfUpdate(owner);
+			SendData.packAndSendAction(owner, new ItemAction.Replace(ring));
 		} else {
 			List<Integer> path = new ArrayList<>(1);
 			path.add(-5);

@@ -13,7 +13,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.desktop.DesktopPlatformSupport;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.watabou.noosa.Game;
 import com.watabou.plugins.PluginManifest;
@@ -83,16 +82,27 @@ public final class DesktopItemActionRaceSmoke {
                     waitClient(client, () -> client.inventory() != null && client.inventory().itemsByPath().containsKey(pathOf(bag)), "bag was not rebuilt");
 
                     RaceItem item = new RaceItem();
-                    client.beforeAction("item_update", (c, a) -> bag.allowAdd.countDown());
-                    actor = new Thread(() -> item.collect(bag), "test-actor");
+                    List<Integer> itemPath = new ArrayList<>(pathOf(bag));
+                    itemPath.add(0);
+                    AtomicBoolean itemAdded = new AtomicBoolean();
+                    AtomicBoolean itemUpdated = new AtomicBoolean();
+                    client.afterAction("item_add", (c, a) -> {
+                        if (a.getJSONArray("path").toList().equals(itemPath)) {
+                            itemAdded.set(true);
+                        }
+                    });
+                    client.beforeAction("item_update", (c, a) -> {
+                        if (a.getJSONArray("path").toList().equals(itemPath)) {
+                            require(itemAdded.get(), "item_update arrived before item_add");
+                            itemUpdated.set(true);
+                        }
+                    });
+                    actor = new Thread(() -> item.collect(hero().belongings.backpack), "test-actor");
                     actor.start();
                     require(bag.added.await(TIMEOUT, TimeUnit.MILLISECONDS), "item was not internally added");
-                    runOnRender(() -> { item.setNeedUpdateVisual(true); GameScene.setUpdateItemDisplays(hero()); });
-                    long deadline = System.currentTimeMillis() + TIMEOUT;
-                    while (System.currentTimeMillis() < deadline) {
-                        try { client.parseNext(); } catch (SocketTimeoutException ignored) { }
-                    }
-                    throw new AssertionError("GameScene did not send item_update during the collect race");
+                    bag.allowAdd.countDown();
+                    waitClient(client, itemUpdated::get, "item_update was not received");
+                    require(itemAdded.get(), "item_add was not received");
                 }
             } catch (Throwable t) {
                 failure.set(t);

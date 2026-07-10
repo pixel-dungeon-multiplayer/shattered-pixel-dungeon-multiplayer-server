@@ -79,6 +79,11 @@ public class Cleanse extends ClericSpell {
 				affected.add(mob);
 			}
 		}
+		for (Hero h: Dungeon.heroes) {
+			if (h != null && hero.fieldOfView[h.pos] && h.alignment == Char.Alignment.ALLY){
+				affected.add(h);
+			}
+		}
 
 		Char ally = PowerOfMany.getPoweredAlly();
 		//hero is always affected, to just check for life linked ally

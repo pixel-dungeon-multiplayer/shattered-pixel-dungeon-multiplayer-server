@@ -201,3 +201,13 @@ tasks.register('inventoryFuzzSmoke', JavaExec) {
         jvmArgs '-XstartOnFirstThread'
     }
 }
+
+tasks.register('itemActionRaceSmoke', JavaExec) {
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'io.github.pixeldungeonmultiplayer.shattered.server.desktop.DesktopItemActionRaceSmoke'
+
+    systemProperty 'Specification-Title', appName + ' Item Action Race Smoke'
+    systemProperty 'Implementation-Title', appPackageName
+    systemProperty 'Specification-Version', appVersionName + "-INDEV"
+    systemProperty 'Implementation-Version', appVersionCode
+}

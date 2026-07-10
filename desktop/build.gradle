@@ -159,3 +159,17 @@ tasks.register('equipSwapSmoke', JavaExec) {
         jvmArgs '-XstartOnFirstThread'
     }
 }
+
+tasks.register('inventoryCapacitySmoke', JavaExec) {
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'io.github.pixeldungeonmultiplayer.shattered.server.desktop.DesktopInventoryCapacitySmoke'
+
+    systemProperty 'Specification-Title', appName + ' Inventory Capacity Smoke'
+    systemProperty 'Implementation-Title', appPackageName
+    systemProperty 'Specification-Version', appVersionName + "-INDEV"
+    systemProperty 'Implementation-Version', appVersionCode
+
+    if (osName.contains('mac')) {
+        jvmArgs '-XstartOnFirstThread'
+    }
+}

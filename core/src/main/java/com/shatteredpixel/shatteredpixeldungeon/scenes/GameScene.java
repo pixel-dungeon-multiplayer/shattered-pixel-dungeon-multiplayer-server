@@ -165,14 +165,6 @@ public class GameScene extends PixelScene {
 		inGameScene = true;
 	}
 
-	public static void setUpdateItemDisplays(Hero hero) {
-		if (hero != null) {
-			GameScene.updateItemDisplays.add(HeroHelp.getHeroID(hero));
-		} else {
-
-		}
-	}
-
 	@Override
 	public void create() {
 
@@ -652,43 +644,17 @@ public class GameScene extends PixelScene {
 	//this caps the speed of resting for higher refresh rate displays
 	private float notifyDelay = 1 / 60f;
 
-	private static final Set<Integer> updateItemDisplays = new HashSet<>();
-	private static final Set<Integer> fullUpdate = new HashSet<>();
-
 	public static boolean tagDisappeared = false;
 	public static boolean updateTags = false;
 	private static float waterOfs = 0;
 
 	public static boolean shouldProcess = false;
 
-	private void updateItemDisplays() {
-		for (int id = 0; id < Dungeon.heroes.length; id++){
-			final Hero hero = Dungeon.heroes[id];
-			if (hero == null) {
-				continue;
-			}
-			if (updateItemDisplays.contains(id)) {
-				updateItemDisplays.remove(id);
-				updateItemDisplays(hero);
-			}
-		}
-	}
-
-	private void updateItemDisplays(@NotNull Hero hero) {
-		for (Item item: hero.belongings) {
-			if (item.isNeedUpdateVisual()) {
-				SendData.packAndSendAction(hero, new ItemAction.Update(item));
-				item.setNeedUpdateVisual(false);
-			}
-		}
-	}
 	@Override
 	public synchronized void update() {
 		Server.parseActions();
 		SendData.updatePendingChat(Game.elapsed);
 		lastOffset = null;
-
-		updateItemDisplays();
 
 		if (Dungeon.heroes == null || scene == null) {
 			return;

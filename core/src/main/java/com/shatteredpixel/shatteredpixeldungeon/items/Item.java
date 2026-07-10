@@ -123,8 +123,6 @@ public class Item implements Bundlable {
 	protected static final String TXT_LEVEL = "%+d";
 	protected static final String TXT_CURSED = "";//"-";
 
-	private boolean needUpdateVisual = false;
-
 	public int customNoteID = -1;
 
 	private String boundUUID;
@@ -727,12 +725,14 @@ public class Item implements Bundlable {
 		if (hero == null) {
 			hero = item.findOwner();
 		}
+		if (hero == null) {
+			return;
+		}
 		if (item == null) {
 			updateQuickslotForAllItems((Hero) hero);
 			return;
 		}
-		item.setNeedUpdateVisual(true);
-		GameScene.setUpdateItemDisplays((Hero) hero);
+		item.sendSelfUpdate((Hero) hero);
 	}
 
 	public static final void updateQuickslotForAllHeroes() {
@@ -744,9 +744,8 @@ public class Item implements Bundlable {
 
 	public static final void updateQuickslotForAllItems(Hero hero) {
 		for (Item item: hero.belongings) {
-			item.setNeedUpdateVisual(true);
+			item.sendSelfUpdate(hero);
 		}
-		GameScene.setUpdateItemDisplays((Hero) hero);
 	}
 
 	private static final String QUANTITY		= "quantity";
@@ -1034,14 +1033,6 @@ public class Item implements Bundlable {
 			SendData.packAndSendActionForAll(new ItemAction.Update(this));
 		}
 	}
-
-    public boolean isNeedUpdateVisual() {
-        return needUpdateVisual;
-    }
-
-    public void setNeedUpdateVisual(boolean needUpdateVisual) {
-        this.needUpdateVisual = needUpdateVisual;
-    }
 	public boolean isBound(){
 		return boundUUID != null;
 	}

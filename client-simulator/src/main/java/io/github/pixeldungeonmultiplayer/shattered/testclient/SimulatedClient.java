@@ -180,6 +180,35 @@ public final class SimulatedClient implements Closeable {
         send(packet);
     }
 
+    public void itemAction(List<Integer> slot, String actionName) throws IOException {
+        JSONObject action = new JSONObject();
+        action.put("slot", new JSONArray(slot));
+        action.put("action_name", actionName);
+
+        JSONObject packet = new JSONObject();
+        packet.put(Protocol.FIELD_PACKET_TYPE, Protocol.PACKET_CLIENT_COMMAND);
+        packet.put("action", action);
+        send(packet);
+    }
+
+    public void selectWindow(int id, int button) throws IOException {
+        JSONObject selection = new JSONObject();
+        selection.put("id", id);
+        selection.put("button", button);
+
+        JSONObject packet = new JSONObject();
+        packet.put(Protocol.FIELD_PACKET_TYPE, Protocol.PACKET_CLIENT_COMMAND);
+        packet.put("window", selection);
+        send(packet);
+    }
+
+    public void selectCell(int cell) throws IOException {
+        JSONObject packet = new JSONObject();
+        packet.put(Protocol.FIELD_PACKET_TYPE, Protocol.PACKET_CLIENT_COMMAND);
+        packet.put("cell_listener", cell);
+        send(packet);
+    }
+
     public SimulatedClient beforeAction(String actionName, ActionHook hook) {
         addHook(beforeActionHooks, actionName, hook);
         return this;

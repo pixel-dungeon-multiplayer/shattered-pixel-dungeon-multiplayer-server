@@ -145,3 +145,17 @@ tasks.register('gameLoopSmoke', JavaExec) {
         jvmArgs '-XstartOnFirstThread'
     }
 }
+
+tasks.register('equipSwapSmoke', JavaExec) {
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'io.github.pixeldungeonmultiplayer.shattered.server.desktop.DesktopEquipSwapSmoke'
+
+    systemProperty 'Specification-Title', appName + ' Equip Swap Smoke'
+    systemProperty 'Implementation-Title', appPackageName
+    systemProperty 'Specification-Version', appVersionName + "-INDEV"
+    systemProperty 'Implementation-Version', appVersionCode
+
+    if (osName.contains('mac')) {
+        jvmArgs '-XstartOnFirstThread'
+    }
+}

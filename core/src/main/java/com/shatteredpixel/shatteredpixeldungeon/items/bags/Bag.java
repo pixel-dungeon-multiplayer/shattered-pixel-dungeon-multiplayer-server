@@ -127,6 +127,12 @@ public abstract class Bag extends Item implements Iterable<Item> {
 	
 	@Override
 	public boolean collect( Bag container ) {
+		Hero previousOwner = owner;
+		owner = container.owner;
+		if (!super.collect( container )) {
+			owner = previousOwner;
+			return false;
+		}
 
 		grabItems(container);
 
@@ -135,16 +141,9 @@ public abstract class Bag extends Item implements Iterable<Item> {
 			Dungeon.quickslot.replacePlaceholder(item);
 		}
 
-		if (super.collect( container )) {
-			
-			owner = container.owner;
-			
-			Badges.validateAllBagsBought( this );
-			
-			return true;
-		} else {
-			return false;
-		}
+		Badges.validateAllBagsBought( this );
+
+		return true;
 	}
 
 	@Override
@@ -166,11 +165,17 @@ public abstract class Bag extends Item implements Iterable<Item> {
 		if (owner == null){
 			owner = container.owner;
 		}
+		List<Integer> bagPath = owner instanceof Hero
+				? ((Hero) owner).belongings.pathOfItem(this)
+				: null;
 		for (Item item : container.items.toArray( new Item[0] )) {
 			if (canHold( item )) {
 				int slot = Dungeon.quickslot.getSlot(item);
 				item.detachAll(container);
-				if (!item.collect(this)) {
+				boolean collected = bagPath == null
+						? item.collect(this)
+						: item.collect(this, new ArrayList<>(bagPath)) != null;
+				if (!collected) {
 					item.collect(container);
 				}
 				if (slot != -1) {

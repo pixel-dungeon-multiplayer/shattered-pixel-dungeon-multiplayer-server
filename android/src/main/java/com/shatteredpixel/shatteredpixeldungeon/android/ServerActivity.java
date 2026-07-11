@@ -1,24 +1,24 @@
 package com.shatteredpixel.shatteredpixeldungeon.android;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Looper;
 import android.text.InputType;
 import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -54,8 +54,7 @@ public class ServerActivity extends Activity {
     private Button openLogsButton;
     private Button resetSaveButton;
 
-    private ServerService serverService;
-    private boolean isBound = false;
+    private boolean serverRunning = false;
 
     // Цвета темы
     private int themeBg;
@@ -75,28 +74,19 @@ public class ServerActivity extends Activity {
         }
     };
 
-    private final ServiceConnection connection = new ServiceConnection() {
+    private final BroadcastReceiver statusReceiver = new BroadcastReceiver() {
         @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            ServerService.LocalBinder binder = (ServerService.LocalBinder) service;
-            serverService = binder.getService();
-            isBound = true;
-            updateStatusUI();
-            updateIpAddress();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            isBound = false;
-            serverService = null;
-            updateStatusUI();
+        public void onReceive(Context context, Intent intent) {
+            if ("com.shatteredpixel.shatteredpixeldungeon.android.STATUS".equals(intent.getAction())) {
+                serverRunning = intent.getBooleanExtra("running", false);
+                updateStatusUI();
+            }
         }
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LogHelper.init();
         initThemeColors();
 
         // Основной скроллер для всей разметки (нужен при появлении клавиатуры)
@@ -210,7 +200,6 @@ public class ServerActivity extends Activity {
         startButton.setOnClickListener(v -> {
             Intent serviceIntent = new Intent(ServerActivity.this, ServerService.class);
             startService(serviceIntent);
-            bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
             Toast.makeText(ServerActivity.this, getString(R.string.msg_starting_server), Toast.LENGTH_SHORT).show();
             updateIpAddress();
         });
@@ -234,10 +223,6 @@ public class ServerActivity extends Activity {
         stopButton.setOnClickListener(v -> {
             Intent serviceIntent = new Intent(ServerActivity.this, ServerService.class);
             stopService(serviceIntent);
-            if (isBound) {
-                unbindService(connection);
-                isBound = false;
-            }
             updateStatusUI();
             Toast.makeText(ServerActivity.this, getString(R.string.msg_server_stopped), Toast.LENGTH_SHORT).show();
             updateIpAddress();
@@ -494,10 +479,20 @@ public class ServerActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (ServerService.isRunning()) {
-            Intent serviceIntent = new Intent(this, ServerService.class);
-            bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
+
+        IntentFilter filter = new IntentFilter("com.shatteredpixel.shatteredpixeldungeon.android.STATUS");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(statusReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(statusReceiver, filter);
         }
+
+        serverRunning = isServiceRunning(ServerService.class);
+        updateStatusUI();
+
+        // Запрашиваем актуальный статус у фоновой службы, если она работает
+        sendBroadcast(new Intent("com.shatteredpixel.shatteredpixeldungeon.android.REQUEST_STATUS"));
+        
         handler.post(statusUpdater);
         updateIpAddress();
     }
@@ -505,15 +500,26 @@ public class ServerActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (isBound) {
-            unbindService(connection);
-            isBound = false;
-        }
+        try {
+            unregisterReceiver(statusReceiver);
+        } catch (Exception ignored) {}
         handler.removeCallbacks(statusUpdater);
     }
 
+    private boolean isServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        if (manager != null) {
+            for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+                if (serviceClass.getName().equals(service.service.getClassName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private void updateStatusUI() {
-        boolean isRunning = ServerService.isRunning();
+        boolean isRunning = serverRunning || isServiceRunning(ServerService.class);
         if (isRunning) {
             statusValue.setText(getString(R.string.status_running));
             statusValue.setTextColor(Color.parseColor("#55FF55"));

@@ -17,8 +17,10 @@ $env:JAVA_TOOL_OPTIONS = '-Dspd.port=7777 -Dspd.onlineMode=false -Dspd.serverNam
 .\gradlew.bat :headless-desktop:run
 ```
 
-The server stores its editable JSON configuration in `config.json` in the
-current working directory. Use `spd.configFile` to select another path.
+The server stores its runtime state under `headless-data/` in the current
+working directory. Its editable configuration is `headless-data/config.json`.
+Use `spd.dataDir` to relocate all server data or `spd.configFile` to override
+only the configuration path.
 
 Supported properties are `spd.port`, `spd.onlineMode`, `spd.serverName`,
 `spd.serverUuid`, `spd.maxPlayers`, `spd.motd`, `spd.dataDir`, and

@@ -60,14 +60,15 @@ public final class HeadlessDesktopLauncher {
 			Game.width = positiveIntProperty("spd.virtualWidth", 720);
 			Game.height = positiveIntProperty("spd.virtualHeight", 400);
 			System.out.println("Headless virtual resolution: " + Game.width + "x" + Game.height);
-			String configFileName = System.getProperty("spd.configFile", "config.json");
+			String dataDirectory = System.getProperty("spd.dataDir", "headless-data/");
+			String configFileName = System.getProperty("spd.configFile",
+					new FileHandle(dataDirectory).child("config.json").path());
 			FileHandle configFile = Gdx.files.local(configFileName);
 			Preferences preferences = new JsonPreferences(configFile);
             SPDSettings.set(preferences);
 			System.out.println("Headless server configuration: " + configFile.file().getAbsolutePath());
             applySystemProperties();
-            FileUtils.setDefaultFileProperties(Files.FileType.Local,
-                    System.getProperty("spd.dataDir", "headless-data/") );
+            FileUtils.setDefaultFileProperties(Files.FileType.Local, dataDirectory);
             System.out.println("Starting headless SPDMP server on port " + SPDSettings.serverPort());
             super.create();
 			if (!Server.started) {

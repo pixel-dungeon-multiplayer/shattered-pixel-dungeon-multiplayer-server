@@ -35,6 +35,7 @@ public final class SimulatedClient implements Closeable {
     private final Map<String, List<ActionHook>> beforeActionHooks = new HashMap<>();
     private final Map<String, List<ActionHook>> afterActionHooks = new HashMap<>();
     private final Map<String, List<ActionHook>> insteadActionHooks = new HashMap<>();
+    private final List<PacketHook> beforePacketHooks = new ArrayList<>();
 
     @Contract(pure = true)
     public ClientState state() {
@@ -85,6 +86,9 @@ public final class SimulatedClient implements Closeable {
     }
 
     public void parse(JSONObject packet) {
+        for (PacketHook hook : beforePacketHooks) {
+            hook.handle(this, packet);
+        }
         try {
             String packetType = packet.optString(Protocol.FIELD_PACKET_TYPE, "");
             if (Protocol.PACKET_HANDSHAKE.equals(packetType)) {
@@ -224,6 +228,11 @@ public final class SimulatedClient implements Closeable {
         return this;
     }
 
+    public SimulatedClient beforePacket(PacketHook hook) {
+        beforePacketHooks.add(hook);
+        return this;
+    }
+
     public int protocolVersion() {
         return helloPacket().getInt(Protocol.FIELD_VERSION);
     }
@@ -306,5 +315,9 @@ public final class SimulatedClient implements Closeable {
 
     public interface ActionHook {
         void handle(SimulatedClient client, JSONObject action);
+    }
+
+    public interface PacketHook {
+        void handle(SimulatedClient client, JSONObject packet);
     }
 }

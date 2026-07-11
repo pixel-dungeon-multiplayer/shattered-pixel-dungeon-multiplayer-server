@@ -25,6 +25,7 @@ import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.Se
 import io.github.pixeldungeonmultiplayer.shattered.testclient.ClientInventory;
 import io.github.pixeldungeonmultiplayer.shattered.testclient.ClientItem;
 import io.github.pixeldungeonmultiplayer.shattered.testclient.SimulatedClient;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -103,6 +106,7 @@ public final class DesktopBagTransferSmoke {
         private final int port;
         private Item trackedItem;
         private TestBag collectingBag;
+        private final Deque<String> receivedPackets = new ArrayDeque<>();
 
         private BagTransferGame(TestDesktopPlatformSupport platform, int port) {
             super(platform);
@@ -121,6 +125,7 @@ public final class DesktopBagTransferSmoke {
             try {
                 waitFor(() -> Server.started, "server did not start");
                 try (SimulatedClient client = new SimulatedClient().connect(connectClientSocket())) {
+                    client.beforePacket((ignored, packet) -> recordPacket(packet));
                     client.parseNext();
                     AtomicBoolean sceneReady = new AtomicBoolean(false);
                     client.afterAction("interlevel_scene", (c, action) -> {
@@ -198,11 +203,40 @@ public final class DesktopBagTransferSmoke {
                     assertInventoryMatches(client.inventory());
                 }
             } catch (Throwable t) {
-                failure.set(t);
+                failure.set(new AssertionError("bag transfer packet trace:\n" + receivedPackets, t));
             } finally {
                 Server.stopServer();
                 Gdx.app.exit();
             }
+        }
+
+        private void recordPacket(JSONObject packet) {
+            JSONArray actions = packet.optJSONArray("actions");
+            if (actions == null) {
+                return;
+            }
+            StringBuilder trace = new StringBuilder();
+            for (int i = 0; i < actions.length(); i++) {
+                JSONObject action = actions.getJSONObject(i);
+                String actionName = action.optString("action_name", "");
+                if (!actionName.startsWith("item_") && !"inventory_rebuild".equals(actionName)) {
+                    continue;
+                }
+                if (trace.length() > 0) {
+                    trace.append(", ");
+                }
+                trace.append(actionName);
+                if (action.has("path")) {
+                    trace.append(' ').append(action.getJSONArray("path"));
+                }
+            }
+            if (trace.length() == 0) {
+                return;
+            }
+            if (receivedPackets.size() == 20) {
+                receivedPackets.removeFirst();
+            }
+            receivedPackets.addLast(trace.toString());
         }
 
         private void addTrackedItemAndRebuild() throws InterruptedException {

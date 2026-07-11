@@ -187,7 +187,10 @@ public class ScrollOfUpgrade extends InventoryScroll {
 		if (Dungeon.balance.useFragments){
 			for (Hero h: Dungeon.heroes){
                 if (h != null) {
-                    new FragmentOfUpgrade(h).collect(h);
+					FragmentOfUpgrade fragmentOfUpgrade = new FragmentOfUpgrade(h);
+	                if(!fragmentOfUpgrade.collect(h)){
+						Dungeon.level.drop(fragmentOfUpgrade, h.pos);
+					};
                 }
             }
 			curItem.detach(hero.belongings.backpack);

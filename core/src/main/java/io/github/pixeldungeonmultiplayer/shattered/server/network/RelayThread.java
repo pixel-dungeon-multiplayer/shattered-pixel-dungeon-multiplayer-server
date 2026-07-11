@@ -53,10 +53,13 @@ public class RelayThread extends Thread {
     public void run() {
         Socket socket = null;
         String relayServerAddress = getRelayAddress();
+        int relayPort = getRelayPort();
+        System.out.println("Relay: Connecting to " + relayServerAddress + ":" + relayPort + "...");
         try {
-            socket = new Socket(relayServerAddress, getRelayPort());
+            socket = new Socket(relayServerAddress, relayPort);
             socket.setSoTimeout(UPDATE_DELAY);
         } catch (IOException e) {
+            System.out.println("Relay: Connection to " + relayServerAddress + ":" + relayPort + " failed: " + e.getMessage());
             e.printStackTrace();
             this.callback.onDisconnect();
             return;
@@ -74,7 +77,7 @@ public class RelayThread extends Thread {
             reader = new BufferedReader(readStream);
             writer = new BufferedWriter(writeStream, 16384);
 
-
+            System.out.println("Relay: Connected successfully, registering server...");
             sendServerUpdate(null);
             long serverId = 0;
             while (true) {
@@ -86,10 +89,10 @@ public class RelayThread extends Thread {
                     continue;
                 }
                 if (json == null){
-                    // we silence relay related messages for the first three times. We do not want confused users.
                     if (restartCount > 3) {
                         GLog.h("relay thread stopped");
                     }
+                    System.out.println("Relay: Connection closed by remote server.");
                     socket.close();
                     this.callback.onDisconnect();
                     if (restartCount < 10) {
@@ -107,6 +110,7 @@ public class RelayThread extends Thread {
                 String actionName = action.optString("action", "");
                 if ("server_registered".equals(actionName)) {
                     serverId = action.optLong("server_id", serverId);
+                    System.out.println("Relay: Server registered successfully. Server ID: " + serverId);
                 } else if ("ping".equals(actionName)) {
                     JSONObject pong = new JSONObject();
                     pong.put("action", "pong");
@@ -115,11 +119,14 @@ public class RelayThread extends Thread {
                     writer.write('\n');
                     writer.flush();
                 } else if ("client_requested".equals(actionName)) {
-                    Socket client = new Socket(relayServerAddress, getRelayPort());
+                    String connectId = action.optString("connect_id", "unknown");
+                    long reqServerId = action.optLong("server_id", 0);
+                    System.out.println("Relay: Incoming client request. Connect ID: " + connectId + ", Server ID: " + reqServerId);
+                    Socket client = new Socket(relayServerAddress, relayPort);
                     JSONObject accept = new JSONObject();
                     accept.put("action", "accept_client");
-                    accept.put("server_id", action.getLong("server_id"));
-                    accept.put("connect_id", action.getString("connect_id"));
+                    accept.put("server_id", reqServerId);
+                    accept.put("connect_id", connectId);
                     BufferedWriter acceptWriter = new BufferedWriter(new OutputStreamWriter(
                             client.getOutputStream(),
                             Charset.forName(CHARSET).newEncoder()
@@ -127,12 +134,16 @@ public class RelayThread extends Thread {
                     acceptWriter.write(accept.toString());
                     acceptWriter.write('\n');
                     acceptWriter.flush();
+                    System.out.println("Relay: Client tunnel accepted, starting client handler thread...");
                     Server.startClientThread(client);
                 } else if ("error".equals(actionName)) {
-                    GLog.h("Relay error: {0}", action.optString("message", action.optString("code", "unknown")));
+                    String errMsg = action.optString("message", action.optString("code", "unknown"));
+                    System.out.println("Relay error: " + errMsg);
+                    GLog.h("Relay error: {0}", errMsg);
                 }
             }
         } catch (IOException | JSONException e) {
+            System.out.println("Relay thread error: " + e.getMessage());
             e.printStackTrace();
             try {
                 Thread.sleep((1000 * new java.util.Random().nextInt(10)));

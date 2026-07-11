@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.android;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ComponentName;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 
 import com.shatteredpixel.shatteredpixeldungeon.android.R;
 
+import java.io.File;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -50,6 +52,7 @@ public class ServerActivity extends Activity {
     private CheckBox onlineModeCheckbox;
     private Button saveSettingsButton;
     private Button openLogsButton;
+    private Button resetSaveButton;
 
     private ServerService serverService;
     private boolean isBound = false;
@@ -255,13 +258,31 @@ public class ServerActivity extends Activity {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        openLogsParams.setMargins(0, 0, 0, 24);
+        openLogsParams.setMargins(0, 0, 0, 16);
         openLogsButton.setLayoutParams(openLogsParams);
         openLogsButton.setOnClickListener(v -> {
             Intent intent = new Intent(ServerActivity.this, LogActivity.class);
             startActivity(intent);
         });
         rootLayout.addView(openLogsButton);
+
+        // Кнопка сброса сохранения (опасное действие)
+        resetSaveButton = new Button(this);
+        resetSaveButton.setText(getString(R.string.btn_reset_save));
+        resetSaveButton.setTextColor(Color.WHITE);
+        resetSaveButton.setTextSize(16);
+        GradientDrawable resetBtnBg = new GradientDrawable();
+        resetBtnBg.setColor(Color.parseColor("#D32F2F")); // Red
+        resetBtnBg.setCornerRadius(8f);
+        resetSaveButton.setBackground(resetBtnBg);
+        LinearLayout.LayoutParams resetParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        resetParams.setMargins(0, 0, 0, 24);
+        resetSaveButton.setLayoutParams(resetParams);
+        resetSaveButton.setOnClickListener(v -> showResetConfirmationDialog());
+        rootLayout.addView(resetSaveButton);
 
         // Карточка настроек
         LinearLayout settingsCard = new LinearLayout(this);
@@ -436,6 +457,40 @@ public class ServerActivity extends Activity {
         Toast.makeText(this, getString(R.string.msg_settings_saved), Toast.LENGTH_SHORT).show();
     }
 
+    private void showResetConfirmationDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.confirm_reset_title))
+                .setMessage(getString(R.string.confirm_reset_msg))
+                .setPositiveButton(getString(R.string.btn_delete), (dialog, which) -> {
+                    deleteSaveData();
+                    Toast.makeText(this, getString(R.string.msg_save_deleted), Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton(getString(R.string.btn_cancel), null)
+                .show();
+    }
+
+    private void deleteSaveData() {
+        File externalSaveDir = new File(getExternalFilesDir(null), "save");
+        deleteRecursive(externalSaveDir);
+
+        File internalSaveDir = new File(getFilesDir(), "save");
+        deleteRecursive(internalSaveDir);
+    }
+
+    private void deleteRecursive(File fileOrDirectory) {
+        if (fileOrDirectory.exists()) {
+            if (fileOrDirectory.isDirectory()) {
+                File[] children = fileOrDirectory.listFiles();
+                if (children != null) {
+                    for (File child : children) {
+                        deleteRecursive(child);
+                    }
+                }
+            }
+            fileOrDirectory.delete();
+        }
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -467,7 +522,7 @@ public class ServerActivity extends Activity {
             stopButton.setEnabled(true);
             stopButton.setAlpha(1.0f);
 
-            // Блокируем изменение настроек во время работы сервера
+            // Блокируем изменение настроек и сброс сохранения во время работы сервера
             serverNameInput.setEnabled(false);
             serverPortInput.setEnabled(false);
             maxPlayersInput.setEnabled(false);
@@ -475,6 +530,9 @@ public class ServerActivity extends Activity {
             onlineModeCheckbox.setEnabled(false);
             saveSettingsButton.setEnabled(false);
             saveSettingsButton.setAlpha(0.5f);
+
+            resetSaveButton.setEnabled(false);
+            resetSaveButton.setAlpha(0.5f);
         } else {
             statusValue.setText(getString(R.string.status_stopped));
             statusValue.setTextColor(Color.parseColor("#FF5555"));
@@ -483,7 +541,7 @@ public class ServerActivity extends Activity {
             stopButton.setEnabled(false);
             stopButton.setAlpha(0.5f);
 
-            // Разрешаем изменение настроек, когда сервер остановлен
+            // Разрешаем изменение настроек и сброс сохранения, когда сервер остановлен
             serverNameInput.setEnabled(true);
             serverPortInput.setEnabled(true);
             maxPlayersInput.setEnabled(true);
@@ -491,6 +549,9 @@ public class ServerActivity extends Activity {
             onlineModeCheckbox.setEnabled(true);
             saveSettingsButton.setEnabled(true);
             saveSettingsButton.setAlpha(1.0f);
+
+            resetSaveButton.setEnabled(true);
+            resetSaveButton.setAlpha(1.0f);
         }
     }
 

@@ -31,4 +31,10 @@
     <string name="btn_back">Back</string>
     <string name="log_screen_title">Server Logs</string>
     <string name="btn_open_logs">Open Logs</string>
+    <string name="btn_reset_save">Reset Game Save</string>
+    <string name="confirm_reset_title">Reset Save Data?</string>
+    <string name="confirm_reset_msg">Are you sure you want to delete all server save files? This will reset world and players progress.</string>
+    <string name="btn_delete">Delete</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="msg_save_deleted">Save data deleted successfully</string>
 </resources>

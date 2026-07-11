@@ -31,4 +31,10 @@
     <string name="btn_back">Назад</string>
     <string name="log_screen_title">Логи сервера</string>
     <string name="btn_open_logs">Открыть логи</string>
+    <string name="btn_reset_save">Сбросить сохранение</string>
+    <string name="confirm_reset_title">Сбросить сохранение?</string>
+    <string name="confirm_reset_msg">Вы уверены, что хотите удалить все файлы сохранений сервера? Это сбросит прогресс мира и игроков.</string>
+    <string name="btn_delete">Удалить</string>
+    <string name="btn_cancel">Отмена</string>
+    <string name="msg_save_deleted">Файлы сохранений успешно удалены</string>
 </resources>

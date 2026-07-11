@@ -31,4 +31,10 @@
     <string name="btn_back">Înapoi</string>
     <string name="log_screen_title">Jurnal Server</string>
     <string name="btn_open_logs">Deschide Jurnalul</string>
+    <string name="btn_reset_save">Șterge Salvarea</string>
+    <string name="confirm_reset_title">Ștergeți datele de salvare?</string>
+    <string name="confirm_reset_msg">Sigur doriți să ștergeți toate fișierele de salvare? Aceasta va reseta progresul lumii și al jucătorilor.</string>
+    <string name="btn_delete">Șterge</string>
+    <string name="btn_cancel">Renunță</string>
+    <string name="msg_save_deleted">Datele de salvare au fost șterse cu succes</string>
 </resources>

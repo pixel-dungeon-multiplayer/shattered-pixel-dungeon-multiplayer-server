@@ -165,13 +165,13 @@ public abstract class Bag extends Item implements Iterable<Item> {
 		if (owner == null){
 			owner = container.owner;
 		}
-		List<Integer> bagPath = owner instanceof Hero
-				? ((Hero) owner).belongings.pathOfItem(this)
-				: null;
 		for (Item item : container.items.toArray( new Item[0] )) {
 			if (canHold( item )) {
 				int slot = Dungeon.quickslot.getSlot(item);
 				item.detachAll(container);
+				List<Integer> bagPath = owner instanceof Hero
+						? ((Hero) owner).belongings.pathOfItem(this)
+						: null;
 				boolean collected = bagPath == null
 						? item.collect(this)
 						: item.collect(this, new ArrayList<>(bagPath)) != null;

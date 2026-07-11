@@ -75,14 +75,14 @@ public class LogHelper {
     }
 
     public static synchronized void init(Context context) {
-        if (initialized) return;
-        initialized = true;
-
         appContext = context.getApplicationContext();
         logFile = new File(appContext.getFilesDir(), "server_logs.txt");
-        logFile.delete(); // Стираем старый лог при старте процесса сервера
+        logFile.delete(); // Стираем старый лог при каждом старте сервера
         File backupFile = new File(appContext.getFilesDir(), "server_logs.txt.bak");
-        backupFile.delete(); // Стираем старый бэкап при старте процесса сервера
+        backupFile.delete(); // Стираем старый бэкап при каждом старте сервера
+
+        if (initialized) return;
+        initialized = true;
 
         PrintStream origOut = System.out;
         PrintStream origErr = System.err;

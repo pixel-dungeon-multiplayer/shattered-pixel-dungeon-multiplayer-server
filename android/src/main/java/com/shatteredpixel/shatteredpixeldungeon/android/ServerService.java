@@ -13,6 +13,7 @@ import com.shatteredpixel.shatteredpixeldungeon.android.R;
 
 public class ServerService extends Service {
 
+    public static final String ACTION_STOP_SERVER = "com.shatteredpixel.shatteredpixeldungeon.android.ACTION_STOP_SERVER";
     private static final String CHANNEL_ID = "SPDMP_Server_Channel";
     private static final int NOTIFICATION_ID = 42;
 
@@ -33,6 +34,11 @@ public class ServerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null && ACTION_STOP_SERVER.equals(intent.getAction())) {
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+
         running = true;
 
         Notification notification = createNotification();
@@ -114,11 +120,21 @@ public class ServerService extends Service {
             if (resId != 0) iconRes = resId;
         } catch (Exception ignored) {}
 
+        Intent stopIntent = new Intent(this, ServerService.class);
+        stopIntent.setAction(ACTION_STOP_SERVER);
+        PendingIntent stopPendingIntent = PendingIntent.getService(
+                this,
+                1,
+                stopIntent,
+                PendingIntent.FLAG_IMMUTABLE
+        );
+
         return builder
                 .setContentTitle(getString(R.string.notification_title))
                 .setContentText(getString(R.string.notification_text))
                 .setSmallIcon(iconRes)
                 .setContentIntent(pendingIntent)
+                .addAction(android.R.drawable.ic_media_pause, getString(R.string.btn_stop), stopPendingIntent)
                 .build();
     }
 }

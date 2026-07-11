@@ -255,6 +255,7 @@ public class DesktopPlatformSupport extends PlatformSupport {
 
 	@Override
 	public void registerService(int port, Map<String, String> properties) {
+		System.out.println("Starting mDNS registration for _spdmp._tcp.local. on port " + port);
 		synchronized (dnsLock) {
 			dnsServicePort = port;
 		}
@@ -328,9 +329,11 @@ public class DesktopPlatformSupport extends PlatformSupport {
 			closeServices(oldDns);
 			List<InetAddress> addresses = serviceAddresses();
 			if (addresses.isEmpty()) {
+				System.out.println("mDNS found no eligible network interfaces; trying the default interface");
 				registerService(null, port, propertiesSnapshot, generation);
 				return;
 			}
+			System.out.println("mDNS eligible addresses: " + addresses);
 			List<Future<?>> futures = new ArrayList<>();
 			for (InetAddress address : addresses) {
 				futures.add(dnsExecutor.submit(() -> registerService(address, port, propertiesSnapshot, generation)));
@@ -342,6 +345,8 @@ public class DesktopPlatformSupport extends PlatformSupport {
 	private void registerService(InetAddress bindAddress, int port, Map<String, String> properties, int generation) {
 		JmDNS dns = null;
 		try {
+			String requestedHost = bindAddress == null ? "default interface" : bindAddress.getHostAddress();
+			System.out.println("Registering mDNS service on " + requestedHost + ":" + port);
 			dns = bindAddress == null ? JmDNS.create() : JmDNS.create(bindAddress);
 			ServiceInfo serviceInfo = ServiceInfo.create("_spdmp._tcp.local.", SPDSettings.serverName(), port, 0, 0, properties);
 			dns.registerService(serviceInfo);
@@ -360,8 +365,9 @@ public class DesktopPlatformSupport extends PlatformSupport {
 			}
 			String host = registeredAddress == null ? "default interface" : registeredAddress.getHostAddress();
 			System.out.println("Service registered: " + serviceInfo.getName() + " on " + host + ":" + serviceInfo.getPort());
-		} catch (IOException e) {
+		} catch (IOException | RuntimeException e) {
 			String host = bindAddress == null ? "default interface" : bindAddress.getHostAddress();
+			System.err.println("Failed to register mDNS service on " + host + ": " + e);
 			Gdx.app.error("DNS", "Failed to register service on " + host, e);
 			if (dns != null) {
 				closeService(dns);

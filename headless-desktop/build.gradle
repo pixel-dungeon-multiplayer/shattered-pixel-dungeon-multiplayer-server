@@ -1,0 +1,55 @@
+apply plugin: 'application'
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+java.sourceCompatibility = java.targetCompatibility = appJavaCompatibility
+
+ext.appMainClass = 'io.github.pixeldungeonmultiplayer.shattered.server.headless.HeadlessDesktopLauncher'
+application.mainClass = appMainClass
+
+processResources {
+    from new File(project(':core').projectDir, '/src/main/assets')
+    from new File(project(':desktop').projectDir, '/src/main/assets')
+}
+
+dependencies {
+    implementation project(':core')
+    implementation project(':desktop')
+    implementation "org.json:json:20170516"
+    implementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+    runtimeOnly "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    runtimeOnly "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+}
+
+tasks.register('debug', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    ignoreExitValue = true
+
+    mainClass = appMainClass
+    workingDir = rootProject.projectDir
+    systemProperty 'Specification-Title', appName
+    systemProperty 'Implementation-Title', appPackageName
+    systemProperty 'Specification-Version', appVersionName + '-HEADLESS'
+    systemProperty 'Implementation-Version', appVersionCode
+    standardInput = System.in
+}
+
+tasks.register('release', Jar) {
+    setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    archiveClassifier = 'headless'
+
+    from sourceSets.main.output
+    dependsOn configurations.runtimeClasspath
+    from { configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) } }
+
+    manifest {
+        attributes 'Main-Class': appMainClass
+        attributes 'Specification-Title': appName
+        attributes 'Implementation-Title': appPackageName
+        attributes 'Specification-Version': appVersionName
+        attributes 'Implementation-Version': appVersionCode
+    }
+}
+
+installDist.dependsOn release
+startScripts.dependsOn release

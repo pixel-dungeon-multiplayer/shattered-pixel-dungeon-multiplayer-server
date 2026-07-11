@@ -86,7 +86,7 @@ public class Game implements ApplicationListener {
 		density = Gdx.graphics.getDensity();
 		if (density == Float.POSITIVE_INFINITY){
 			density = 100f / 160f; //assume 100PPI if density can't be found
-		} else if (DeviceCompat.isDesktop()) {
+		} else if (DeviceCompat.isDesktop() && Gdx.graphics.getDisplayMode() != null) {
 			int dispWidth = Gdx.graphics.getDisplayMode().width;
 			int dispHeight = Gdx.graphics.getDisplayMode().height;
 			float reportedWidth = dispWidth / Gdx.graphics.getPpiX();

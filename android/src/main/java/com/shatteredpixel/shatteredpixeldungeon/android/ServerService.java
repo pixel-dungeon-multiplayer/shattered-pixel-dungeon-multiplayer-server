@@ -5,10 +5,13 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Binder;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.IBinder;
+
 import com.shatteredpixel.shatteredpixeldungeon.android.R;
 
 public class ServerService extends Service {
@@ -17,19 +20,34 @@ public class ServerService extends Service {
     private static final String CHANNEL_ID = "SPDMP_Server_Channel";
     private static final int NOTIFICATION_ID = 42;
 
-    private final IBinder binder = new LocalBinder();
     private static boolean running = false;
 
-    public class LocalBinder extends Binder {
-        public ServerService getService() {
-            return ServerService.this;
+    private final BroadcastReceiver statusRequestReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if ("com.shatteredpixel.shatteredpixeldungeon.android.REQUEST_STATUS".equals(intent.getAction())) {
+                broadcastStatus(running);
+            }
         }
+    };
+
+    private void broadcastStatus(boolean isRunning) {
+        Intent intent = new Intent("com.shatteredpixel.shatteredpixeldungeon.android.STATUS");
+        intent.putExtra("running", isRunning);
+        sendBroadcast(intent);
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
         createNotificationChannel();
+
+        IntentFilter filter = new IntentFilter("com.shatteredpixel.shatteredpixeldungeon.android.REQUEST_STATUS");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(statusRequestReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(statusRequestReceiver, filter);
+        }
     }
 
     @Override
@@ -40,6 +58,7 @@ public class ServerService extends Service {
         }
 
         running = true;
+        LogHelper.init(this); // Инициализируем логгер с контекстом сервиса
 
         Notification notification = createNotification();
 
@@ -58,6 +77,8 @@ public class ServerService extends Service {
             startForeground(NOTIFICATION_ID, notification);
         }
 
+        broadcastStatus(true);
+
         new Thread(() -> {
             AndroidHeadlessServerLauncher.launch(ServerService.this);
         }, "HeadlessServerThread").start();
@@ -69,16 +90,16 @@ public class ServerService extends Service {
     public void onDestroy() {
         AndroidHeadlessServerLauncher.stop();
         running = false;
+        broadcastStatus(false);
+        try {
+            unregisterReceiver(statusRequestReceiver);
+        } catch (Exception ignored) {}
         super.onDestroy();
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        return binder;
-    }
-
-    public static boolean isRunning() {
-        return running;
+        return null; // В многопроцессном режиме локальная привязка не поддерживается
     }
 
     private void createNotificationChannel() {

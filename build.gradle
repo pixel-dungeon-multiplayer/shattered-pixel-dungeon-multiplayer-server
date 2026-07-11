@@ -63,3 +63,9 @@ allprojects {
         }
     }
 }
+
+tasks.register('printAppVersion') {
+    doLast {
+        println appVersionName.toLowerCase(Locale.ROOT)
+    }
+}

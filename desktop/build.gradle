@@ -147,6 +147,7 @@ tasks.register('desktopSmokeTest', Test) {
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
     include '**/*Smoke.class'
+    forkEvery = 1
     useJUnitPlatform {
         includeTags 'desktop'
     }

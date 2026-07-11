@@ -38,6 +38,10 @@ public class Log {
             message = q.toString();
         }
         String formattedMessage = String.format("[%s] [%s] %s", time, logLevel, message);
-        DeviceCompat.log(tag, formattedMessage);
+        if (com.badlogic.gdx.Gdx.app != null) {
+            DeviceCompat.log(tag, formattedMessage);
+        } else {
+            System.out.println("[" + tag + "] " + formattedMessage);
+        }
     }
 }

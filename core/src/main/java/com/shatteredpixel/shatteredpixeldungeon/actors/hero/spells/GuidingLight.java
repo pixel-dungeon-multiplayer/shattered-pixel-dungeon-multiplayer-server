@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells;
 
+import com.watabou.utils.Bundle;
 import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -42,6 +43,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.HeroIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Image;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.Server;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
@@ -80,7 +82,6 @@ public class GuidingLight extends TargetedClericSpell {
 		MagicMissile.boltFromChar(hero.getSprite().parent, MagicMissile.LIGHT_MISSILE, hero.getSprite(), aim.collisionPos, new Callback() {
 			@Override
 			public void call() {
-
 				Char ch = Actor.findChar( aim.collisionPos );
 				if (ch != null) {
 					ch.damage(Random.NormalIntRange(2, 8), new Char.DamageCause(GuidingLight.this, hero));
@@ -88,7 +89,7 @@ public class GuidingLight extends TargetedClericSpell {
 					ch.getSprite().burst(0xFFFFFF44, 3);
 					if (ch.isAlive()){
 						if (ch.buff(Illuminated.class) == null) {
-							Buff.affect(ch, Illuminated.class).source = hero;
+							Buff.affect(ch, Illuminated.class).sourceUUID = hero.uuid;
 						}
 						Buff.affect(ch, WasIlluminatedTracker.class);
 					}
@@ -149,7 +150,8 @@ public class GuidingLight extends TargetedClericSpell {
 	}
 
 	public static class Illuminated extends Buff {
-		public Hero source;
+		private static final String SOURCE_UUID = "source_uuid";
+		public String sourceUUID;
 
 		{
 			type = buffType.NEGATIVE;
@@ -169,6 +171,7 @@ public class GuidingLight extends TargetedClericSpell {
 		@Override
 		public LocalizedString desc() {
 			LocalizedString desc = super.desc();
+			Hero source = Server.findHeroByUUID(sourceUUID);
 			if (source == null || source.subClass == HeroSubClass.PRIEST){
 				desc = LocalizedString.concat(desc, LocalizedString.concat("\n\n", Messages.get(this, "desc_priest")));
 			} else if (source.heroClass != HeroClass.CLERIC){
@@ -178,6 +181,19 @@ public class GuidingLight extends TargetedClericSpell {
 			return desc;
 		}
 
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(SOURCE_UUID, sourceUUID);
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			if (bundle.contains(SOURCE_UUID)) {
+				sourceUUID = bundle.getString(SOURCE_UUID);
+			}
+		}
 	}
 
 	public static class WasIlluminatedTracker extends Buff {}

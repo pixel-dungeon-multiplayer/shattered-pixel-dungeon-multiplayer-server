@@ -126,7 +126,7 @@ public class HolyLance extends TargetedClericSpell {
 									Sample.INSTANCE.play( Assets.Sounds.HIT_STAB, 1, Random.Float(0.8f, 1f) );
 
 									if (enemy.isActive()){
-										Buff.affect(enemy, GuidingLight.Illuminated.class);
+										Buff.affect(enemy, GuidingLight.Illuminated.class).sourceUUID = hero.uuid;
 									}
 
 									enemy.getSprite().burst(0xFFFFFFFF, 10);

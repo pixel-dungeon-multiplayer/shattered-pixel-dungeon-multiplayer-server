@@ -147,6 +147,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.Server;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.CharUpdateAction;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Earthroot;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
@@ -482,7 +483,7 @@ public abstract class Char extends Actor {
 			dmg += dmgBonus;
 
 			if (enemy.buff(GuidingLight.Illuminated.class) != null){
-				Hero source = enemy.buff(GuidingLight.Illuminated.class).source;
+				Hero source = Server.findHeroByUUID(enemy.buff(GuidingLight.Illuminated.class).sourceUUID);
 				enemy.buff(GuidingLight.Illuminated.class).detach();
 				if (this == source && source.hasTalent(Talent.SEARING_LIGHT)){
 					dmg += 1 + 2* source.pointsInTalent(Talent.SEARING_LIGHT);

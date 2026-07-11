@@ -17,8 +17,11 @@ $env:JAVA_TOOL_OPTIONS = '-Dspd.port=7777 -Dspd.onlineMode=false -Dspd.serverNam
 .\gradlew.bat :headless-desktop:run
 ```
 
+The server stores its editable JSON configuration in `config.json` in the
+current working directory. Use `spd.configFile` to select another path.
+
 Supported properties are `spd.port`, `spd.onlineMode`, `spd.serverName`,
 `spd.serverUuid`, `spd.maxPlayers`, `spd.motd`, `spd.dataDir`, and
 `spd.headless.ups`. The virtual layout resolution defaults to `720x400` and can
-be changed with `spd.virtualWidth` and `spd.virtualHeight`. Persistent preferences are stored by libGDX under the
-usual user preferences directory; game data defaults to `headless-data/`.
+be changed with `spd.virtualWidth` and `spd.virtualHeight`. Game data defaults
+to `headless-data/`.

@@ -13,6 +13,7 @@ processResources {
 dependencies {
     implementation project(':core')
     implementation project(':desktop')
+    implementation "org.json:json:20170516"
     implementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
     implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
     runtimeOnly "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
@@ -20,6 +21,7 @@ dependencies {
 }
 
 tasks.named('run', JavaExec) {
+    workingDir = rootProject.projectDir
     systemProperty 'Specification-Version', appVersionName + '-HEADLESS'
     systemProperty 'Implementation-Version', appVersionCode
     standardInput = System.in

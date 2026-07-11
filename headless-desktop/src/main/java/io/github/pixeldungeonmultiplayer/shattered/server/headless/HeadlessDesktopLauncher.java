@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
@@ -59,8 +60,11 @@ public final class HeadlessDesktopLauncher {
 			Game.width = positiveIntProperty("spd.virtualWidth", 720);
 			Game.height = positiveIntProperty("spd.virtualHeight", 400);
 			System.out.println("Headless virtual resolution: " + Game.width + "x" + Game.height);
-            Preferences preferences = Gdx.app.getPreferences(SPDSettings.DEFAULT_PREFS_FILE);
+			String configFileName = System.getProperty("spd.configFile", "config.json");
+			FileHandle configFile = Gdx.files.local(configFileName);
+			Preferences preferences = new JsonPreferences(configFile);
             SPDSettings.set(preferences);
+			System.out.println("Headless server configuration: " + configFile.file().getAbsolutePath());
             applySystemProperties();
             FileUtils.setDefaultFileProperties(Files.FileType.Local,
                     System.getProperty("spd.dataDir", "headless-data/") );
@@ -68,7 +72,8 @@ public final class HeadlessDesktopLauncher {
             super.create();
 			if (!Server.started) {
 				System.err.println("Headless SPDMP startup aborted because the server socket could not be opened");
-				Gdx.app.exit();
+				System.err.flush();
+				System.exit(1);
 			}
         }
 

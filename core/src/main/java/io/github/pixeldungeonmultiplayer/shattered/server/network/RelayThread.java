@@ -2,6 +2,7 @@ package io.github.pixeldungeonmultiplayer.shattered.server.network;
 
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import io.github.pixeldungeonmultiplayer.shattered.server.utils.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -11,7 +12,6 @@ import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 
 import static io.github.pixeldungeonmultiplayer.shattered.server.network.ClientThread.CHARSET;
-
 
 public class RelayThread extends Thread {
     private static final int RELAY_PROTOCOL_VERSION = 2;
@@ -28,18 +28,29 @@ public class RelayThread extends Thread {
         this.callback = new Callback() {
             @Override
             public void onDisconnect() {
-            };
+            }
         };
     }
     public RelayThread(Callback callback){
         this.callback = callback;
+    }
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
+        if (clientSocket != null) {
+            try {
+                clientSocket.close();
+            } catch (IOException ignored) {}
+            clientSocket = null;
+        }
     }
     private static int getRelayPort(){
         if (!SPDSettings.useCustomRelay()){
             return SPDSettings.defaultRelayServerPort;
         }
         int port = SPDSettings.customRelayPort();
-       return (port != 0)? port: SPDSettings.defaultRelayServerPort;
+        return (port != 0)? port: SPDSettings.defaultRelayServerPort;
     }
 
     private static String getRelayAddress(){
@@ -53,10 +64,13 @@ public class RelayThread extends Thread {
     public void run() {
         Socket socket = null;
         String relayServerAddress = getRelayAddress();
+        int relayPort = getRelayPort();
+        Log.i("Relay", "Connecting to %s:%d...", relayServerAddress, relayPort);
         try {
-            socket = new Socket(relayServerAddress, getRelayPort());
+            socket = new Socket(relayServerAddress, relayPort);
             socket.setSoTimeout(UPDATE_DELAY);
         } catch (IOException e) {
+            Log.e("Relay", "Connection to %s:%d failed: %s", relayServerAddress, relayPort, e.getMessage());
             e.printStackTrace();
             this.callback.onDisconnect();
             return;
@@ -74,7 +88,7 @@ public class RelayThread extends Thread {
             reader = new BufferedReader(readStream);
             writer = new BufferedWriter(writeStream, 16384);
 
-
+            Log.i("Relay", "Connected successfully, registering server...");
             sendServerUpdate(null);
             long serverId = 0;
             while (true) {
@@ -86,20 +100,20 @@ public class RelayThread extends Thread {
                     continue;
                 }
                 if (json == null){
-                    // we silence relay related messages for the first three times. We do not want confused users.
                     if (restartCount > 3) {
                         GLog.h("relay thread stopped");
                     }
+                    Log.w("Relay", "Connection closed by remote server.");
                     socket.close();
                     this.callback.onDisconnect();
                     if (restartCount < 10) {
                         if (restartCount > 3) {
-                            System.out.println("Restarting relay");
+                            Log.w("Relay", "Restarting relay");
                         }
                         new RelayThread().start();
                         restartCount++;
                     } else {
-                        System.out.println("Starting relay failed");
+                        Log.e("Relay", "Starting relay failed");
                     }
                     return;
                 }
@@ -107,6 +121,7 @@ public class RelayThread extends Thread {
                 String actionName = action.optString("action", "");
                 if ("server_registered".equals(actionName)) {
                     serverId = action.optLong("server_id", serverId);
+                    Log.i("Relay", "Server registered successfully. Server ID: %d", serverId);
                 } else if ("ping".equals(actionName)) {
                     JSONObject pong = new JSONObject();
                     pong.put("action", "pong");
@@ -115,11 +130,14 @@ public class RelayThread extends Thread {
                     writer.write('\n');
                     writer.flush();
                 } else if ("client_requested".equals(actionName)) {
-                    Socket client = new Socket(relayServerAddress, getRelayPort());
+                    String connectId = action.optString("connect_id", "unknown");
+                    long reqServerId = action.optLong("server_id", 0);
+                    Log.i("Relay", "Incoming client request. Connect ID: %s, Server ID: %d", connectId, reqServerId);
+                    Socket client = new Socket(relayServerAddress, relayPort);
                     JSONObject accept = new JSONObject();
                     accept.put("action", "accept_client");
-                    accept.put("server_id", action.getLong("server_id"));
-                    accept.put("connect_id", action.getString("connect_id"));
+                    accept.put("server_id", reqServerId);
+                    accept.put("connect_id", connectId);
                     BufferedWriter acceptWriter = new BufferedWriter(new OutputStreamWriter(
                             client.getOutputStream(),
                             Charset.forName(CHARSET).newEncoder()
@@ -127,24 +145,31 @@ public class RelayThread extends Thread {
                     acceptWriter.write(accept.toString());
                     acceptWriter.write('\n');
                     acceptWriter.flush();
+                    Log.i("Relay", "Client tunnel accepted, starting client handler thread...");
                     Server.startClientThread(client);
                 } else if ("error".equals(actionName)) {
-                    GLog.h("Relay error: {0}", action.optString("message", action.optString("code", "unknown")));
+                    String errMsg = action.optString("message", action.optString("code", "unknown"));
+                    Log.e("Relay", "Relay error: %s", errMsg);
+                    GLog.h("Relay error: {0}", errMsg);
                 }
             }
         } catch (IOException | JSONException e) {
-            e.printStackTrace();
-            try {
-                Thread.sleep((1000 * new java.util.Random().nextInt(10)));
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-                throw new RuntimeException(ex);
+            if (Server.started) {
+                Log.e("Relay", "Relay thread error: %s", e.getMessage());
+                e.printStackTrace();
+                try {
+                    Thread.sleep((1000 * new java.util.Random().nextInt(10)));
+                } catch (InterruptedException ex) {
+                    return;
+                }
+                GLog.h("relay thread stopped");
+                this.callback.onDisconnect();
+                restartCount = 0;
+                new RelayThread().start();
+                GLog.h("Relay thread restarted");
+            } else {
+                Log.i("Relay", "Relay thread stopped cleanly.");
             }
-            GLog.h("relay thread stopped");
-            this.callback.onDisconnect();
-            restartCount = 0;
-            new RelayThread().start();
-            GLog.h("Relay thread restarted");
         }
     }
 

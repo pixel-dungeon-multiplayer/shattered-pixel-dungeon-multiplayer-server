@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_title">Shattered PD Server</string>
+    <string name="status_label">Статус: </string>
+    <string name="status_running">Запущен</string>
+    <string name="status_stopped">Остановлен</string>
+    <string name="ip_label">IP в сети: </string>
+    <string name="ip_unknown">Неизвестно</string>
+    <string name="btn_start">Запустить</string>
+    <string name="btn_stop">Остановить</string>
+    <string name="settings_title">Настройки сервера</string>
+    <string name="settings_name_label">Имя сервера</string>
+    <string name="settings_port_label">Порт сервера (0 = авто)</string>
+    <string name="settings_max_players_label">Макс. игроков</string>
+    <string name="settings_motd_label">Приветствие (MOTD)</string>
+    <string name="settings_online_mode_label">Онлайн режим (online_mode)</string>
+    <string name="btn_save_settings">Сохранить настройки</string>
+    <string name="log_title">Лог сервера:</string>
+    <string name="btn_clear_log">Очистить</string>
+    <string name="msg_starting_server">Запуск сервера...</string>
+    <string name="msg_server_stopped">Сервер остановлен</string>
+    <string name="msg_err_empty_name">Имя сервера не должно быть пустым</string>
+    <string name="msg_err_invalid_port">Порт должен быть от 0 до 65535</string>
+    <string name="msg_err_port_format">Неверный формат порта</string>
+    <string name="msg_err_invalid_players">Максимальное число игроков должно быть больше 0</string>
+    <string name="msg_err_players_format">Неверный формат числа игроков</string>
+    <string name="msg_settings_saved">Настройки сохранены</string>
+    <string name="msg_ip_copied">IP скопирован в буфер</string>
+    <string name="notification_title">Shattered PD Multiplayer Server</string>
+    <string name="notification_text">Сервер запущен и работает в фоне</string>
+    <string name="btn_back">Назад</string>
+    <string name="log_screen_title">Логи сервера</string>
+    <string name="btn_open_logs">Открыть логи</string>
+    <string name="btn_reset_save">Сбросить сохранение</string>
+    <string name="confirm_reset_title">Сбросить сохранение?</string>
+    <string name="confirm_reset_msg">Вы уверены, что хотите удалить все файлы сохранений сервера? Это сбросит прогресс мира и игроков.</string>
+    <string name="btn_delete">Удалить</string>
+    <string name="btn_cancel">Отмена</string>
+    <string name="msg_save_deleted">Файлы сохранений успешно удалены</string>
+</resources>

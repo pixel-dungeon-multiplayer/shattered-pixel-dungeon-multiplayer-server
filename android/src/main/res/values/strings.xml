@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_title">Shattered PD Server</string>
+    <string name="status_label">Status: </string>
+    <string name="status_running">Running</string>
+    <string name="status_stopped">Stopped</string>
+    <string name="ip_label">IP address: </string>
+    <string name="ip_unknown">Unknown</string>
+    <string name="btn_start">Start</string>
+    <string name="btn_stop">Stop</string>
+    <string name="settings_title">Server Settings</string>
+    <string name="settings_name_label">Server Name</string>
+    <string name="settings_port_label">Server Port (0 = auto)</string>
+    <string name="settings_max_players_label">Max Players</string>
+    <string name="settings_motd_label">Message of the Day (MOTD)</string>
+    <string name="settings_online_mode_label">Online mode (online_mode)</string>
+    <string name="btn_save_settings">Save Settings</string>
+    <string name="log_title">Server Log:</string>
+    <string name="btn_clear_log">Clear</string>
+    <string name="msg_starting_server">Starting server...</string>
+    <string name="msg_server_stopped">Server stopped</string>
+    <string name="msg_err_empty_name">Server name cannot be empty</string>
+    <string name="msg_err_invalid_port">Port must be between 0 and 65535</string>
+    <string name="msg_err_port_format">Invalid port format</string>
+    <string name="msg_err_invalid_players">Max players must be greater than 0</string>
+    <string name="msg_err_players_format">Invalid players format</string>
+    <string name="msg_settings_saved">Settings saved</string>
+    <string name="msg_ip_copied">IP copied to clipboard</string>
+    <string name="notification_title">Shattered PD Multiplayer Server</string>
+    <string name="notification_text">Server is running in background</string>
+    <string name="btn_back">Back</string>
+    <string name="log_screen_title">Server Logs</string>
+    <string name="btn_open_logs">Open Logs</string>
+    <string name="btn_reset_save">Reset Game Save</string>
+    <string name="confirm_reset_title">Reset Save Data?</string>
+    <string name="confirm_reset_msg">Are you sure you want to delete all server save files? This will reset world and players progress.</string>
+    <string name="btn_delete">Delete</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="msg_save_deleted">Save data deleted successfully</string>
+</resources>

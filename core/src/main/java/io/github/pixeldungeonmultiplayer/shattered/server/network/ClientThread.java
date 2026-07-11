@@ -336,7 +336,7 @@ public class ClientThread implements Callable<String> {
             }
             if (DeviceCompat.isDebug()) {
                 try {
-                    Log.i("flush", "clientID: " + threadID + " data:" + json.toString(4));
+                    //Log.i("flush", "clientID: " + threadID + " data:" + json.toString(4));
                 } catch (JSONException ignored) {
                 }
             }

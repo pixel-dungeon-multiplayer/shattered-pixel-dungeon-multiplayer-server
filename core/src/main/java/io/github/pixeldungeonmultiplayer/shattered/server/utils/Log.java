@@ -1,5 +1,6 @@
 package io.github.pixeldungeonmultiplayer.shattered.server.utils;
 
+import com.watabou.utils.DeviceCompat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -36,6 +37,11 @@ public class Log {
             }
             message = q.toString();
         }
-        System.out.printf("[%s] [%s] %s: %s", time, logLevel, tag, message);
+        String formattedMessage = String.format("[%s] [%s] %s", time, logLevel, message);
+        if (com.badlogic.gdx.Gdx.app != null) {
+            DeviceCompat.log(tag, formattedMessage);
+        } else {
+            System.out.println("[" + tag + "] " + formattedMessage);
+        }
     }
 }

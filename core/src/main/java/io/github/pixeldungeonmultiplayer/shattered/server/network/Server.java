@@ -344,6 +344,16 @@ public class Server extends Thread {
             serverStepThread.interrupt();
             serverStepThread = null;
         }
+        // Отключаем всех активных клиентов
+        if (clients != null) {
+            for (ClientThread client : clients) {
+                if (client != null) {
+                    try {
+                        client.disconnect("Server shutdown");
+                    } catch (Exception ignored) {}
+                }
+            }
+        }
         //ClientThread.sendAll(Codes.SERVER_CLOSED); //todo
         unregisterService();
         if (serverSocket != null) {

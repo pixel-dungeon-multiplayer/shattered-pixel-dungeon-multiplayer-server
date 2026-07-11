@@ -1,9 +1,14 @@
 package com.shatteredpixel.shatteredpixeldungeon.android;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,6 +22,10 @@ import android.widget.TextView;
 
 import com.shatteredpixel.shatteredpixeldungeon.android.R;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +42,45 @@ public class LogActivity extends Activity {
     private int cardStrokeColor;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private final List<String> pendingLogs = new ArrayList<>();
+
+    private final Runnable updateLogsRunnable = new Runnable() {
+        @Override
+        public void run() {
+            synchronized (pendingLogs) {
+                if (pendingLogs.isEmpty()) return;
+                StringBuilder batch = new StringBuilder();
+                for (String line : pendingLogs) {
+                    batch.append(line).append("\n");
+                }
+                pendingLogs.clear();
+                logTextView.append(batch.toString());
+            }
+            logScrollView.post(() -> logScrollView.fullScroll(View.FOCUS_DOWN));
+        }
+    };
+
+    private final BroadcastReceiver logReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if ("com.shatteredpixel.shatteredpixeldungeon.android.LOG".equals(action)) {
+                String line = intent.getStringExtra("line");
+                if (line != null) {
+                    synchronized (pendingLogs) {
+                        pendingLogs.add(line);
+                    }
+                    handler.removeCallbacks(updateLogsRunnable);
+                    handler.postDelayed(updateLogsRunnable, 100);
+                }
+            } else if ("com.shatteredpixel.shatteredpixeldungeon.android.CLEAR_LOGS".equals(action)) {
+                synchronized (pendingLogs) {
+                    pendingLogs.clear();
+                }
+                logTextView.setText("");
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,58 +173,59 @@ public class LogActivity extends Activity {
         rootLayout.addView(logScrollView);
         setContentView(rootLayout);
 
-        // Заполняем лог уже существующими строками
-        List<String> existingLogs = LogHelper.getLogs();
-        StringBuilder sb = new StringBuilder();
-        for (String line : existingLogs) {
-            sb.append(line).append("\n");
+        // Регистрируем бродкаст ресивер для логов
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.shatteredpixel.shatteredpixeldungeon.android.LOG");
+        filter.addAction("com.shatteredpixel.shatteredpixeldungeon.android.CLEAR_LOGS");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(logReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(logReceiver, filter);
         }
-        logTextView.setText(sb.toString());
-        logScrollView.post(() -> logScrollView.fullScroll(View.FOCUS_DOWN));
 
-        // Слушатель логов с накоплением (Throttling)
-        LogHelper.setListener(new LogHelper.LogListener() {
-            private final List<String> pendingLogs = new ArrayList<>();
-            private final Runnable updateLogsRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (pendingLogs) {
-                        if (pendingLogs.isEmpty()) return;
-                        StringBuilder batch = new StringBuilder();
-                        for (String line : pendingLogs) {
-                            batch.append(line).append("\n");
-                        }
-                        pendingLogs.clear();
-                        logTextView.append(batch.toString());
-                    }
-                    logScrollView.post(() -> logScrollView.fullScroll(View.FOCUS_DOWN));
-                }
-            };
+        // Асинхронно загружаем историю логов из файлов
+        loadLogHistoryAsync();
+    }
 
-            @Override
-            public void onLogAdded(String line) {
-                synchronized (pendingLogs) {
-                    pendingLogs.add(line);
-                }
-                handler.removeCallbacks(updateLogsRunnable);
-                handler.postDelayed(updateLogsRunnable, 100);
+    private void loadLogHistoryAsync() {
+        new Thread(() -> {
+            StringBuilder sb = new StringBuilder();
+            
+            // Сначала считываем бэкап, если он есть
+            File backupFile = new File(getFilesDir(), "server_logs.txt.bak");
+            if (backupFile.exists()) {
+                readLogFile(backupFile, sb);
             }
-
-            @Override
-            public void onLogsCleared() {
-                runOnUiThread(() -> {
-                    synchronized (pendingLogs) {
-                        pendingLogs.clear();
-                    }
-                    logTextView.setText("");
-                });
+            
+            // Затем считываем текущий файл
+            File logFile = new File(getFilesDir(), "server_logs.txt");
+            if (logFile.exists()) {
+                readLogFile(logFile, sb);
             }
-        });
+            
+            final String historyText = sb.toString();
+            runOnUiThread(() -> {
+                logTextView.setText(historyText);
+                logScrollView.post(() -> logScrollView.fullScroll(View.FOCUS_DOWN));
+            });
+        }, "LogHistoryReader").start();
+    }
+
+    private void readLogFile(File file, StringBuilder sb) {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line).append("\n");
+            }
+        } catch (IOException ignored) {}
     }
 
     @Override
     protected void onDestroy() {
-        LogHelper.setListener(null);
+        try {
+            unregisterReceiver(logReceiver);
+        } catch (Exception ignored) {}
+        handler.removeCallbacks(updateLogsRunnable);
         super.onDestroy();
     }
 

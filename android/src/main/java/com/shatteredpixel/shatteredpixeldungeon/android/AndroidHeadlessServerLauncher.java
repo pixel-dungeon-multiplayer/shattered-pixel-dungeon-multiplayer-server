@@ -50,6 +50,11 @@ public final class AndroidHeadlessServerLauncher {
     }
 
     public static synchronized void stop() {
+        try {
+            io.github.pixeldungeonmultiplayer.shattered.server.network.Server.stopServer();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (application != null) {
             application.exit();
             application = null;

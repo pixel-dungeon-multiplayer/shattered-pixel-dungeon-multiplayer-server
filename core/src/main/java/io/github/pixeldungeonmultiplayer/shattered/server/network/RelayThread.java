@@ -34,6 +34,17 @@ public class RelayThread extends Thread {
     public RelayThread(Callback callback){
         this.callback = callback;
     }
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
+        if (clientSocket != null) {
+            try {
+                clientSocket.close();
+            } catch (IOException ignored) {}
+            clientSocket = null;
+        }
+    }
     private static int getRelayPort(){
         if (!SPDSettings.useCustomRelay()){
             return SPDSettings.defaultRelayServerPort;

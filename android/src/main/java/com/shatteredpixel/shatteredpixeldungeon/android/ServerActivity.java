@@ -109,8 +109,24 @@ public class ServerActivity extends Activity {
         titleTextView.setTextSize(24);
         titleTextView.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
         titleTextView.setGravity(Gravity.CENTER_HORIZONTAL);
-        titleTextView.setPadding(0, 0, 0, 24);
+        titleTextView.setPadding(0, 0, 0, 4);
         rootLayout.addView(titleTextView);
+
+        // Версия сборки
+        TextView versionTextView = new TextView(this);
+        String versionText = "v";
+        try {
+            android.content.pm.PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            versionText = "v" + pInfo.versionName;
+        } catch (Exception e) {
+            versionText = "v1.0.0";
+        }
+        versionTextView.setText(versionText);
+        versionTextView.setTextColor(textColorSec);
+        versionTextView.setTextSize(14);
+        versionTextView.setGravity(Gravity.CENTER_HORIZONTAL);
+        versionTextView.setPadding(0, 0, 0, 24);
+        rootLayout.addView(versionTextView);
 
         // Карточка статуса и IP
         LinearLayout cardLayout = new LinearLayout(this);

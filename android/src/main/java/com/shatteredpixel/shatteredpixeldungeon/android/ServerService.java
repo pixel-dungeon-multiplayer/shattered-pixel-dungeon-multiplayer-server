@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import com.shatteredpixel.shatteredpixeldungeon.android.R;
 
 public class ServerService extends Service {
 
@@ -114,8 +115,8 @@ public class ServerService extends Service {
         } catch (Exception ignored) {}
 
         return builder
-                .setContentTitle("Shattered PD Multiplayer Server")
-                .setContentText("Сервер запущен и работает в фоне")
+                .setContentTitle(getString(R.string.notification_title))
+                .setContentText(getString(R.string.notification_text))
                 .setSmallIcon(iconRes)
                 .setContentIntent(pendingIntent)
                 .build();

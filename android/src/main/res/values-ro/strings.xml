@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_title">Shattered PD Server</string>
+    <string name="status_label">Status: </string>
+    <string name="status_running">Pornit</string>
+    <string name="status_stopped">Oprit</string>
+    <string name="ip_label">Adresă IP: </string>
+    <string name="ip_unknown">Necunoscut</string>
+    <string name="btn_start">Pornește</string>
+    <string name="btn_stop">Oprește</string>
+    <string name="settings_title">Setări Server</string>
+    <string name="settings_name_label">Nume Server</string>
+    <string name="settings_port_label">Port Server (0 = auto)</string>
+    <string name="settings_max_players_label">Jucători Maximi</string>
+    <string name="settings_motd_label">Mesajul Zilei (MOTD)</string>
+    <string name="settings_online_mode_label">Mod online (online_mode)</string>
+    <string name="btn_save_settings">Salvează Setările</string>
+    <string name="log_title">Jurnal Server:</string>
+    <string name="btn_clear_log">Curăță</string>
+    <string name="msg_starting_server">Se pornește serverul...</string>
+    <string name="msg_server_stopped">Server oprit</string>
+    <string name="msg_err_empty_name">Numele serverului nu poate fi gol</string>
+    <string name="msg_err_invalid_port">Portul trebuie să fie între 0 și 65535</string>
+    <string name="msg_err_port_format">Format port nevalid</string>
+    <string name="msg_err_invalid_players">Jucătorii maximi trebuie să fie mai mulți de 0</string>
+    <string name="msg_err_players_format">Format număr jucători nevalid</string>
+    <string name="msg_settings_saved">Setări salvate</string>
+    <string name="msg_ip_copied">Adresă IP copiată în clipboard</string>
+    <string name="notification_title">Shattered PD Multiplayer Server</string>
+    <string name="notification_text">Serverul rulează în fundal</string>
+</resources>

@@ -49,9 +49,14 @@ public final class DesktopInventoryCapacitySmoke {
                 AtomicInteger removes = new AtomicInteger();
                 AtomicInteger adds = new AtomicInteger();
                 AtomicInteger readyActions = new AtomicInteger();
-                client.afterAction("item_remove", (ignored, action) -> removes.incrementAndGet());
-                client.afterAction("item_add", (ignored, action) -> adds.incrementAndGet());
-                client.afterAction("hero_ready", (ignored, action) -> readyActions.incrementAndGet());
+                    client.afterAction("item_remove", (ignored, action) -> removes.incrementAndGet());
+                    client.afterAction("item_add", (ignored, action) -> adds.incrementAndGet());
+                    // Only ready=true confirms that the server finished the current cell action.
+                    client.afterAction("hero_ready", (ignored, action) -> {
+                        if (action.optBoolean("ready", false)) {
+                            readyActions.incrementAndGet();
+                        }
+                    });
 
                 for (int i = 0; i < ITERATIONS; i++) {
                     int iteration = i;
@@ -59,6 +64,7 @@ public final class DesktopInventoryCapacitySmoke {
                     int expectedReady = readyActions.get() + 1;
                     int expectedAdds = adds.get();
                     client.selectCell(hero().pos);
+                    // A full-inventory pickup must finish without creating an item_add for the overflow item.
                     waitForClient(client, () -> readyActions.get() >= expectedReady,
                             "full-inventory pickup did not complete at iteration " + iteration);
                     require(adds.get() == expectedAdds, "full-inventory pickup sent item_add at iteration " + iteration);

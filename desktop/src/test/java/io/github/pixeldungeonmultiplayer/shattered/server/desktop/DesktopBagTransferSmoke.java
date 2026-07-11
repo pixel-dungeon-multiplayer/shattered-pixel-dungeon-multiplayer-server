@@ -125,6 +125,7 @@ public final class DesktopBagTransferSmoke {
             try {
                 waitFor(() -> Server.started, "server did not start");
                 try (SimulatedClient client = new SimulatedClient().connect(connectClientSocket())) {
+                    // Retain received inventory actions before parsing so an ordering failure has its wire trace.
                     client.beforePacket((ignored, packet) -> recordPacket(packet));
                     client.parseNext();
                     AtomicBoolean sceneReady = new AtomicBoolean(false);
@@ -142,6 +143,7 @@ public final class DesktopBagTransferSmoke {
                             "initial tracked item was not received");
 
                     placeCollectingBag();
+                    // Picking up the bag moves the existing item from backpack into its nested inventory.
                     client.selectCell(firstHero().pos);
                     waitForClient(client, () -> {
                                 List<Integer> path = currentServerPath(trackedItem);
@@ -153,6 +155,7 @@ public final class DesktopBagTransferSmoke {
                     List<Integer> nestedPath = serverPath(trackedItem);
                     require(nestedPath.size() == 2, "tracked item was not moved into the bag: " + nestedPath);
                     increaseTrackedQuantity();
+                    // Verify that updates address the item after it has moved into the bag.
                     waitForClient(client, () -> {
                         ClientItem item = client.inventory().itemAt(nestedPath);
                         return item != null && item.quantity == 2;
@@ -179,6 +182,7 @@ public final class DesktopBagTransferSmoke {
 
                     int repickupAdds = itemAdds.get() + 1;
                     client.selectCell(firstHero().pos);
+                    // Re-pickup must rebuild the bag with both nested items, not only the bag shell.
                     waitForClient(client, () -> itemAdds.get() >= repickupAdds
                                     && hasNestedPath(trackedItem)
                                     && hasNestedPath(secondItem),

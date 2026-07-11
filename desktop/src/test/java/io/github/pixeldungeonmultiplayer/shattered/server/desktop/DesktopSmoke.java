@@ -121,6 +121,7 @@ abstract class DesktopSmoke extends ShatteredPixelDungeon {
     protected final void joinAndWaitForScene(SimulatedClient client) throws IOException {
         AtomicReference<Boolean> sceneReady = new AtomicReference<>(false);
         client.parseNext();
+        // The hook must exist before join: fade_out is the first packet after scene initialization.
         client.afterAction("interlevel_scene", (ignored, action) -> {
             if ("fade_out".equals(action.optString("state", ""))) {
                 sceneReady.set(true);
@@ -134,6 +135,7 @@ abstract class DesktopSmoke extends ShatteredPixelDungeon {
         long deadline = System.currentTimeMillis() + TIMEOUT_MILLIS;
         while (!condition.getAsBoolean() && System.currentTimeMillis() < deadline) {
             try {
+                // Parsing is what advances the simulated client's state and invokes action hooks.
                 client.parseNext();
             } catch (SocketTimeoutException ignored) {
             }

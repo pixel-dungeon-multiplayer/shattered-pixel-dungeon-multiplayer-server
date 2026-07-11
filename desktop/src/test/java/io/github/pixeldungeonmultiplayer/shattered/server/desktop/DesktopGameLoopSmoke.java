@@ -47,6 +47,7 @@ public final class DesktopGameLoopSmoke {
             AtomicBoolean checkedInventory = new AtomicBoolean();
             try (SimulatedClient client = connectClient()) {
                 client.parseNext();
+                // Inventory is valid only after the server has completed the initial level transition.
                 client.afterAction("interlevel_scene", (ignored, action) -> {
                     if ("fade_out".equals(action.optString("state", ""))) {
                         assertInventoryMatches(serverInventory(), client.inventory());

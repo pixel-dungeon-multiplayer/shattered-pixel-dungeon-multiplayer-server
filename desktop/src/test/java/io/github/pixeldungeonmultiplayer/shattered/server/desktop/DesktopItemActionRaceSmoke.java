@@ -50,6 +50,7 @@ public final class DesktopItemActionRaceSmoke {
                 itemPath.add(0);
                 AtomicBoolean itemAdded = new AtomicBoolean();
                 AtomicBoolean itemUpdated = new AtomicBoolean();
+                // Register both hooks before releasing addItemDirect, otherwise the race is not observable.
                 client.afterAction("item_add", (ignored, action) -> {
                     if (action.getJSONArray("path").toList().equals(itemPath)) {
                         itemAdded.set(true);
@@ -64,6 +65,7 @@ public final class DesktopItemActionRaceSmoke {
 
                 actor = new Thread(() -> item.collect(hero().belongings.backpack), "test-actor");
                 actor.start();
+                // The bag stops collect between the internal mutation and action creation.
                 require(bag.added.await(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS), "item was not internally added");
                 bag.allowAdd.countDown();
                 waitForClient(client, itemUpdated::get, "item_update was not received");

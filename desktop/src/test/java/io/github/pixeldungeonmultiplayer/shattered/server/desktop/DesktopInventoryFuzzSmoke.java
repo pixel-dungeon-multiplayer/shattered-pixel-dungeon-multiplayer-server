@@ -134,6 +134,7 @@ public final class DesktopInventoryFuzzSmoke {
                     AtomicInteger heroReady = new AtomicInteger();
                     AtomicInteger itemChanges = new AtomicInteger();
                     AtomicInteger spriteActions = new AtomicInteger();
+                    // Ignore ready=false: it is not the completion boundary of a player command.
                     client.afterAction("hero_ready", (c, action) -> {
                         if (action.optBoolean("ready", false)) {
                             heroReady.incrementAndGet();
@@ -151,6 +152,7 @@ public final class DesktopInventoryFuzzSmoke {
                             record(step + " PICK");
                             int expectedReady = heroReady.get() + 1;
                             client.selectCell(firstHero().pos);
+                            // Do not send the next fuzz command until this pickup has completed server-side.
                             waitForClient(client, () -> heroReady.get() >= expectedReady,
                                     "pickup did not complete at step " + step);
                         } else {
@@ -167,6 +169,7 @@ public final class DesktopInventoryFuzzSmoke {
                     }
                     int expectedSpriteActions = spriteActions.get() + 1;
                     client.selectCell(heroPosition() + 1);
+                    // Movement's sprite action is a wire boundary after all queued inventory actions.
                     waitForClient(client, () -> spriteActions.get() >= expectedSpriteActions,
                             "movement bound was not received after fuzz run");
                     waitForInventory(client, "inventory mismatch after fuzz run (seed=" + SEED + ")");

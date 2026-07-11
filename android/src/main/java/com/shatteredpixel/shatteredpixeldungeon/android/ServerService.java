@@ -57,6 +57,11 @@ public class ServerService extends Service {
             return START_NOT_STICKY;
         }
 
+        // Если служба уже работает, игнорируем повторный вызов
+        if (running) {
+            return START_NOT_STICKY;
+        }
+
         running = true;
         LogHelper.init(this); // Инициализируем логгер с контекстом сервиса
 

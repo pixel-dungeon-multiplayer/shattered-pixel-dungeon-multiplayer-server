@@ -1,15 +1,20 @@
 package com.shatteredpixel.shatteredpixeldungeon.android;
 
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LogHelper {
-    private static final int MAX_LOGS = 200;
-    private static final List<String> logs = new ArrayList<>();
-    private static LogListener listener;
+    private static Context appContext;
+    private static File logFile;
     private static boolean initialized = false;
 
     public interface LogListener {
@@ -17,43 +22,67 @@ public class LogHelper {
         void onLogsCleared();
     }
 
+    // Заглушка для обратной совместимости
     public static synchronized void setListener(LogListener newListener) {
-        listener = newListener;
-        if (listener != null) {
-            for (String log : logs) {
-                listener.onLogAdded(log);
-            }
-        }
     }
 
+    // Заглушка для обратной совместимости
     public static synchronized List<String> getLogs() {
-        return new ArrayList<>(logs);
+        return new ArrayList<>();
+    }
+
+    private static void checkLogRotation() {
+        if (logFile != null && logFile.exists() && logFile.length() > 100 * 1024) { // 100 KB limit
+            try {
+                File backupFile = new File(appContext.getFilesDir(), "server_logs.txt.bak");
+                backupFile.delete();
+                logFile.renameTo(backupFile);
+            } catch (Exception ignored) {}
+        }
     }
 
     public static synchronized void addLog(String line) {
-        logs.add(line);
-        if (logs.size() > MAX_LOGS) {
-            logs.remove(0);
+        if (appContext != null) {
+            checkLogRotation();
         }
-        if (listener != null) {
-            try {
-                listener.onLogAdded(line);
-            } catch (Exception ignored) {}
+
+        if (logFile != null) {
+            try (FileWriter fw = new FileWriter(logFile, true);
+                 BufferedWriter bw = new BufferedWriter(fw)) {
+                bw.write(line);
+                bw.newLine();
+            } catch (IOException ignored) {}
+        }
+
+        if (appContext != null) {
+            Intent intent = new Intent("com.shatteredpixel.shatteredpixeldungeon.android.LOG");
+            intent.putExtra("line", line);
+            appContext.sendBroadcast(intent);
         }
     }
 
     public static synchronized void clearLogs() {
-        logs.clear();
-        if (listener != null) {
-            try {
-                listener.onLogsCleared();
-            } catch (Exception ignored) {}
+        if (logFile != null) {
+            logFile.delete();
+        }
+        File backupFile = new File(appContext.getFilesDir(), "server_logs.txt.bak");
+        backupFile.delete();
+
+        if (appContext != null) {
+            Intent intent = new Intent("com.shatteredpixel.shatteredpixeldungeon.android.CLEAR_LOGS");
+            appContext.sendBroadcast(intent);
         }
     }
 
-    public static synchronized void init() {
+    public static synchronized void init(Context context) {
         if (initialized) return;
         initialized = true;
+
+        appContext = context.getApplicationContext();
+        logFile = new File(appContext.getFilesDir(), "server_logs.txt");
+        logFile.delete(); // Стираем старый лог при старте процесса сервера
+        File backupFile = new File(appContext.getFilesDir(), "server_logs.txt.bak");
+        backupFile.delete(); // Стираем старый бэкап при старте процесса сервера
 
         PrintStream origOut = System.out;
         PrintStream origErr = System.err;

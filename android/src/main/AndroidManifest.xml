@@ -41,6 +41,11 @@
 		<activity
 			android:name=".AndroidMissingNativesHandler">
 		</activity>
+		<activity
+			android:name=".LogActivity"
+			android:theme="@style/ServerTheme"
+			android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize">
+		</activity>
 		<service
 			android:name=".ServerService"
 			android:enabled="true"

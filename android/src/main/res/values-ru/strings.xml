@@ -28,4 +28,7 @@
     <string name="msg_ip_copied">IP скопирован в буфер</string>
     <string name="notification_title">Shattered PD Multiplayer Server</string>
     <string name="notification_text">Сервер запущен и работает в фоне</string>
+    <string name="btn_back">Назад</string>
+    <string name="log_screen_title">Логи сервера</string>
+    <string name="btn_open_logs">Открыть логи</string>
 </resources>

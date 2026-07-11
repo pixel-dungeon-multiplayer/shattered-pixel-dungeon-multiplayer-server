@@ -17,7 +17,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.text.InputType;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -34,9 +33,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 
 public class ServerActivity extends Activity {
 
@@ -44,8 +41,6 @@ public class ServerActivity extends Activity {
     private TextView ipAddressValue;
     private Button startButton;
     private Button stopButton;
-    private TextView logTextView;
-    private ScrollView logScrollView;
 
     // Элементы настроек
     private EditText serverNameInput;
@@ -54,6 +49,7 @@ public class ServerActivity extends Activity {
     private EditText motdInput;
     private CheckBox onlineModeCheckbox;
     private Button saveSettingsButton;
+    private Button openLogsButton;
 
     private ServerService serverService;
     private boolean isBound = false;
@@ -246,6 +242,27 @@ public class ServerActivity extends Activity {
         buttonsLayout.addView(stopButton);
         rootLayout.addView(buttonsLayout);
 
+        // Кнопка открытия логов (отдельный экран)
+        openLogsButton = new Button(this);
+        openLogsButton.setText(getString(R.string.btn_open_logs));
+        openLogsButton.setTextColor(Color.WHITE);
+        openLogsButton.setTextSize(16);
+        GradientDrawable openLogsBtnBg = new GradientDrawable();
+        openLogsBtnBg.setColor(Color.parseColor("#37474F")); // Dark slate blue
+        openLogsBtnBg.setCornerRadius(8f);
+        openLogsButton.setBackground(openLogsBtnBg);
+        LinearLayout.LayoutParams openLogsParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        openLogsParams.setMargins(0, 0, 0, 24);
+        openLogsButton.setLayoutParams(openLogsParams);
+        openLogsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(ServerActivity.this, LogActivity.class);
+            startActivity(intent);
+        });
+        rootLayout.addView(openLogsButton);
+
         // Карточка настроек
         LinearLayout settingsCard = new LinearLayout(this);
         settingsCard.setOrientation(LinearLayout.VERTICAL);
@@ -260,7 +277,6 @@ public class ServerActivity extends Activity {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        settingsParams.setMargins(0, 0, 0, 24);
         settingsCard.setLayoutParams(settingsParams);
 
         TextView settingsTitle = new TextView(this);
@@ -304,109 +320,11 @@ public class ServerActivity extends Activity {
 
         rootLayout.addView(settingsCard);
 
-        // Панель логов
-        LinearLayout logTitleRow = new LinearLayout(this);
-        logTitleRow.setOrientation(LinearLayout.HORIZONTAL);
-        logTitleRow.setPadding(0, 0, 0, 8);
-
-        TextView logTitle = new TextView(this);
-        logTitle.setText(getString(R.string.log_title));
-        logTitle.setTextColor(textColorSec);
-        logTitle.setTextSize(14);
-        LinearLayout.LayoutParams logTitleParams = new LinearLayout.LayoutParams(
-                0,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                1.0f
-        );
-        logTitle.setLayoutParams(logTitleParams);
-        logTitleRow.addView(logTitle);
-
-        TextView clearLogBtn = new TextView(this);
-        clearLogBtn.setText(getString(R.string.btn_clear_log));
-        clearLogBtn.setTextColor(Color.parseColor("#00B0FF"));
-        clearLogBtn.setTextSize(14);
-        clearLogBtn.setPadding(8, 8, 8, 8);
-        clearLogBtn.setOnClickListener(v -> LogHelper.clearLogs());
-        logTitleRow.addView(clearLogBtn);
-        rootLayout.addView(logTitleRow);
-
-        logScrollView = new ScrollView(this);
-        LinearLayout.LayoutParams scrollParams = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                dpToPx(200)
-        );
-        logScrollView.setLayoutParams(scrollParams);
-
-        GradientDrawable logBg = new GradientDrawable();
-        logBg.setColor(Color.parseColor("#0A0A0A"));
-        logBg.setCornerRadius(8f);
-        logBg.setStroke(1, Color.parseColor("#222222"));
-        logScrollView.setBackground(logBg);
-        logScrollView.setPadding(16, 16, 16, 16);
-
-        logScrollView.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE) {
-                v.getParent().requestDisallowInterceptTouchEvent(true);
-            }
-            return false;
-        });
-
-        logTextView = new TextView(this);
-        logTextView.setTextColor(Color.parseColor("#00FF00"));
-        logTextView.setTextSize(12);
-        logTextView.setTypeface(Typeface.MONOSPACE);
-        logTextView.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        ));
-        logScrollView.addView(logTextView);
-        rootLayout.addView(logScrollView);
-
         mainScrollView.addView(rootLayout);
         setContentView(mainScrollView);
 
         // Инициализируем настройки из Preferences
         loadSettings();
-
-        // Слушатель логов с накоплением (Throttling) для исключения зависаний при лавине логов
-        LogHelper.setListener(new LogHelper.LogListener() {
-            private final List<String> pendingLogs = new ArrayList<>();
-            private final Runnable updateLogsRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (pendingLogs) {
-                        if (pendingLogs.isEmpty()) return;
-                        StringBuilder sb = new StringBuilder();
-                        for (String line : pendingLogs) {
-                            sb.append(line).append("\n");
-                        }
-                        pendingLogs.clear();
-                        logTextView.append(sb.toString());
-                    }
-                    logScrollView.post(() -> logScrollView.fullScroll(View.FOCUS_DOWN));
-                }
-            };
-
-            @Override
-            public void onLogAdded(String line) {
-                synchronized (pendingLogs) {
-                    pendingLogs.add(line);
-                }
-                // Откладываем обновление UI на 100 мс для пакетирования логов
-                handler.removeCallbacks(updateLogsRunnable);
-                handler.postDelayed(updateLogsRunnable, 100);
-            }
-
-            @Override
-            public void onLogsCleared() {
-                runOnUiThread(() -> {
-                    synchronized (pendingLogs) {
-                        pendingLogs.clear();
-                    }
-                    logTextView.setText("");
-                });
-            }
-        });
     }
 
     private void initThemeColors() {
@@ -459,10 +377,6 @@ public class ServerActivity extends Activity {
 
         row.addView(editText);
         return row;
-    }
-
-    private int dpToPx(int dp) {
-        return (int) (dp * getResources().getDisplayMetrics().density);
     }
 
     private void loadSettings() {

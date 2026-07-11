@@ -28,4 +28,7 @@
     <string name="msg_ip_copied">IP copied to clipboard</string>
     <string name="notification_title">Shattered PD Multiplayer Server</string>
     <string name="notification_text">Server is running in background</string>
+    <string name="btn_back">Back</string>
+    <string name="log_screen_title">Server Logs</string>
+    <string name="btn_open_logs">Open Logs</string>
 </resources>

@@ -28,4 +28,7 @@
     <string name="msg_ip_copied">Adresă IP copiată în clipboard</string>
     <string name="notification_title">Shattered PD Multiplayer Server</string>
     <string name="notification_text">Serverul rulează în fundal</string>
+    <string name="btn_back">Înapoi</string>
+    <string name="log_screen_title">Jurnal Server</string>
+    <string name="btn_open_logs">Deschide Jurnalul</string>
 </resources>

@@ -9,6 +9,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEvasion;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
 import io.github.pixeldungeonmultiplayer.shattered.testclient.ClientWindow;
 import io.github.pixeldungeonmultiplayer.shattered.testclient.SimulatedClient;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -19,7 +21,9 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class DesktopEquipSwapSmoke {
     private DesktopEquipSwapSmoke() { }
 
-    public static void main(String[] args) throws Exception {
+    @Test
+    @Tag("desktop")
+    void smoke() throws Exception {
         DesktopSmoke.launch("equipSwapSmoke", EquipSwapGame::new);
     }
 

@@ -50,6 +50,7 @@ abstract class DesktopSmoke extends ShatteredPixelDungeon {
     static void launch(String name, int maxPlayers, SmokeFactory factory) throws Exception {
         Game.version = System.getProperty("Specification-Version", name);
         Game.versionCode = Integer.parseInt(System.getProperty("Implementation-Version", "1"));
+        FAILURE.set(null);
 
         int port = reservePort();
         String basePath = "build" + File.separator + name + File.separator + System.currentTimeMillis() + File.separator;
@@ -75,8 +76,7 @@ abstract class DesktopSmoke extends ShatteredPixelDungeon {
         new Lwjgl3Application(factory.create(port), config);
         Throwable failure = FAILURE.getAndSet(null);
         if (failure != null) {
-            failure.printStackTrace();
-            System.exit(1);
+            throw new AssertionError(name + " failed", failure);
         }
     }
 

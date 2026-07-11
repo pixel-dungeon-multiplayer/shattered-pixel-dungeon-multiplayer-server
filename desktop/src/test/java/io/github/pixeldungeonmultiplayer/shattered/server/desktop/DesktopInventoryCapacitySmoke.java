@@ -7,6 +7,8 @@ import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.InventoryRebuildAction;
 import io.github.pixeldungeonmultiplayer.shattered.testclient.SimulatedClient;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,9 @@ public final class DesktopInventoryCapacitySmoke {
 
     private DesktopInventoryCapacitySmoke() { }
 
-    public static void main(String[] args) throws Exception {
+    @Test
+    @Tag("desktop")
+    void smoke() throws Exception {
         DesktopSmoke.launch("inventoryCapacitySmoke", CapacityGame::new);
     }
 

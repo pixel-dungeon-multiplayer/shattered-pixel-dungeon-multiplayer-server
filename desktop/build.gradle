@@ -130,84 +130,27 @@ dependencies {
 
     testImplementation project(':client-simulator')
     testImplementation "org.json:json:20170516"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
 }
 
-tasks.register('gameLoopSmoke', JavaExec) {
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'io.github.pixeldungeonmultiplayer.shattered.server.desktop.DesktopGameLoopSmoke'
-
-    systemProperty 'Specification-Title', appName + ' Game Loop Smoke'
-    systemProperty 'Implementation-Title', appPackageName
-    systemProperty 'Specification-Version', appVersionName + "-INDEV"
-    systemProperty 'Implementation-Version', appVersionCode
-
-    if (osName.contains('mac')) {
-        jvmArgs '-XstartOnFirstThread'
+test {
+    useJUnitPlatform {
+        excludeTags 'desktop'
     }
 }
 
-tasks.register('equipSwapSmoke', JavaExec) {
+tasks.register('desktopSmokeTest', Test) {
+    group = 'verification'
+    description = 'Runs desktop smoke tests that open a game window.'
+    testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'io.github.pixeldungeonmultiplayer.shattered.server.desktop.DesktopEquipSwapSmoke'
-
-    systemProperty 'Specification-Title', appName + ' Equip Swap Smoke'
-    systemProperty 'Implementation-Title', appPackageName
-    systemProperty 'Specification-Version', appVersionName + "-INDEV"
-    systemProperty 'Implementation-Version', appVersionCode
-
+    include '**/*Smoke.class'
+    useJUnitPlatform {
+        includeTags 'desktop'
+    }
     if (osName.contains('mac')) {
         jvmArgs '-XstartOnFirstThread'
     }
-}
-
-tasks.register('inventoryCapacitySmoke', JavaExec) {
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'io.github.pixeldungeonmultiplayer.shattered.server.desktop.DesktopInventoryCapacitySmoke'
-
-    systemProperty 'Specification-Title', appName + ' Inventory Capacity Smoke'
-    systemProperty 'Implementation-Title', appPackageName
-    systemProperty 'Specification-Version', appVersionName + "-INDEV"
-    systemProperty 'Implementation-Version', appVersionCode
-
-    if (osName.contains('mac')) {
-        jvmArgs '-XstartOnFirstThread'
-    }
-}
-
-tasks.register('bagTransferSmoke', JavaExec) {
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'io.github.pixeldungeonmultiplayer.shattered.server.desktop.DesktopBagTransferSmoke'
-
-    systemProperty 'Specification-Title', appName + ' Bag Transfer Smoke'
-    systemProperty 'Implementation-Title', appPackageName
-    systemProperty 'Specification-Version', appVersionName + "-INDEV"
-    systemProperty 'Implementation-Version', appVersionCode
-
-    if (osName.contains('mac')) {
-        jvmArgs '-XstartOnFirstThread'
-    }
-}
-
-tasks.register('inventoryFuzzSmoke', JavaExec) {
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'io.github.pixeldungeonmultiplayer.shattered.server.desktop.DesktopInventoryFuzzSmoke'
-
-    systemProperty 'Specification-Title', appName + ' Inventory Fuzz Smoke'
-    systemProperty 'Implementation-Title', appPackageName
-    systemProperty 'Specification-Version', appVersionName + "-INDEV"
-    systemProperty 'Implementation-Version', appVersionCode
-
-    if (osName.contains('mac')) {
-        jvmArgs '-XstartOnFirstThread'
-    }
-}
-
-tasks.register('itemActionRaceSmoke', JavaExec) {
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'io.github.pixeldungeonmultiplayer.shattered.server.desktop.DesktopItemActionRaceSmoke'
-
-    systemProperty 'Specification-Title', appName + ' Item Action Race Smoke'
-    systemProperty 'Implementation-Title', appPackageName
-    systemProperty 'Specification-Version', appVersionName + "-INDEV"
-    systemProperty 'Implementation-Version', appVersionCode
 }

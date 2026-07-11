@@ -26,6 +26,8 @@ import io.github.pixeldungeonmultiplayer.shattered.testclient.ClientInventory;
 import io.github.pixeldungeonmultiplayer.shattered.testclient.ClientItem;
 import io.github.pixeldungeonmultiplayer.shattered.testclient.SimulatedClient;
 import org.json.JSONObject;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +52,9 @@ public final class DesktopBagTransferSmoke {
     private DesktopBagTransferSmoke() {
     }
 
-    public static void main(String[] args) throws Exception {
+    @Test
+    @Tag("desktop")
+    void smoke() throws Exception {
         Game.version = System.getProperty("Specification-Version", "BagTransferSmoke");
         Game.versionCode = Integer.parseInt(System.getProperty("Implementation-Version", "1"));
 
@@ -78,8 +82,7 @@ public final class DesktopBagTransferSmoke {
 
         new Lwjgl3Application(new BagTransferGame(new TestDesktopPlatformSupport(), port), config);
         if (failure.get() != null) {
-            failure.get().printStackTrace();
-            System.exit(1);
+            throw new AssertionError("bag transfer smoke failed", failure.get());
         }
     }
 

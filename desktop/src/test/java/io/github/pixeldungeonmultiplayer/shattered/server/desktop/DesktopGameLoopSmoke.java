@@ -3,6 +3,8 @@ package io.github.pixeldungeonmultiplayer.shattered.server.desktop;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.Protocol;
 import io.github.pixeldungeonmultiplayer.shattered.testclient.ClientState;
 import io.github.pixeldungeonmultiplayer.shattered.testclient.SimulatedClient;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -10,7 +12,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class DesktopGameLoopSmoke {
     private DesktopGameLoopSmoke() { }
 
-    public static void main(String[] args) throws Exception {
+    @Test
+    @Tag("desktop")
+    void smoke() throws Exception {
         DesktopSmoke.launch("gameLoopSmoke", 2, GameLoopSmoke::new);
     }
 

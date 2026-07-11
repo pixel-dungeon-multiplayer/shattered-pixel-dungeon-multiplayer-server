@@ -154,19 +154,22 @@ public class RelayThread extends Thread {
                 }
             }
         } catch (IOException | JSONException e) {
-            Log.e("Relay", "Relay thread error: %s", e.getMessage());
-            e.printStackTrace();
-            try {
-                Thread.sleep((1000 * new java.util.Random().nextInt(10)));
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-                throw new RuntimeException(ex);
+            if (Server.started) {
+                Log.e("Relay", "Relay thread error: %s", e.getMessage());
+                e.printStackTrace();
+                try {
+                    Thread.sleep((1000 * new java.util.Random().nextInt(10)));
+                } catch (InterruptedException ex) {
+                    return;
+                }
+                GLog.h("relay thread stopped");
+                this.callback.onDisconnect();
+                restartCount = 0;
+                new RelayThread().start();
+                GLog.h("Relay thread restarted");
+            } else {
+                Log.i("Relay", "Relay thread stopped cleanly.");
             }
-            GLog.h("relay thread stopped");
-            this.callback.onDisconnect();
-            restartCount = 0;
-            new RelayThread().start();
-            GLog.h("Relay thread restarted");
         }
     }
 

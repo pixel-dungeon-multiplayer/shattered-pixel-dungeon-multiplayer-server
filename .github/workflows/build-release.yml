@@ -107,6 +107,8 @@ jobs:
 
       - name: Collect desktop artifacts
         shell: bash
+        env:
+          APP_VERSION: ${{ needs.prepare.outputs.version }}
         run: |
           set -euo pipefail
 
@@ -128,7 +130,8 @@ jobs:
             exit 1
           fi
 
-          cp -v "${files[0]}" release-artifacts/
+          full_version="$(./gradlew -q printAppVersion | tail -n 1)"
+          cp -v "${files[0]}" "release-artifacts/desktop-${full_version}.jar"
 
       - name: Upload desktop artifacts
         uses: actions/upload-artifact@v4
@@ -197,11 +200,12 @@ jobs:
       - name: Collect Android artifacts
         shell: bash
         env:
-          ASSET_SUFFIX: ${{ needs.prepare.outputs.asset_suffix }}
+          APP_VERSION: ${{ needs.prepare.outputs.version }}
         run: |
           set -euo pipefail
 
           mkdir -p release-artifacts
+          full_version="$(./gradlew -q printAppVersion | tail -n 1)"
 
           index=0
 
@@ -217,9 +221,9 @@ jobs:
             index=$((index + 1))
 
             if [[ "$index" -eq 1 ]]; then
-              target="android-server-${ASSET_SUFFIX}.${ext}"
+              target="android-${full_version}.${ext}"
             else
-              target="android-server-${ASSET_SUFFIX}-${index}.${ext}"
+              target="android-${full_version}-${index}.${ext}"
             fi
 
             cp -v "$file" "release-artifacts/$target"
@@ -274,7 +278,7 @@ jobs:
       - name: Collect headless desktop artifact
         shell: bash
         env:
-          ASSET_SUFFIX: ${{ needs.prepare.outputs.asset_suffix }}
+          APP_VERSION: ${{ needs.prepare.outputs.version }}
         run: |
           set -euo pipefail
 
@@ -291,7 +295,8 @@ jobs:
             exit 1
           fi
 
-          cp -v "${files[0]}" "release-artifacts/headless-server-${ASSET_SUFFIX}.jar"
+          full_version="$(./gradlew -q printAppVersion | tail -n 1)"
+          cp -v "${files[0]}" "release-artifacts/headless-${full_version}.jar"
 
       - name: Upload headless desktop artifact
         uses: actions/upload-artifact@v4

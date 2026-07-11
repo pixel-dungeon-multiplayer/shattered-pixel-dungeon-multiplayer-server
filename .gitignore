@@ -32,3 +32,4 @@ desktop/.lwjgl
 */settings.xml
 */save/*
 */balance/balance.json
+headless-desktop/headless-data/

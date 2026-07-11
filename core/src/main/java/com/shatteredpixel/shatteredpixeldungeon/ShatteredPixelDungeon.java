@@ -44,7 +44,9 @@ public class ShatteredPixelDungeon extends Game {
 		updateSystemUI();
 		SPDAction.loadBindings();
 
-		Server.startServer();
+		if (!Server.startServer()) {
+			return;
+		}
 
         if (GamesInProgress.gameExists()) {
             InterLevelSceneServer.mode = InterLevelSceneServer.Mode.CONTINUE;

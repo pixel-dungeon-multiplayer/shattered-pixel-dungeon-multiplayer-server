@@ -2,6 +2,7 @@
 include ':SPD-classes'
 include ':core'
 include ':client-simulator'
+include ':headless-desktop'
 
 //platform modules
 include ':android'

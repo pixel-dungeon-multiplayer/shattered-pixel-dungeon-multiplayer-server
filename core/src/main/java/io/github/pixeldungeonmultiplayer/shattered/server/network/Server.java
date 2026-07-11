@@ -476,11 +476,24 @@ public class Server extends Thread {
     }
 
     protected static boolean initializeServerSocket() {
+		return initializeServerSocket(SPDSettings.serverPort());
+	}
+
+	static boolean initializeServerSocket(int port) {
         try {
-            serverSocket = new ServerSocket();
-            serverSocket.setReuseAddress(true);
-            serverSocket.bind(new InetSocketAddress(SPDSettings.serverPort()));
+            serverSocket = ServerSocketBinder.bind(port);
         } catch (Exception e) {
+			System.err.println("Failed to bind SPDMP server to port " + port + ": " + e.getMessage());
+			if (Gdx.app != null) {
+				Gdx.app.error("Server", "Failed to bind server to port " + port, e);
+			}
+			if (serverSocket != null) {
+				try {
+					serverSocket.close();
+				} catch (IOException ignored) {
+				}
+				serverSocket = null;
+			}
             return false;
         }
         // Store the chosen port.

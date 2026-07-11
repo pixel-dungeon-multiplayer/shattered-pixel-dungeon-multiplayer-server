@@ -48,6 +48,7 @@
 		</activity>
 		<service
 			android:name=".ServerService"
+			android:process=":server"
 			android:enabled="true"
 			android:exported="false"
 			android:foregroundServiceType="specialUse">

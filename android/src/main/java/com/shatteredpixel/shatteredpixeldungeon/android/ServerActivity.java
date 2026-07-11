@@ -34,7 +34,9 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 public class ServerActivity extends Activity {
 
@@ -81,6 +83,7 @@ public class ServerActivity extends Activity {
             serverService = binder.getService();
             isBound = true;
             updateStatusUI();
+            updateIpAddress();
         }
 
         @Override
@@ -167,7 +170,7 @@ public class ServerActivity extends Activity {
         ipRow.addView(ipLabel);
 
         ipAddressValue = new TextView(this);
-        ipAddressValue.setText(getLocalIpAddress());
+        ipAddressValue.setText(getString(R.string.ip_unknown));
         ipAddressValue.setTextColor(Color.parseColor("#55FF55"));
         ipAddressValue.setTextSize(16);
         ipAddressValue.setTypeface(Typeface.DEFAULT_BOLD);
@@ -210,6 +213,7 @@ public class ServerActivity extends Activity {
             startService(serviceIntent);
             bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
             Toast.makeText(ServerActivity.this, getString(R.string.msg_starting_server), Toast.LENGTH_SHORT).show();
+            updateIpAddress();
         });
         buttonsLayout.addView(startButton);
 
@@ -237,6 +241,7 @@ public class ServerActivity extends Activity {
             }
             updateStatusUI();
             Toast.makeText(ServerActivity.this, getString(R.string.msg_server_stopped), Toast.LENGTH_SHORT).show();
+            updateIpAddress();
         });
         buttonsLayout.addView(stopButton);
         rootLayout.addView(buttonsLayout);
@@ -363,18 +368,43 @@ public class ServerActivity extends Activity {
         // Инициализируем настройки из Preferences
         loadSettings();
 
+        // Слушатель логов с накоплением (Throttling) для исключения зависаний при лавине логов
         LogHelper.setListener(new LogHelper.LogListener() {
+            private final List<String> pendingLogs = new ArrayList<>();
+            private final Runnable updateLogsRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    synchronized (pendingLogs) {
+                        if (pendingLogs.isEmpty()) return;
+                        StringBuilder sb = new StringBuilder();
+                        for (String line : pendingLogs) {
+                            sb.append(line).append("\n");
+                        }
+                        pendingLogs.clear();
+                        logTextView.append(sb.toString());
+                    }
+                    logScrollView.post(() -> logScrollView.fullScroll(View.FOCUS_DOWN));
+                }
+            };
+
             @Override
             public void onLogAdded(String line) {
-                runOnUiThread(() -> {
-                    logTextView.append(line + "\n");
-                    logScrollView.post(() -> logScrollView.fullScroll(View.FOCUS_DOWN));
-                });
+                synchronized (pendingLogs) {
+                    pendingLogs.add(line);
+                }
+                // Откладываем обновление UI на 100 мс для пакетирования логов
+                handler.removeCallbacks(updateLogsRunnable);
+                handler.postDelayed(updateLogsRunnable, 100);
             }
 
             @Override
             public void onLogsCleared() {
-                runOnUiThread(() -> logTextView.setText(""));
+                runOnUiThread(() -> {
+                    synchronized (pendingLogs) {
+                        pendingLogs.clear();
+                    }
+                    logTextView.setText("");
+                });
             }
         });
     }
@@ -500,6 +530,7 @@ public class ServerActivity extends Activity {
             bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
         }
         handler.post(statusUpdater);
+        updateIpAddress();
     }
 
     @Override
@@ -547,7 +578,18 @@ public class ServerActivity extends Activity {
             saveSettingsButton.setEnabled(true);
             saveSettingsButton.setAlpha(1.0f);
         }
-        ipAddressValue.setText(getLocalIpAddress());
+    }
+
+    // Асинхронное получение IP в фоновом потоке, чтобы исключить блокировки UI
+    private void updateIpAddress() {
+        new Thread(() -> {
+            final String ip = getLocalIpAddress();
+            runOnUiThread(() -> {
+                if (ipAddressValue != null) {
+                    ipAddressValue.setText(ip);
+                }
+            });
+        }, "IpQueryThread").start();
     }
 
     private String getLocalIpAddress() {

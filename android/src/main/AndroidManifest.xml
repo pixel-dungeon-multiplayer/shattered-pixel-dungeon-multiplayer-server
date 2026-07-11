@@ -31,7 +31,7 @@
 		<activity
 			android:name=".ServerActivity"
 			android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize"
-			android:theme="@android:style/Theme.DeviceDefault"
+			android:theme="@style/ServerTheme"
 			android:exported="true">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />

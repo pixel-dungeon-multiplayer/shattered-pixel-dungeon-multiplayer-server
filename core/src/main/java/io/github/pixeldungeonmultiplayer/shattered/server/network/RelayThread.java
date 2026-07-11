@@ -2,6 +2,7 @@ package io.github.pixeldungeonmultiplayer.shattered.server.network;
 
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import io.github.pixeldungeonmultiplayer.shattered.server.utils.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -11,7 +12,6 @@ import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 
 import static io.github.pixeldungeonmultiplayer.shattered.server.network.ClientThread.CHARSET;
-
 
 public class RelayThread extends Thread {
     private static final int RELAY_PROTOCOL_VERSION = 2;
@@ -28,7 +28,7 @@ public class RelayThread extends Thread {
         this.callback = new Callback() {
             @Override
             public void onDisconnect() {
-            };
+            }
         };
     }
     public RelayThread(Callback callback){
@@ -39,7 +39,7 @@ public class RelayThread extends Thread {
             return SPDSettings.defaultRelayServerPort;
         }
         int port = SPDSettings.customRelayPort();
-       return (port != 0)? port: SPDSettings.defaultRelayServerPort;
+        return (port != 0)? port: SPDSettings.defaultRelayServerPort;
     }
 
     private static String getRelayAddress(){
@@ -54,12 +54,12 @@ public class RelayThread extends Thread {
         Socket socket = null;
         String relayServerAddress = getRelayAddress();
         int relayPort = getRelayPort();
-        System.out.println("Relay: Connecting to " + relayServerAddress + ":" + relayPort + "...");
+        Log.i("Relay", "Connecting to %s:%d...", relayServerAddress, relayPort);
         try {
             socket = new Socket(relayServerAddress, relayPort);
             socket.setSoTimeout(UPDATE_DELAY);
         } catch (IOException e) {
-            System.out.println("Relay: Connection to " + relayServerAddress + ":" + relayPort + " failed: " + e.getMessage());
+            Log.e("Relay", "Connection to %s:%d failed: %s", relayServerAddress, relayPort, e.getMessage());
             e.printStackTrace();
             this.callback.onDisconnect();
             return;
@@ -77,7 +77,7 @@ public class RelayThread extends Thread {
             reader = new BufferedReader(readStream);
             writer = new BufferedWriter(writeStream, 16384);
 
-            System.out.println("Relay: Connected successfully, registering server...");
+            Log.i("Relay", "Connected successfully, registering server...");
             sendServerUpdate(null);
             long serverId = 0;
             while (true) {
@@ -92,17 +92,17 @@ public class RelayThread extends Thread {
                     if (restartCount > 3) {
                         GLog.h("relay thread stopped");
                     }
-                    System.out.println("Relay: Connection closed by remote server.");
+                    Log.w("Relay", "Connection closed by remote server.");
                     socket.close();
                     this.callback.onDisconnect();
                     if (restartCount < 10) {
                         if (restartCount > 3) {
-                            System.out.println("Restarting relay");
+                            Log.w("Relay", "Restarting relay");
                         }
                         new RelayThread().start();
                         restartCount++;
                     } else {
-                        System.out.println("Starting relay failed");
+                        Log.e("Relay", "Starting relay failed");
                     }
                     return;
                 }
@@ -110,7 +110,7 @@ public class RelayThread extends Thread {
                 String actionName = action.optString("action", "");
                 if ("server_registered".equals(actionName)) {
                     serverId = action.optLong("server_id", serverId);
-                    System.out.println("Relay: Server registered successfully. Server ID: " + serverId);
+                    Log.i("Relay", "Server registered successfully. Server ID: %d", serverId);
                 } else if ("ping".equals(actionName)) {
                     JSONObject pong = new JSONObject();
                     pong.put("action", "pong");
@@ -121,7 +121,7 @@ public class RelayThread extends Thread {
                 } else if ("client_requested".equals(actionName)) {
                     String connectId = action.optString("connect_id", "unknown");
                     long reqServerId = action.optLong("server_id", 0);
-                    System.out.println("Relay: Incoming client request. Connect ID: " + connectId + ", Server ID: " + reqServerId);
+                    Log.i("Relay", "Incoming client request. Connect ID: %s, Server ID: %d", connectId, reqServerId);
                     Socket client = new Socket(relayServerAddress, relayPort);
                     JSONObject accept = new JSONObject();
                     accept.put("action", "accept_client");
@@ -134,16 +134,16 @@ public class RelayThread extends Thread {
                     acceptWriter.write(accept.toString());
                     acceptWriter.write('\n');
                     acceptWriter.flush();
-                    System.out.println("Relay: Client tunnel accepted, starting client handler thread...");
+                    Log.i("Relay", "Client tunnel accepted, starting client handler thread...");
                     Server.startClientThread(client);
                 } else if ("error".equals(actionName)) {
                     String errMsg = action.optString("message", action.optString("code", "unknown"));
-                    System.out.println("Relay error: " + errMsg);
+                    Log.e("Relay", "Relay error: %s", errMsg);
                     GLog.h("Relay error: {0}", errMsg);
                 }
             }
         } catch (IOException | JSONException e) {
-            System.out.println("Relay thread error: " + e.getMessage());
+            Log.e("Relay", "Relay thread error: %s", e.getMessage());
             e.printStackTrace();
             try {
                 Thread.sleep((1000 * new java.util.Random().nextInt(10)));

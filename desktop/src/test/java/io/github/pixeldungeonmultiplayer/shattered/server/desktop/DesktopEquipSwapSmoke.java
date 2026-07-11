@@ -100,12 +100,13 @@ public final class DesktopEquipSwapSmoke {
             if (client.inventory() == null) {
                 return false;
             }
-            for (Item item : items) {
-                if (client.inventory().itemAt(pathOf(item)) == null) {
-                    return false;
+            int inventoryItems = 0;
+            for (List<Integer> path : client.inventory().itemsByPath().keySet()) {
+                if (!path.isEmpty() && path.get(0) >= 0) {
+                    inventoryItems++;
                 }
             }
-            return true;
+            return inventoryItems >= items.size();
         }
     }
 }

@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -14,10 +15,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.text.InputType;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -38,8 +43,25 @@ public class ServerActivity extends Activity {
     private TextView logTextView;
     private ScrollView logScrollView;
 
+    // Элементы настроек
+    private EditText serverNameInput;
+    private EditText serverPortInput;
+    private EditText maxPlayersInput;
+    private EditText motdInput;
+    private CheckBox onlineModeCheckbox;
+    private Button saveSettingsButton;
+
     private ServerService serverService;
     private boolean isBound = false;
+
+    // Цвета темы
+    private int themeBg;
+    private int textColor;
+    private int textColorSec;
+    private int cardBgColor;
+    private int cardStrokeColor;
+    private int editTextColor;
+    private int editTextBgColor;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable statusUpdater = new Runnable() {
@@ -71,32 +93,39 @@ public class ServerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LogHelper.init();
+        initThemeColors();
+
+        // Основной скроллер для всей разметки (нужен при появлении клавиатуры)
+        ScrollView mainScrollView = new ScrollView(this);
+        mainScrollView.setBackgroundColor(themeBg);
+        mainScrollView.setFillViewport(true);
 
         LinearLayout rootLayout = new LinearLayout(this);
         rootLayout.setOrientation(LinearLayout.VERTICAL);
-        rootLayout.setBackgroundColor(Color.parseColor("#121212"));
         rootLayout.setPadding(32, 32, 32, 32);
         rootLayout.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
+                ViewGroup.LayoutParams.WRAP_CONTENT
         ));
 
+        // Заголовок
         TextView titleTextView = new TextView(this);
         titleTextView.setText("Shattered PD Server");
-        titleTextView.setTextColor(Color.parseColor("#FFFFFF"));
+        titleTextView.setTextColor(textColor);
         titleTextView.setTextSize(24);
         titleTextView.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
         titleTextView.setGravity(Gravity.CENTER_HORIZONTAL);
         titleTextView.setPadding(0, 0, 0, 24);
         rootLayout.addView(titleTextView);
 
+        // Карточка статуса и IP
         LinearLayout cardLayout = new LinearLayout(this);
         cardLayout.setOrientation(LinearLayout.VERTICAL);
         cardLayout.setPadding(24, 24, 24, 24);
         GradientDrawable cardBg = new GradientDrawable();
-        cardBg.setColor(Color.parseColor("#1E1E1E"));
+        cardBg.setColor(cardBgColor);
         cardBg.setCornerRadius(16f);
-        cardBg.setStroke(2, Color.parseColor("#333333"));
+        cardBg.setStroke(2, cardStrokeColor);
         cardLayout.setBackground(cardBg);
 
         LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
@@ -106,13 +135,14 @@ public class ServerActivity extends Activity {
         cardParams.setMargins(0, 0, 0, 24);
         cardLayout.setLayoutParams(cardParams);
 
+        // Статус
         LinearLayout statusRow = new LinearLayout(this);
         statusRow.setOrientation(LinearLayout.HORIZONTAL);
         statusRow.setPadding(0, 0, 0, 16);
 
         TextView statusLabel = new TextView(this);
         statusLabel.setText("Статус: ");
-        statusLabel.setTextColor(Color.parseColor("#BBBBBB"));
+        statusLabel.setTextColor(textColorSec);
         statusLabel.setTextSize(16);
         statusRow.addView(statusLabel);
 
@@ -122,15 +152,15 @@ public class ServerActivity extends Activity {
         statusValue.setTextSize(16);
         statusValue.setTypeface(Typeface.DEFAULT_BOLD);
         statusRow.addView(statusValue);
-
         cardLayout.addView(statusRow);
 
+        // IP
         LinearLayout ipRow = new LinearLayout(this);
         ipRow.setOrientation(LinearLayout.HORIZONTAL);
 
         TextView ipLabel = new TextView(this);
         ipLabel.setText("IP в сети: ");
-        ipLabel.setTextColor(Color.parseColor("#BBBBBB"));
+        ipLabel.setTextColor(textColorSec);
         ipLabel.setTextSize(16);
         ipRow.addView(ipLabel);
 
@@ -152,6 +182,7 @@ public class ServerActivity extends Activity {
         cardLayout.addView(ipRow);
         rootLayout.addView(cardLayout);
 
+        // Кнопки управления
         LinearLayout buttonsLayout = new LinearLayout(this);
         buttonsLayout.setOrientation(LinearLayout.HORIZONTAL);
         buttonsLayout.setPadding(0, 0, 0, 24);
@@ -206,16 +237,74 @@ public class ServerActivity extends Activity {
             Toast.makeText(ServerActivity.this, "Сервер остановлен", Toast.LENGTH_SHORT).show();
         });
         buttonsLayout.addView(stopButton);
-
         rootLayout.addView(buttonsLayout);
 
+        // Карточка настроек
+        LinearLayout settingsCard = new LinearLayout(this);
+        settingsCard.setOrientation(LinearLayout.VERTICAL);
+        settingsCard.setPadding(24, 24, 24, 24);
+        GradientDrawable settingsBg = new GradientDrawable();
+        settingsBg.setColor(cardBgColor);
+        settingsBg.setCornerRadius(16f);
+        settingsBg.setStroke(2, cardStrokeColor);
+        settingsCard.setBackground(settingsBg);
+
+        LinearLayout.LayoutParams settingsParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        settingsParams.setMargins(0, 0, 0, 24);
+        settingsCard.setLayoutParams(settingsParams);
+
+        TextView settingsTitle = new TextView(this);
+        settingsTitle.setText("Настройки сервера");
+        settingsTitle.setTextColor(textColor);
+        settingsTitle.setTextSize(18);
+        settingsTitle.setTypeface(Typeface.DEFAULT_BOLD);
+        settingsTitle.setPadding(0, 0, 0, 16);
+        settingsCard.addView(settingsTitle);
+
+        serverNameInput = new EditText(this);
+        settingsCard.addView(createInputField("Имя сервера", serverNameInput));
+
+        serverPortInput = new EditText(this);
+        serverPortInput.setInputType(InputType.TYPE_CLASS_NUMBER);
+        settingsCard.addView(createInputField("Порт сервера (0 = авто)", serverPortInput));
+
+        maxPlayersInput = new EditText(this);
+        maxPlayersInput.setInputType(InputType.TYPE_CLASS_NUMBER);
+        settingsCard.addView(createInputField("Макс. игроков", maxPlayersInput));
+
+        motdInput = new EditText(this);
+        settingsCard.addView(createInputField("Приветствие (MOTD)", motdInput));
+
+        onlineModeCheckbox = new CheckBox(this);
+        onlineModeCheckbox.setText("Онлайн режим (online_mode)");
+        onlineModeCheckbox.setTextColor(textColor);
+        onlineModeCheckbox.setTextSize(16);
+        onlineModeCheckbox.setPadding(0, 8, 0, 16);
+        settingsCard.addView(onlineModeCheckbox);
+
+        saveSettingsButton = new Button(this);
+        saveSettingsButton.setText("Сохранить настройки");
+        saveSettingsButton.setTextColor(Color.WHITE);
+        GradientDrawable saveBtnBg = new GradientDrawable();
+        saveBtnBg.setColor(Color.parseColor("#0288D1")); // System blue
+        saveBtnBg.setCornerRadius(8f);
+        saveSettingsButton.setBackground(saveBtnBg);
+        saveSettingsButton.setOnClickListener(v -> saveSettings());
+        settingsCard.addView(saveSettingsButton);
+
+        rootLayout.addView(settingsCard);
+
+        // Панель логов
         LinearLayout logTitleRow = new LinearLayout(this);
         logTitleRow.setOrientation(LinearLayout.HORIZONTAL);
         logTitleRow.setPadding(0, 0, 0, 8);
 
         TextView logTitle = new TextView(this);
         logTitle.setText("Лог сервера:");
-        logTitle.setTextColor(Color.parseColor("#888888"));
+        logTitle.setTextColor(textColorSec);
         logTitle.setTextSize(14);
         LinearLayout.LayoutParams logTitleParams = new LinearLayout.LayoutParams(
                 0,
@@ -232,14 +321,13 @@ public class ServerActivity extends Activity {
         clearLogBtn.setPadding(8, 8, 8, 8);
         clearLogBtn.setOnClickListener(v -> LogHelper.clearLogs());
         logTitleRow.addView(clearLogBtn);
-
         rootLayout.addView(logTitleRow);
 
         logScrollView = new ScrollView(this);
+        // Задаем фиксированную высоту лога, чтобы он помещался рядом с настройками
         LinearLayout.LayoutParams scrollParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                0,
-                1.0f
+                dpToPx(200)
         );
         logScrollView.setLayoutParams(scrollParams);
 
@@ -250,6 +338,14 @@ public class ServerActivity extends Activity {
         logScrollView.setBackground(logBg);
         logScrollView.setPadding(16, 16, 16, 16);
 
+        // Перехватываем скролл для лога, чтобы он не прокручивал внешнюю форму
+        logScrollView.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE) {
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+            }
+            return false;
+        });
+
         logTextView = new TextView(this);
         logTextView.setTextColor(Color.parseColor("#00FF00"));
         logTextView.setTextSize(12);
@@ -259,10 +355,13 @@ public class ServerActivity extends Activity {
                 ViewGroup.LayoutParams.WRAP_CONTENT
         ));
         logScrollView.addView(logTextView);
-
         rootLayout.addView(logScrollView);
 
-        setContentView(rootLayout);
+        mainScrollView.addView(rootLayout);
+        setContentView(mainScrollView);
+
+        // Инициализируем настройки из Preferences
+        loadSettings();
 
         LogHelper.setListener(new LogHelper.LogListener() {
             @Override
@@ -278,6 +377,120 @@ public class ServerActivity extends Activity {
                 runOnUiThread(() -> logTextView.setText(""));
             }
         });
+    }
+
+    private void initThemeColors() {
+        // Получаем цвета из текущей темы
+        themeBg = getThemeColor(android.R.attr.colorBackground, Color.parseColor("#F5F5F5"));
+        textColor = getThemeColor(android.R.attr.textColorPrimary, Color.BLACK);
+        textColorSec = getThemeColor(android.R.attr.textColorSecondary, Color.DKGRAY);
+
+        boolean isDark = isColorDark(themeBg);
+        cardBgColor = isDark ? Color.parseColor("#1E1E1E") : Color.parseColor("#FFFFFF");
+        cardStrokeColor = isDark ? Color.parseColor("#333333") : Color.parseColor("#E0E0E0");
+
+        editTextColor = textColor;
+        editTextBgColor = isDark ? Color.parseColor("#2D2D2D") : Color.parseColor("#ECEFF1");
+    }
+
+    private int getThemeColor(int attr, int defaultColor) {
+        android.util.TypedValue typedValue = new android.util.TypedValue();
+        if (getTheme().resolveAttribute(attr, typedValue, true)) {
+            return typedValue.data;
+        }
+        return defaultColor;
+    }
+
+    private boolean isColorDark(int color) {
+        double darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255;
+        return darkness >= 0.5;
+    }
+
+    private LinearLayout createInputField(String labelText, EditText editText) {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.VERTICAL);
+        row.setPadding(0, 0, 0, 16);
+
+        TextView label = new TextView(this);
+        label.setText(labelText);
+        label.setTextColor(textColorSec);
+        label.setTextSize(14);
+        label.setPadding(0, 0, 0, 4);
+        row.addView(label);
+
+        editText.setTextColor(editTextColor);
+        editText.setTextSize(16);
+        editText.setPadding(24, 16, 24, 16);
+
+        GradientDrawable editBg = new GradientDrawable();
+        editBg.setColor(editTextBgColor);
+        editBg.setCornerRadius(8f);
+        editBg.setStroke(1, cardStrokeColor);
+        editText.setBackground(editBg);
+
+        row.addView(editText);
+        return row;
+    }
+
+    private int dpToPx(int dp) {
+        return (int) (dp * getResources().getDisplayMetrics().density);
+    }
+
+    private void loadSettings() {
+        SharedPreferences prefs = getSharedPreferences("ShatteredPixelDungeonServer", MODE_PRIVATE);
+        serverNameInput.setText(prefs.getString("server_name", "SPD-server"));
+        serverPortInput.setText(String.valueOf(prefs.getInt("server_port", 0)));
+        maxPlayersInput.setText(String.valueOf(prefs.getInt("max_players", 8)));
+        motdInput.setText(prefs.getString("motd", ""));
+        onlineModeCheckbox.setChecked(prefs.getBoolean("online_mode", true));
+    }
+
+    private void saveSettings() {
+        String name = serverNameInput.getText().toString().trim();
+        String portStr = serverPortInput.getText().toString().trim();
+        String maxPlayersStr = maxPlayersInput.getText().toString().trim();
+        String motd = motdInput.getText().toString().trim();
+        boolean online = onlineModeCheckbox.isChecked();
+
+        if (name.isEmpty()) {
+            Toast.makeText(this, "Имя сервера не должно быть пустым", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int port;
+        try {
+            port = Integer.parseInt(portStr);
+            if (port < 0 || port > 65535) {
+                Toast.makeText(this, "Порт должен быть от 0 до 65535", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Неверный формат порта", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int maxPlayers;
+        try {
+            maxPlayers = Integer.parseInt(maxPlayersStr);
+            if (maxPlayers <= 0) {
+                Toast.makeText(this, "Максимальное число игроков должно быть больше 0", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Неверный формат числа игроков", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        SharedPreferences prefs = getSharedPreferences("ShatteredPixelDungeonServer", MODE_PRIVATE);
+        prefs.edit()
+                .putString("server_name", name)
+                .putInt("server_port", port)
+                .putInt("max_players", maxPlayers)
+                .putString("motd", motd)
+                .putBoolean("online_mode", online)
+                .apply();
+
+        Toast.makeText(this, "Настройки сохранены", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -309,6 +522,15 @@ public class ServerActivity extends Activity {
             startButton.setAlpha(0.5f);
             stopButton.setEnabled(true);
             stopButton.setAlpha(1.0f);
+
+            // Блокируем изменение настроек во время работы сервера
+            serverNameInput.setEnabled(false);
+            serverPortInput.setEnabled(false);
+            maxPlayersInput.setEnabled(false);
+            motdInput.setEnabled(false);
+            onlineModeCheckbox.setEnabled(false);
+            saveSettingsButton.setEnabled(false);
+            saveSettingsButton.setAlpha(0.5f);
         } else {
             statusValue.setText("Остановлен");
             statusValue.setTextColor(Color.parseColor("#FF5555"));
@@ -316,6 +538,15 @@ public class ServerActivity extends Activity {
             startButton.setAlpha(1.0f);
             stopButton.setEnabled(false);
             stopButton.setAlpha(0.5f);
+
+            // Разрешаем изменение настроек, когда сервер остановлен
+            serverNameInput.setEnabled(true);
+            serverPortInput.setEnabled(true);
+            maxPlayersInput.setEnabled(true);
+            motdInput.setEnabled(true);
+            onlineModeCheckbox.setEnabled(true);
+            saveSettingsButton.setEnabled(true);
+            saveSettingsButton.setAlpha(1.0f);
         }
         ipAddressValue.setText(getLocalIpAddress());
     }

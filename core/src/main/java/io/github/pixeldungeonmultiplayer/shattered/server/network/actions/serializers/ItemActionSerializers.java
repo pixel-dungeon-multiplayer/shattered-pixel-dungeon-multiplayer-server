@@ -25,16 +25,11 @@ public final class ItemActionSerializers {
     public static class Add extends NetworkActionSerializer<ItemAction.Add> {
         @Override
         protected @Nullable JSONObject serializeInternal(@NotNull ItemAction.Add obj, @NotNull SerializationContext ctx, @NotNull String profile) {
-            Hero hero = (Hero) ctx.observer;
-            if (hero == null) {
-                return null;
-            }
-            java.util.List<Integer> path = hero.belongings.pathOfItem(obj.item);
-            if (path == null || path.isEmpty()) {
+            if (!(ctx.observer instanceof Hero) || obj.path.isEmpty()) {
                 return null;
             }
             JSONObject object = new JSONObject();
-            object.put("path", serializePath(path));
+            object.put("path", serializePath(obj.path));
             object.put("item", ctx.serialize(obj.item, "inventory"));
             return object;
         }

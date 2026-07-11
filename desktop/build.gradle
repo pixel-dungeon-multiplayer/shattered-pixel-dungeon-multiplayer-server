@@ -127,4 +127,31 @@ dependencies {
 
     implementation project(':services:updates:githubUpdates')
     implementation project(':services:news:shatteredNews')
+
+    testImplementation project(':client-simulator')
+    testImplementation "org.json:json:20170516"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
+}
+
+test {
+    useJUnitPlatform {
+        excludeTags 'desktop'
+    }
+}
+
+tasks.register('desktopSmokeTest', Test) {
+    group = 'verification'
+    description = 'Runs desktop smoke tests that open a game window.'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    include '**/*Smoke.class'
+    forkEvery = 1
+    useJUnitPlatform {
+        includeTags 'desktop'
+    }
+    if (osName.contains('mac')) {
+        jvmArgs '-XstartOnFirstThread'
+    }
 }

@@ -64,18 +64,29 @@ public class ClientThread implements Callable<String> {
     protected final Socket clientSocket;
 
     protected Hero clientHero;
+    protected String clientProtocolName;
+    protected int clientProtocolVersion = -1;
+    private String pendingJson;
 
     protected final NetworkPacket packet = new NetworkPacket();
     private final ArrayList<ChatMessageAction> pendingChatMessages = new ArrayList<>();
+    boolean needHeroInit = true;
 
     //todo rewrite it on single thread pool
     @NotNull
     private FutureTask<String> jsonCall;
 
     public ClientThread(int ThreadID, Socket clientSocket, @Nullable Hero hero, int protocolVersion) {
+        this(ThreadID, clientSocket, hero, protocolVersion, null);
+    }
+
+    public ClientThread(int ThreadID, Socket clientSocket, @Nullable Hero hero, int protocolVersion, @Nullable String initialJson) {
         clientHero = hero;
         this.clientSocket = clientSocket;
         this.protocolVersion = protocolVersion;
+        this.clientProtocolName = Protocol.NAME;
+        this.clientProtocolVersion = protocolVersion;
+        this.pendingJson = initialJson;
         try {
             this.threadID = ThreadID;
             if (hero != null){
@@ -99,7 +110,9 @@ public class ClientThread implements Callable<String> {
         if (clientHero != null){
             sendInitData();
         }
-        updateTask();
+        if (pendingJson == null) {
+            updateTask();
+        }
     }
 
     protected void updateTask() {
@@ -129,6 +142,12 @@ public class ClientThread implements Callable<String> {
             try {
                 switch (token) {
                     case Protocol.FIELD_PACKET_TYPE: {
+                        break;
+                    }
+                    case Protocol.FIELD_PROTOCOL: {
+                        break;
+                    }
+                    case Protocol.FIELD_VERSION: {
                         break;
                     }
                     //Level block
@@ -262,8 +281,20 @@ public class ClientThread implements Callable<String> {
         }
     }
 
-
     public void parse() {
+        if (pendingJson != null) {
+            String json = pendingJson;
+            pendingJson = null;
+            updateTask();
+            try {
+                parse(json);
+            } catch (JSONException e) {
+                ShatteredPixelDungeon.reportException(e);
+                GLog.n(e.getStackTrace().toString());
+                disconnect();
+            }
+            return;
+        }
         if (!jsonCall.isDone()) {
             return;
         }
@@ -385,7 +416,6 @@ public class ClientThread implements Callable<String> {
                 heroFound = true;
             }
         }
-        newHero.setSprite(new HeroSprite(newHero));
         clientHero = newHero;
         level.linkHero(newHero);
         if (!heroFound) {
@@ -400,14 +430,12 @@ public class ClientThread implements Callable<String> {
         }
         //newHero.pos = Dungeon.getPosNear(level.entrance);
 
-        newHero.updateSpriteState();
         if (newHero.pos == -1) {
             newHero.pos = level.entrance(); //todo  FIXME
         }
-        newHero.timeToNow();
+        newHero.timeToNow(); //todo check this: this may remove "paralytic"
         Actor.addDelayed(newHero, 1f);
         Dungeon.level.occupyCell(newHero);
-        newHero.getSprite().place(newHero.pos);
         synchronized (heroes) { //todo fix it. It is not work
             for (int i = 0; i < heroes.length; i++) {
                 if (heroes[i] == null) {

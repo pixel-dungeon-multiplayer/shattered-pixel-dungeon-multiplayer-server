@@ -1444,9 +1444,15 @@ public class GameScene extends PixelScene {
 		}
 	}
 
-	public static void addHeroSprite(Hero hero) {
-		CharSprite sprite = hero.getSprite();
+	public static void addHeroSprite(@NotNull final Hero hero) {
+		if (scene == null || tiles == null) {
+			return;
+		}
+		@NotNull final CharSprite sprite = new HeroSprite(hero);
+		hero.setSprite(sprite);
+		hero.updateSpriteState();
 		sprite.visible = true;
 		sprite.link(hero);
+		hero.getSprite().place(hero.pos);
 	}
 }

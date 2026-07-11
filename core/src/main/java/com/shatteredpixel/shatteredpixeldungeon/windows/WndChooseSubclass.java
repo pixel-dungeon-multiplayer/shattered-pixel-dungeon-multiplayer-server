@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -34,7 +35,12 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.watabou.noosa.Game;
+import com.watabou.utils.Random;
+import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +53,8 @@ public class WndChooseSubclass extends Window {
 	public final IconTitle titlebar;
 	public final RenderedTextBlock message;
 	public final List<RedButton> subclassButtons = new ArrayList<>();
+	public final List<IconButton> subclassInfoButtons = new ArrayList<>();
+	public final IconButton randomButton;
 	public final RedButton cancelButton;
 
 	public WndChooseSubclass(final @NotNull TengusMask tome, final Hero hero ) {
@@ -58,6 +66,29 @@ public class WndChooseSubclass extends Window {
 		titlebar.label( tome.name() );
 		titlebar.setRect( 0, 0, WIDTH, 0 );
 		add( titlebar );
+
+		randomButton = new IconButton(Icons.SHUFFLE) {
+			@Override
+			protected void onClick() {
+				super.onClick();
+				showRandomConfirmation();
+			}
+
+			@Override
+			public void update() {
+				if (Statistics.qualifiedForRandomVictoryBadge) {
+					image.tint(1, 1, 1, (float)Math.abs(Math.cos(1.5f * Math.PI * Game.timeTotal) / 2f));
+				}
+				super.update();
+			}
+
+			@Override
+			protected LocalizedString hoverText() {
+				return Messages.get(WndChooseSubclass.class, "random_title");
+			}
+		};
+		randomButton.setRect(WIDTH - 16, 0, 16, 16);
+		add(randomButton);
 
 		message = PixelScene.renderTextBlock( 6 );
 		message.text( Messages.get(this, "message"), WIDTH );
@@ -104,6 +135,7 @@ public class WndChooseSubclass extends Window {
 				}
 			};
 			clsInfo.setRect(WIDTH-20, btnCls.top() + (btnCls.height()-20)/2, 20, 20);
+			subclassInfoButtons.add(clsInfo);
 			add(clsInfo);
 
 			pos = btnCls.bottom() + GAP;
@@ -123,10 +155,42 @@ public class WndChooseSubclass extends Window {
 
 	@Override
 	protected void onSelect(int button) {
-		if (button < subclassButtons.size()) {
+		if (button >= 0 && button < subclassButtons.size()) {
 			subclassButtons.get(button).onClickNetwork();
 		} else if (button == subclassButtons.size()) {
 			cancelButton.onClickNetwork();
+		} else if (button == subclassButtons.size() + 1) {
+			randomButton.onClickNetwork();
 		}
+	}
+
+	@Override
+	public void onSelect(int button, @Nullable JSONObject args) {
+		if (args != null && args.optBoolean("info", false)
+				&& button >= 0 && button < subclassInfoButtons.size()) {
+			subclassInfoButtons.get(button).onClickNetwork();
+		} else {
+			onSelect(button);
+		}
+	}
+
+	private void showRandomConfirmation() {
+		Hero hero = getOwnerHero();
+		GameScene.show(new WndOptions(hero, Icons.SHUFFLE.get(),
+				Messages.get(WndChooseSubclass.class, "random_title"),
+				Messages.get(WndChooseSubclass.class, "random_sure"),
+				Messages.get(WndChooseSubclass.class, "yes"),
+				Messages.get(WndChooseSubclass.class, "no")) {
+			@Override
+			protected void onSelect(int index) {
+				super.onSelect(index);
+				if (index == 0) {
+					WndChooseSubclass.this.hide();
+					HeroSubClass subClass = Random.oneOf(hero.heroClass.subClasses());
+					tome.choose(subClass);
+					GameScene.show(new WndInfoSubclass(hero.heroClass, subClass, hero));
+				}
+			}
+		});
 	}
 }

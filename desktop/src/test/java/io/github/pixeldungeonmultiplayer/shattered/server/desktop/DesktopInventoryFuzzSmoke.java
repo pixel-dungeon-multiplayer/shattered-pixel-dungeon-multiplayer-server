@@ -134,7 +134,11 @@ public final class DesktopInventoryFuzzSmoke {
                     AtomicInteger heroReady = new AtomicInteger();
                     AtomicInteger itemChanges = new AtomicInteger();
                     AtomicInteger spriteActions = new AtomicInteger();
-                    client.afterAction("hero_ready", (c, action) -> heroReady.incrementAndGet());
+                    client.afterAction("hero_ready", (c, action) -> {
+                        if (action.optBoolean("ready", false)) {
+                            heroReady.incrementAndGet();
+                        }
+                    });
                     client.afterAction("item_add", (c, action) -> itemChanges.incrementAndGet());
                     client.afterAction("item_remove", (c, action) -> itemChanges.incrementAndGet());
                     client.afterAction("item_update", (c, action) -> itemChanges.incrementAndGet());

@@ -33,3 +33,9 @@ desktop/.lwjgl
 */save/*
 */balance/balance.json
 headless-desktop/headless-data/
+
+# eclipse jdt
+org.eclipse.buildship.core.prefs
+org.eclipse.jdt.core.prefs
+.classpath
+.project

@@ -394,11 +394,11 @@ public class ServerActivity extends Activity {
     }
 
     private int getThemeColor(int attr, int defaultColor) {
-        android.util.TypedValue typedValue = new android.util.TypedValue();
-        if (getTheme().resolveAttribute(attr, typedValue, true)) {
-            return typedValue.data;
-        }
-        return defaultColor;
+        int[] attrs = new int[] { attr };
+        android.content.res.TypedArray ta = obtainStyledAttributes(attrs);
+        int color = ta.getColor(0, defaultColor);
+        ta.recycle();
+        return color;
     }
 
     private boolean isColorDark(int color) {

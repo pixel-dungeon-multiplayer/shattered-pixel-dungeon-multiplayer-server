@@ -1,4 +1,4 @@
-package io.github.pixeldungeonmultiplayer.shattered.testclient;
+package io.github.pixeldungeonmultiplayer.shattered.headlessclient;
 
 import org.json.JSONObject;
 

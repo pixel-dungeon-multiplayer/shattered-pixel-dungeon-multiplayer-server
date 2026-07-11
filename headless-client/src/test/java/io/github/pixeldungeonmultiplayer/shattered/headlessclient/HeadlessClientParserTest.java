@@ -1,4 +1,4 @@
-package io.github.pixeldungeonmultiplayer.shattered.testclient;
+package io.github.pixeldungeonmultiplayer.shattered.headlessclient;
 
 import io.github.pixeldungeonmultiplayer.shattered.server.network.Protocol;
 import org.json.JSONArray;
@@ -12,14 +12,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class SimulatedClientParserTest {
+class HeadlessClientParserTest {
 
     private static final String SERVER_UUID = "test-server-id";
 
     @Test
     void parsesInventoryAndWindowActionsIntoClientState() throws Exception {
         InMemorySocketPair sockets = InMemorySocketPair.create();
-        SimulatedClient client = new SimulatedClient().connect(sockets.client());
+        HeadlessClient client = new HeadlessClient().connect(sockets.client());
         client.parse(handshakePacket());
 
         JSONObject packet = new JSONObject();
@@ -41,7 +41,7 @@ class SimulatedClientParserTest {
     @Test
     void appliesListInventoryItemActions() throws Exception {
         InMemorySocketPair sockets = InMemorySocketPair.create();
-        SimulatedClient client = new SimulatedClient().connect(sockets.client());
+        HeadlessClient client = new HeadlessClient().connect(sockets.client());
         client.parse(handshakePacket());
 
         JSONObject packet = new JSONObject();
@@ -67,7 +67,7 @@ class SimulatedClientParserTest {
     @Test
     void addressesSpecialSlotsAndNestedSpecialSlotBags() throws Exception {
         InMemorySocketPair sockets = InMemorySocketPair.create();
-        SimulatedClient client = new SimulatedClient().connect(sockets.client());
+        HeadlessClient client = new HeadlessClient().connect(sockets.client());
         client.parse(handshakePacket());
 
         JSONObject packet = new JSONObject();
@@ -89,7 +89,7 @@ class SimulatedClientParserTest {
     @Test
     void rejectsUpdateForMissingItem() throws Exception {
         InMemorySocketPair sockets = InMemorySocketPair.create();
-        SimulatedClient client = new SimulatedClient().connect(sockets.client());
+        HeadlessClient client = new HeadlessClient().connect(sockets.client());
         client.parse(handshakePacket());
 
         JSONObject packet = new JSONObject();
@@ -104,7 +104,7 @@ class SimulatedClientParserTest {
     @Test
     void runsBeforeAfterAndInsteadActionHooks() throws Exception {
         InMemorySocketPair sockets = InMemorySocketPair.create();
-        SimulatedClient client = new SimulatedClient().connect(sockets.client());
+        HeadlessClient client = new HeadlessClient().connect(sockets.client());
         client.parse(handshakePacket());
 
         AtomicInteger before = new AtomicInteger();

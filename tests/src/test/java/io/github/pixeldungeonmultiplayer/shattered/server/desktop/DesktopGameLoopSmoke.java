@@ -1,8 +1,8 @@
 package io.github.pixeldungeonmultiplayer.shattered.server.desktop;
 
 import io.github.pixeldungeonmultiplayer.shattered.server.network.Protocol;
-import io.github.pixeldungeonmultiplayer.shattered.testclient.ClientState;
-import io.github.pixeldungeonmultiplayer.shattered.testclient.SimulatedClient;
+import io.github.pixeldungeonmultiplayer.shattered.headlessclient.ClientState;
+import io.github.pixeldungeonmultiplayer.shattered.headlessclient.HeadlessClient;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +34,7 @@ public final class DesktopGameLoopSmoke {
         }
 
         private void runHandshakeSmoke() throws IOException {
-            try (SimulatedClient client = connectClient()) {
+            try (HeadlessClient client = connectClient()) {
                 client.parseNext();
                 require(client.state() == ClientState.HELLO_RECEIVED, "client did not receive hello");
                 require(Protocol.NAME.equals(client.protocolName()), "unexpected protocol");
@@ -45,7 +45,7 @@ public final class DesktopGameLoopSmoke {
 
         private void runJoinInventorySmoke() throws IOException {
             AtomicBoolean checkedInventory = new AtomicBoolean();
-            try (SimulatedClient client = connectClient()) {
+            try (HeadlessClient client = connectClient()) {
                 client.parseNext();
                 // Inventory is valid only after the server has completed the initial level transition.
                 client.afterAction("interlevel_scene", (ignored, action) -> {

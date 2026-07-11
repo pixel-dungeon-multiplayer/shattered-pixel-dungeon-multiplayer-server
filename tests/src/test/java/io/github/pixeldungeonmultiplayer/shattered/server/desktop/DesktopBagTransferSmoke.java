@@ -22,9 +22,9 @@ import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.Server;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.InventoryRebuildAction;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.SerializationContext;
-import io.github.pixeldungeonmultiplayer.shattered.testclient.ClientInventory;
-import io.github.pixeldungeonmultiplayer.shattered.testclient.ClientItem;
-import io.github.pixeldungeonmultiplayer.shattered.testclient.SimulatedClient;
+import io.github.pixeldungeonmultiplayer.shattered.headlessclient.ClientInventory;
+import io.github.pixeldungeonmultiplayer.shattered.headlessclient.ClientItem;
+import io.github.pixeldungeonmultiplayer.shattered.headlessclient.HeadlessClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Tag;
@@ -124,7 +124,7 @@ public final class DesktopBagTransferSmoke {
         private void runTest() {
             try {
                 waitFor(() -> Server.started, "server did not start");
-                try (SimulatedClient client = new SimulatedClient().connect(connectClientSocket())) {
+                try (HeadlessClient client = new HeadlessClient().connect(connectClientSocket())) {
                     // Retain received inventory actions before parsing so an ordering failure has its wire trace.
                     client.beforePacket((ignored, packet) -> recordPacket(packet));
                     client.parseNext();
@@ -329,7 +329,7 @@ public final class DesktopBagTransferSmoke {
             }
         }
 
-        private void waitForClient(SimulatedClient client, BooleanSupplier condition, String message) throws IOException {
+        private void waitForClient(HeadlessClient client, BooleanSupplier condition, String message) throws IOException {
             long deadline = System.currentTimeMillis() + TIMEOUT_MILLIS;
             while (!condition.getAsBoolean() && System.currentTimeMillis() < deadline) {
                 try {

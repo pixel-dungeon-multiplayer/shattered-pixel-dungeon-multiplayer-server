@@ -19,9 +19,9 @@ import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.Server;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.SerializationContext;
-import io.github.pixeldungeonmultiplayer.shattered.testclient.ClientInventory;
-import io.github.pixeldungeonmultiplayer.shattered.testclient.ClientItem;
-import io.github.pixeldungeonmultiplayer.shattered.testclient.SimulatedClient;
+import io.github.pixeldungeonmultiplayer.shattered.headlessclient.ClientInventory;
+import io.github.pixeldungeonmultiplayer.shattered.headlessclient.ClientItem;
+import io.github.pixeldungeonmultiplayer.shattered.headlessclient.HeadlessClient;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -122,7 +122,7 @@ public final class DesktopInventoryFuzzSmoke {
         private void runTest() {
             try {
                 waitFor(() -> Server.started, "server did not start");
-                try (SimulatedClient client = new SimulatedClient().connect(connectClientSocket())) {
+                try (HeadlessClient client = new HeadlessClient().connect(connectClientSocket())) {
                     client.parseNext();
                     AtomicBoolean sceneReady = new AtomicBoolean(false);
                     client.afterAction("interlevel_scene", (c, action) -> {
@@ -211,7 +211,7 @@ public final class DesktopInventoryFuzzSmoke {
             return name instanceof JSONObject && ((JSONObject) name).optString("raw", "").startsWith("fuzz-");
         }
 
-        private void waitForInventory(SimulatedClient client, String message) throws IOException, InterruptedException {
+        private void waitForInventory(HeadlessClient client, String message) throws IOException, InterruptedException {
             long deadline = System.currentTimeMillis() + TIMEOUT_MILLIS;
             while (System.currentTimeMillis() < deadline) {
                 if (inventoryMatches(serverInventory(), client.inventory())) return;
@@ -291,7 +291,7 @@ public final class DesktopInventoryFuzzSmoke {
             if (error.get() != null) throw new AssertionError("game thread operation failed", error.get());
         }
 
-        private void waitForClient(SimulatedClient client, BooleanSupplier condition, String message) throws IOException {
+        private void waitForClient(HeadlessClient client, BooleanSupplier condition, String message) throws IOException {
             long deadline = System.currentTimeMillis() + TIMEOUT_MILLIS;
             while (!condition.getAsBoolean() && System.currentTimeMillis() < deadline) {
                 try {

@@ -7,8 +7,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.ChaliceOfBlood;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAccuracy;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEvasion;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
-import io.github.pixeldungeonmultiplayer.shattered.testclient.ClientWindow;
-import io.github.pixeldungeonmultiplayer.shattered.testclient.SimulatedClient;
+import io.github.pixeldungeonmultiplayer.shattered.headlessclient.ClientWindow;
+import io.github.pixeldungeonmultiplayer.shattered.headlessclient.HeadlessClient;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +38,7 @@ public final class DesktopEquipSwapSmoke {
 
         @Override protected void runTest() throws Exception {
             waitForServer();
-            try (SimulatedClient client = connectClient()) {
+            try (HeadlessClient client = connectClient()) {
                 joinAndWaitForScene(client);
                 List<Item> items = seedInventory();
                 waitForClient(client, () -> allPresent(client, items), "seed items were not received");
@@ -86,7 +86,7 @@ public final class DesktopEquipSwapSmoke {
             return items.get();
         }
 
-        private void equip(SimulatedClient client, Item item, int targetSlot) throws IOException {
+        private void equip(HeadlessClient client, Item item, int targetSlot) throws IOException {
             client.itemAction(pathOf(item), "EQUIP");
             waitForClient(client, () -> client.inventory().itemAt(Arrays.asList(targetSlot)) != null,
                     "item was not equipped into slot " + targetSlot);
@@ -98,7 +98,7 @@ public final class DesktopEquipSwapSmoke {
             return path;
         }
 
-        private boolean allPresent(SimulatedClient client, List<Item> items) {
+        private boolean allPresent(HeadlessClient client, List<Item> items) {
             if (client.inventory() == null) {
                 return false;
             }

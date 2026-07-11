@@ -1,4 +1,4 @@
-package io.github.pixeldungeonmultiplayer.shattered.testclient;
+package io.github.pixeldungeonmultiplayer.shattered.headlessclient;
 
 import io.github.pixeldungeonmultiplayer.shattered.server.network.ClientThread;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.Protocol;
@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class SimulatedClient implements Closeable {
+public final class HeadlessClient implements Closeable {
 
     private ClientState state = ClientState.NEW;
     private Socket socket;
@@ -62,7 +62,7 @@ public final class SimulatedClient implements Closeable {
         return Collections.unmodifiableList(unhandledActions);
     }
 
-    public SimulatedClient connect(Socket socket) throws IOException {
+    public HeadlessClient connect(Socket socket) throws IOException {
         requireState(ClientState.NEW);
         this.socket = socket;
         Charset charset = Charset.forName(ClientThread.CHARSET);
@@ -73,7 +73,7 @@ public final class SimulatedClient implements Closeable {
     }
 
     @Contract("->this")
-    public SimulatedClient parseNext() throws IOException {
+    public HeadlessClient parseNext() throws IOException {
         requireConnected();
         String line = reader.readLine();
         if (line == null) {
@@ -213,22 +213,22 @@ public final class SimulatedClient implements Closeable {
         send(packet);
     }
 
-    public SimulatedClient beforeAction(String actionName, ActionHook hook) {
+    public HeadlessClient beforeAction(String actionName, ActionHook hook) {
         addHook(beforeActionHooks, actionName, hook);
         return this;
     }
 
-    public SimulatedClient afterAction(String actionName, ActionHook hook) {
+    public HeadlessClient afterAction(String actionName, ActionHook hook) {
         addHook(afterActionHooks, actionName, hook);
         return this;
     }
 
-    public SimulatedClient insteadAction(String actionName, ActionHook hook) {
+    public HeadlessClient insteadAction(String actionName, ActionHook hook) {
         addHook(insteadActionHooks, actionName, hook);
         return this;
     }
 
-    public SimulatedClient beforePacket(PacketHook hook) {
+    public HeadlessClient beforePacket(PacketHook hook) {
         beforePacketHooks.add(hook);
         return this;
     }
@@ -314,10 +314,10 @@ public final class SimulatedClient implements Closeable {
     }
 
     public interface ActionHook {
-        void handle(SimulatedClient client, JSONObject action);
+        void handle(HeadlessClient client, JSONObject action);
     }
 
     public interface PacketHook {
-        void handle(SimulatedClient client, JSONObject packet);
+        void handle(HeadlessClient client, JSONObject packet);
     }
 }

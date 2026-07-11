@@ -2,9 +2,9 @@ package io.github.pixeldungeonmultiplayer.shattered.server.network;
 
 import com.badlogic.gdx.Preferences;
 import com.watabou.utils.GameSettings;
-import io.github.pixeldungeonmultiplayer.shattered.testclient.ClientState;
-import io.github.pixeldungeonmultiplayer.shattered.testclient.InMemorySocketPair;
-import io.github.pixeldungeonmultiplayer.shattered.testclient.SimulatedClient;
+import io.github.pixeldungeonmultiplayer.shattered.headlessclient.ClientState;
+import io.github.pixeldungeonmultiplayer.shattered.headlessclient.InMemorySocketPair;
+import io.github.pixeldungeonmultiplayer.shattered.headlessclient.HeadlessClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +32,7 @@ class QueryClientThreadTest {
         server.setDaemon(true);
         server.start();
 
-        SimulatedClient client = new SimulatedClient()
+        HeadlessClient client = new HeadlessClient()
                 .connect(sockets.client());
         client.parseNext();
 

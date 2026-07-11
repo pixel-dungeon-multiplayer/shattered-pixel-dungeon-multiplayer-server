@@ -1,7 +1,7 @@
 //core game code modules
 include ':SPD-classes'
 include ':core'
-include ':client-simulator'
+include ':headless-client'
 include ':headless-desktop'
 include ':tests'
 

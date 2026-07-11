@@ -6,7 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.InventoryRebuildAction;
-import io.github.pixeldungeonmultiplayer.shattered.testclient.SimulatedClient;
+import io.github.pixeldungeonmultiplayer.shattered.headlessclient.HeadlessClient;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +39,7 @@ public final class DesktopInventoryCapacitySmoke {
 
         @Override protected void runTest() throws Exception {
             waitForServer();
-            try (SimulatedClient client = connectClient()) {
+            try (HeadlessClient client = connectClient()) {
                 joinAndWaitForScene(client);
                 fillBackpack();
                 waitForClient(client, () -> client.inventory() != null

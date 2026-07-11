@@ -16,9 +16,9 @@ import com.watabou.plugins.PluginManifest;
 import com.watabou.utils.FileUtils;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.Server;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.serializers.SerializationContext;
-import io.github.pixeldungeonmultiplayer.shattered.testclient.ClientInventory;
-import io.github.pixeldungeonmultiplayer.shattered.testclient.ClientItem;
-import io.github.pixeldungeonmultiplayer.shattered.testclient.SimulatedClient;
+import io.github.pixeldungeonmultiplayer.shattered.headlessclient.ClientInventory;
+import io.github.pixeldungeonmultiplayer.shattered.headlessclient.ClientItem;
+import io.github.pixeldungeonmultiplayer.shattered.headlessclient.HeadlessClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -112,13 +112,13 @@ abstract class DesktopSmoke extends ShatteredPixelDungeon {
         waitFor(() -> Server.started, "server did not start");
     }
 
-    protected final SimulatedClient connectClient() throws IOException {
+    protected final HeadlessClient connectClient() throws IOException {
         Socket socket = new Socket("127.0.0.1", port);
         socket.setSoTimeout(500);
-        return new SimulatedClient().connect(socket);
+        return new HeadlessClient().connect(socket);
     }
 
-    protected final void joinAndWaitForScene(SimulatedClient client) throws IOException {
+    protected final void joinAndWaitForScene(HeadlessClient client) throws IOException {
         AtomicReference<Boolean> sceneReady = new AtomicReference<>(false);
         client.parseNext();
         // The hook must exist before join: fade_out is the first packet after scene initialization.
@@ -131,7 +131,7 @@ abstract class DesktopSmoke extends ShatteredPixelDungeon {
         waitForClient(client, () -> sceneReady.get(), "game scene was not initialized");
     }
 
-    protected final void waitForClient(SimulatedClient client, BooleanSupplier condition, String message) throws IOException {
+    protected final void waitForClient(HeadlessClient client, BooleanSupplier condition, String message) throws IOException {
         long deadline = System.currentTimeMillis() + TIMEOUT_MILLIS;
         while (!condition.getAsBoolean() && System.currentTimeMillis() < deadline) {
             try {

@@ -178,7 +178,9 @@ public class HallowedGround extends TargetedClericSpell {
 
 		@Override
 		protected void evolve() {
-
+			if (source == null) {
+				source = new Hero();
+			}
 			int cell;
 
 			Fire fire = (Fire)Dungeon.level.blobs.get( Fire.class );

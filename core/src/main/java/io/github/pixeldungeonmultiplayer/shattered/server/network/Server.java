@@ -527,6 +527,14 @@ public class Server extends Thread {
         }
         return null;
     }
+    public static Hero findAndLoadHeroByUUID(String  uuid){
+        for (Hero hero: Dungeon.heroes) {
+            if (hero != null && hero.uuid.equals(uuid)) {
+                return hero;
+            }
+        }
+        return Dungeon.readHero(uuid);
+    }
     public static JSONObject serverInfo(){
             JSONObject serverInfo = new JSONObject();
             serverInfo.put("name", SPDSettings.serverName());

@@ -171,16 +171,16 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 public abstract class Char extends Actor {
-	
+
 	public int pos = 0;
-	
+
 	private CharSprite sprite;
 
 	public Class<? extends CharSprite> spriteClass;
-	
+
 	protected int HT;
 	public int HP;
-	
+
 	protected float baseSpeed	= 1;
 	protected PathFinder.Path path;
 
@@ -483,7 +483,7 @@ public abstract class Char extends Actor {
 			dmg += dmgBonus;
 
 			if (enemy.buff(GuidingLight.Illuminated.class) != null){
-				Hero source = Server.findHeroByUUID(enemy.buff(GuidingLight.Illuminated.class).sourceUUID);
+				Hero source = Server.findAndLoadHeroByUUID(enemy.buff(GuidingLight.Illuminated.class).sourceUUID);
 				enemy.buff(GuidingLight.Illuminated.class).detach();
 				if (this == source && source.hasTalent(Talent.SEARING_LIGHT)){
 					dmg += 1 + 2* source.pointsInTalent(Talent.SEARING_LIGHT);

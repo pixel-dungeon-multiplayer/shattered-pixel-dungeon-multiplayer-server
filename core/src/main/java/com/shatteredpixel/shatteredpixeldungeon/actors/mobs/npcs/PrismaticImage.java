@@ -49,35 +49,35 @@ import com.watabou.utils.Random;
 import org.jetbrains.annotations.NotNull;
 
 public class PrismaticImage extends NPC {
-	
+
 	{
 		spriteClass = PrismaticSprite.class;
-		
+
 		setHP(setHT(10));
 		defenseSkill = 1;
-		
+
 		alignment = Alignment.ALLY;
 		intelligentAlly = true;
 		state = HUNTING;
-		
+
 		WANDERING = new Wandering();
-		
+
 		//before other mobs
 		actPriority = MOB_PRIO + 1;
 	}
-	
+
 	private Hero hero;
 	private String heroUUID;
 	public int armTier;
-	
+
 	private int deathTimer = -1;
-	
+
 	@Override
 	protected boolean act() {
-		
+
 		if (!isAlive()){
 			deathTimer--;
-			
+
 			if (deathTimer > 0) {
 				getSprite().alpha((deathTimer + 3) / 8f);
 				spend(TICK);
@@ -87,13 +87,13 @@ public class PrismaticImage extends NPC {
 			}
 			return true;
 		}
-		
+
 		if (deathTimer != -1){
 			if (paralysed == 0) getSprite().remove(CharSprite.State.PARALYSED);
 			deathTimer = -1;
 			getSprite().resetColor();
 		}
-		
+
 		if ( hero == null ){
 			findHero();
 			if ( hero == null ){
@@ -102,15 +102,15 @@ public class PrismaticImage extends NPC {
 				return true;
 			}
 		}
-		
+
 		if (hero.tier() != armTier){
 			armTier = hero.tier();
 			((PrismaticSprite) getSprite()).updateArmor( armTier );
 		}
-		
+
 		return super.act();
 	}
-	
+
 	@Override
 	public void die(@NotNull DamageCause cause) {
 		if (deathTimer == -1) {
@@ -130,29 +130,29 @@ public class PrismaticImage extends NPC {
 
 	private static final String HEROUUID	= "hero_id";
 	private static final String TIMER	= "timer";
-	
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put(HEROUUID , heroUUID );
 		bundle.put( TIMER, deathTimer );
 	}
-	
+
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		heroUUID = bundle.getString( HEROUUID );
-		hero = Server.findHeroByUUID(heroUUID);
+		hero = Server.findAndLoadHeroByUUID(heroUUID);
 		deathTimer = bundle.getInt( TIMER );
 	}
-	
+
 	public void duplicate( Hero hero, int HP ) {
 		this.hero = hero;
 		heroUUID = this.hero.uuid;
 		this.setHP(HP);
 		setHT(PrismaticGuard.maxHP( hero ));
 	}
-	
+
 	@Override
 	public int damageRoll() {
 		if (hero != null) {
@@ -161,7 +161,7 @@ public class PrismaticImage extends NPC {
 			return Random.NormalIntRange( 2, 4 );
 		}
 	}
-	
+
 	@Override
 	public int attackSkill( Char target ) {
 		if (hero != null) {
@@ -171,7 +171,7 @@ public class PrismaticImage extends NPC {
 			return 0;
 		}
 	}
-	
+
 	@Override
 	public int defenseSkill(Char enemy) {
 		if (hero != null) {
@@ -188,7 +188,7 @@ public class PrismaticImage extends NPC {
 			return 0;
 		}
 	}
-	
+
 	@Override
 	public int drRoll() {
 		int dr = super.drRoll();
@@ -198,7 +198,7 @@ public class PrismaticImage extends NPC {
 			return dr;
 		}
 	}
-	
+
 	@Override
 	public int defenseProc(Char enemy, int damage) {
 		if (hero != null && hero.belongings.armor() != null){
@@ -220,7 +220,7 @@ public class PrismaticImage extends NPC {
 
 		super.damage(dmg, source);
 	}
-	
+
 	@Override
 	public float speed() {
         if (hero != null && hero.belongings.armor() != null) {
@@ -239,18 +239,18 @@ public class PrismaticImage extends NPC {
 
 	@Override
 	public int attackProc( Char enemy, int damage ) {
-		
+
 		if (enemy instanceof Mob) {
 			((Mob)enemy).aggro( this );
 		}
-		
+
 		return super.attackProc( enemy, damage );
 	}
-	
+
 	@Override
 	public CharSprite sprite() {
 		CharSprite s = super.sprite();
-		
+
 		findHero();
 		if (hero != null) {
 			armTier = hero.tier();
@@ -267,9 +267,9 @@ public class PrismaticImage extends NPC {
 		immunities.add( Burning.class );
 		immunities.add( AllyBuff.class );
 	}
-	
+
 	private class Wandering extends Mob.Wandering{
-		
+
 		@Override
 		public boolean act(boolean enemyInFOV, boolean justAlerted) {
 			if (!enemyInFOV){
@@ -283,7 +283,7 @@ public class PrismaticImage extends NPC {
 				return super.act(enemyInFOV, justAlerted);
 			}
 		}
-		
+
 	}
 	private void findHero(){
 		if (hero == null){
@@ -293,7 +293,7 @@ public class PrismaticImage extends NPC {
 	}
 	public Hero getHero() {
 		if (hero == null){
-			hero = Server.findHeroByUUID(heroUUID);
+			hero = Server.findAndLoadHeroByUUID(heroUUID);
 		}
     	return hero;
 	}

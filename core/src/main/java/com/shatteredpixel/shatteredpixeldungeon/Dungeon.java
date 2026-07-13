@@ -150,7 +150,7 @@ public class Dungeon {
 				} else {
 					lim.count = 0;
 				}
-				
+
 			}
 		}
 
@@ -163,7 +163,7 @@ public class Dungeon {
 	public static Level level;
 
 	public static QuickSlot quickslot = new QuickSlot();
-	
+
 	public static int depth;
 	//determines path the hero is on. Current uses:
 	// 0 is the default path
@@ -174,7 +174,7 @@ public class Dungeon {
 	public static ArrayList<Integer> generatedLevels = new ArrayList<>();
 
 	public static int energy;
-	
+
 	public static HashSet<Integer> chapters;
 
 	public static SparseArray<ArrayList<Item>> droppedItems;
@@ -232,7 +232,7 @@ public class Dungeon {
 			Generator.fullReset();
 
 		Random.resetGenerators();
-		
+
 		Statistics.reset();
 		Notes.reset();
 
@@ -248,9 +248,9 @@ public class Dungeon {
 		droppedItems = new SparseArray<>();
 
 		LimitedDrops.reset();
-		
+
 		chapters = new HashSet<>();
-		
+
 		Ghost.Quest.reset();
 		Wandmaker.Quest.reset();
 		Blacksmith.Quest.reset();
@@ -270,9 +270,9 @@ public class Dungeon {
 	public static boolean levelHasBeenGenerated(int depth, int branch){
 		return generatedLevels.contains(depth + 1000*branch);
 	}
-	
+
 	public static Level newLevel() {
-		
+
 		Dungeon.level = null;
 		Actor.clear();
 
@@ -382,19 +382,19 @@ public class Dungeon {
 		}
 
 		Statistics.qualifiedForBossRemainsBadge = false;
-		
+
 		level.create();
-		
+
 		if (branch == 0) Statistics.qualifiedForNoKilling = !bossLevel();
 		Statistics.qualifiedForBossChallengeBadge = false;
 
 		return level;
 	}
-	
+
 	public static void resetLevel() {
-		
+
 		Actor.clear();
-		
+
 		level.reset();
 		switchLevel( level, level.entrance() );
 	}
@@ -417,15 +417,15 @@ public class Dungeon {
 		Random.popGenerator();
 		return result;
 	}
-	
+
 	public static boolean shopOnLevel() {
 		return depth == 6 || depth == 11 || depth == 16;
 	}
-	
+
 	public static boolean bossLevel() {
 		return bossLevel( depth );
 	}
-	
+
 	public static boolean bossLevel( int depth ) {
 		return depth == 5 || depth == 10 || depth == 15 || depth == 20 || depth == 25;
 	}
@@ -452,7 +452,7 @@ public class Dungeon {
 		}
 		return true;
 	}
-	
+
 	public static void switchLevelForAll( final Level level, int pos ) {
 
 		//Position of -2 specifically means trying to place the hero the exit
@@ -466,9 +466,9 @@ public class Dungeon {
 		if (pos < 0 || pos >= level.length() || level.invalidHeroPos(pos)){
 			pos = level.getTransition(null).cell();
 		}
-		
+
 		PathFinder.setMapSize(level.width(), level.height());
-		
+
 		Dungeon.level = level;
 		//Position of -3 specifically means place hero to it's position
 		for (Hero hero : heroes) {
@@ -553,7 +553,7 @@ public class Dungeon {
 		else return false;
 
 	}
-	
+
 	public static boolean souNeeded() {
 		int souLeftThisSet;
 		//3 SOU each floor set
@@ -564,7 +564,7 @@ public class Dungeon {
 		//chance is floors left / scrolls left
 		return Random.Int(5 - floorThisSet) < souLeftThisSet;
 	}
-	
+
 	public static boolean asNeeded() {
 		//1 AS each floor set
 		int asLeftThisSet = 1 - (LimitedDrops.ARCANE_STYLI.count - (depth / 5));
@@ -660,24 +660,24 @@ public class Dungeon {
 			Bundle limDrops = new Bundle();
 			LimitedDrops.store( limDrops );
 			bundle.put ( LIMDROPS, limDrops );
-			
+
 			int count = 0;
 			int ids[] = new int[chapters.size()];
 			for (Integer id : chapters) {
 				ids[count++] = id;
 			}
 			bundle.put( CHAPTERS, ids );
-			
+
 			Bundle quests = new Bundle();
 			Ghost		.Quest.storeInBundle( quests );
 			Wandmaker	.Quest.storeInBundle( quests );
 			Blacksmith	.Quest.storeInBundle( quests );
 			Imp			.Quest.storeInBundle( quests );
 			bundle.put( QUESTS, quests );
-			
+
 			SpecialRoom.storeRoomsInBundle( bundle );
 			SecretRoom.storeRoomsInBundle( bundle );
-			
+
 			Statistics.storeInBundle( bundle );
 			Notes.storeInBundle( bundle );
 			Generator.storeInBundle( bundle );
@@ -687,13 +687,13 @@ public class Dungeon {
 				bundleArr[i] = generatedLevels.get(i);
 			}
 			bundle.put( GENERATED_LEVELS, bundleArr);
-			
+
 			Scroll.save( bundle );
 			Potion.save( bundle );
 			Ring.save( bundle );
 
 			Actor.storeNextID( bundle );
-			
+
 			Bundle badges = new Bundle();
 			Badges.saveLocal( badges );
 			bundle.put( BADGES, badges );
@@ -710,18 +710,18 @@ public class Dungeon {
 			ShatteredPixelDungeon.reportException(e);
 		}
 	}
-	
+
 	public static void saveLevel() throws IOException {
 		Bundle bundle = new Bundle();
 		bundle.put( LEVEL, level );
-		
+
 		FileUtils.bundleToFile(GamesInProgress.depthFile(depth, branch ), bundle);
 	}
-	
+
 	public static void saveAll() throws IOException {
 		//todo fixme
 		if (heroes[0] != null && (heroes[0].isAlive() || WndResurrect.instance != null)) {
-			
+
 			Actor.fixTime();
 			updateLevelExplored();
 			saveGame( GamesInProgress.curSlot );
@@ -731,13 +731,13 @@ public class Dungeon {
 
 		}
 	}
-	
+
 	public static void loadGame( int save ) throws IOException {
 		loadGame( save, true );
 	}
-	
+
 	public static void loadGame( int save, boolean fullLoad ) throws IOException {
-		
+
 		Bundle bundle = FileUtils.bundleFromFile( GamesInProgress.gameFile() );
 
 		initialVersion = bundle.getInt( INIT_VER );
@@ -756,18 +756,18 @@ public class Dungeon {
 
 		Dungeon.challenges = bundle.getInt( CHALLENGES );
 		Dungeon.mobsToChampion = bundle.getFloat( MOBS_TO_CHAMPION );
-		
+
 		Dungeon.level = null;
 		Dungeon.depth = -1;
-		
+
 		Scroll.restore( bundle );
 		Potion.restore( bundle );
 		Ring.restore( bundle );
 
 		quickslot.restorePlaceholders( bundle );
-		
+
 		if (fullLoad) {
-			
+
 			LimitedDrops.restore( bundle.getBundle(LIMDROPS) );
 
 			chapters = new HashSet<>();
@@ -794,7 +794,7 @@ public class Dungeon {
 				Blacksmith.Quest.reset();
 				Imp.Quest.reset();
 			}
-			
+
 			SpecialRoom.restoreRoomsFromBundle(bundle);
 			SecretRoom.restoreRoomsFromBundle(bundle);
 
@@ -818,14 +818,14 @@ public class Dungeon {
 
 			}
 		}
-		
+
 		Bundle badges = bundle.getBundle(BADGES);
 		if (!badges.isNull()) {
 			Badges.loadLocal( badges );
 		} else {
 			Badges.reset();
 		}
-		
+
 		Notes.restoreFromBundle( bundle );
 
 		//todo
@@ -840,9 +840,9 @@ public class Dungeon {
 		Statistics.restoreFromBundle( bundle );
 		Generator.restoreFromBundle( bundle );
 	}
-	
+
 	public static Level loadLevel() throws IOException {
-		
+
 		Dungeon.level = null;
 		Actor.clear();
 
@@ -856,7 +856,7 @@ public class Dungeon {
 			return level;
 		}
 	}
-	
+
 	public static void deleteGame(boolean deleteLevels ) {
 
 		if (deleteLevels) {
@@ -869,10 +869,10 @@ public class Dungeon {
 		}
 
 		FileUtils.overwriteFile(GamesInProgress.gameFile(), 1);
-		
+
 		GamesInProgress.delete();
 	}
-	
+
 	public static void preview( GamesInProgress.Info info, Bundle bundle ) {
 		info.depth = bundle.getInt( DEPTH );
 		info.version = bundle.getInt( VERSION );
@@ -886,7 +886,7 @@ public class Dungeon {
 		//Hero.preview( info, bundle.getBundle( HERO ) );
 		Statistics.preview( info, bundle );
 	}
-	
+
 	public static void fail( Object cause ) {
 		if (WndResurrect.instance == null) {
 			updateLevelExplored();
@@ -894,7 +894,7 @@ public class Dungeon {
 			//Rankings.INSTANCE.submit( false, cause );
 		}
 	}
-	
+
 	public static void win( Object cause ) {
 
 		updateLevelExplored();
@@ -1104,7 +1104,7 @@ public class Dungeon {
 		return PathFinder.find( ch.pos, to, findPassable(ch, pass, vis, chars) );
 
 	}
-	
+
 	public static int findStep(Char ch, int to, boolean[] pass, boolean[] visible, boolean chars ) {
 
 		if (Dungeon.level.adjacent( ch.pos, to )) {
@@ -1180,6 +1180,19 @@ public class Dungeon {
 			return null;
         }
     }
+	//Only reads data and returns it
+	public static Hero readHero(String uuid){
+		try {
+			Bundle bundle = FileUtils.bundleFromFile("save/heroes/"+ uuid);
+			Hero hero = new Hero();
+			hero.restoreFromBundle(bundle);
+			return hero;
+		} catch (IOException e) {
+			//Maybe there is no file?
+			ShatteredPixelDungeon.reportException(e);
+			return null;
+		}
+	}
 	public static Hero getHeroByUUID(String uuid) {
 		for (Hero hero : heroes) {
 			if (hero != null && hero.uuid.equals(uuid)) {

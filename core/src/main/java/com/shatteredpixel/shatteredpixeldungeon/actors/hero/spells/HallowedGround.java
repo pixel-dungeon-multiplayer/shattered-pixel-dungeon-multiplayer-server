@@ -232,7 +232,9 @@ public class HallowedGround extends TargetedClericSpell {
 
 			//max of 100 turns of grass per hero level before it starts to furrow
 			if (volume > 0){
-				Buff.count(source, HallowedFurrowTracker.class, 1);
+				if (source != null) {
+					Buff.count(source, HallowedFurrowTracker.class, 1);
+				}
 			}
 
 			Char ally = PowerOfMany.getPoweredAlly();

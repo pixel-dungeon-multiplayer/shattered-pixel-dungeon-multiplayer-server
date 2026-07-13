@@ -48,20 +48,20 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
 public class MirrorImage extends NPC {
-	
+
 	{
 		spriteClass = MirrorSprite.class;
-		
+
 		setHP(setHT(1));
 		defenseSkill = 1;
-		
+
 		alignment = Alignment.ALLY;
 		state = HUNTING;
-		
+
 		//before other mobs
 		actPriority = MOB_PRIO + 1;
 	}
-	
+
 	private Hero hero;
 
 	public Hero getHero() {
@@ -70,28 +70,28 @@ public class MirrorImage extends NPC {
 
 	private String heroUUID;
 	public int armTier;
-	
+
 	@Override
 	protected boolean act() {
 
 		if ( hero == null ) {
 
-			hero = Server.findHeroByUUID(heroUUID);
+			hero = Server.findAndLoadHeroByUUID(heroUUID);
 			if ( hero == null ){
 //				die(new DamageCause( null));
 //				getSprite().killAndErase();
 				return true;
 			}
 		}
-		
+
 		if (hero.tier() != armTier){
 			armTier = hero.tier();
 			((MirrorSprite) getSprite()).updateArmor( armTier );
 		}
-		
+
 		return super.act();
 	}
-	
+
 	private static final String HERO_UUID = "hero_id";
 	private static final String ARMOR_TIER = "armor_tier";
 	@Override
@@ -101,7 +101,7 @@ public class MirrorImage extends NPC {
 		bundle.put(ARMOR_TIER, armTier);
 
 	}
-	
+
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
@@ -109,15 +109,15 @@ public class MirrorImage extends NPC {
 			armTier = bundle.getInt(ARMOR_TIER);
 		}
 		heroUUID = bundle.getString(HERO_UUID);
-		hero = Server.findHeroByUUID(heroUUID);
+		hero = Server.findAndLoadHeroByUUID(heroUUID);
 	}
-	
+
 	public void duplicate( Hero hero ) {
 		this.hero = hero;
 		heroUUID = this.hero.uuid;
 		Buff.affect(this, MirrorInvis.class, Short.MAX_VALUE);
 	}
-	
+
 	@Override
 	public int damageRoll() {
 		int damage;
@@ -128,7 +128,7 @@ public class MirrorImage extends NPC {
 		}
 		return (damage+1)/2; //half hero damage, rounded up
 	}
-	
+
 	@Override
 	public int attackSkill( Char target ) {
 		//same base attack skill as hero, benefits from accuracy ring and weapon
@@ -139,13 +139,13 @@ public class MirrorImage extends NPC {
 		}
 		return attackSkill;
 	}
-	
+
 	@Override
 	public int defenseSkill(Char enemy) {
 		if (hero != null) {
 			int baseEvasion = 4 + hero.lvl;
 			int heroEvasion = (int)((4 + hero.lvl) * RingOfEvasion.evasionMultiplier( hero ));
-			
+
 			//if the hero has more/less evasion, 50% of it is applied
 			//includes ring of evasion boost
 			return super.defenseSkill(enemy) * (baseEvasion + heroEvasion) / 2;
@@ -153,17 +153,17 @@ public class MirrorImage extends NPC {
 			return 0;
 		}
 	}
-	
+
 	@Override
 	public float attackDelay() {
 		return hero.attackDelay(); //handles ring of furor
 	}
-	
+
 	@Override
 	protected boolean canAttack(Char enemy) {
 		return super.canAttack(enemy) || (hero.belongings.weapon() != null && hero.belongings.weapon().canReach(this, enemy.pos));
 	}
-	
+
 	@Override
 	public int drRoll() {
 		int dr = super.drRoll();
@@ -173,16 +173,16 @@ public class MirrorImage extends NPC {
 			return dr;
 		}
 	}
-	
+
 	@Override
 	public int attackProc( Char enemy, int damage ) {
 		damage = super.attackProc( enemy, damage );
-		
+
 		MirrorInvis buff = buff(MirrorInvis.class);
 		if (buff != null){
 			buff.detach();
 		}
-		
+
 		if (enemy instanceof Mob) {
 			((Mob)enemy).aggro( this );
 		}
@@ -209,12 +209,10 @@ public class MirrorImage extends NPC {
 			return damage;
 		}
 	}
-	
+
 	@Override
 	public CharSprite sprite() {
 		CharSprite s = super.sprite();
-		
-		hero = Server.findHeroByUUID(heroUUID);
 		if (hero != null) {
 			armTier = hero.tier();
 		} else {
@@ -224,20 +222,20 @@ public class MirrorImage extends NPC {
 		((MirrorSprite)s).updateArmor( armTier );
 		return s;
 	}
-	
+
 	{
 		immunities.add( ToxicGas.class );
 		immunities.add( CorrosiveGas.class );
 		immunities.add( Burning.class );
 		immunities.add( AllyBuff.class );
 	}
-	
+
 	public static class MirrorInvis extends Invisibility {
-		
+
 		{
 			announced = false;
 		}
-		
+
 		@Override
 		public int icon() {
 			return BuffIndicator.NONE;

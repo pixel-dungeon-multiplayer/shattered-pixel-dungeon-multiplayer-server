@@ -123,6 +123,9 @@ public class MagesStaff extends MeleeWeapon {
 	public void activate( Char ch ) {
 		super.activate(ch);
 		applyWandChargeBuff(ch);
+		if(ch instanceof Hero) {
+			updateWand(false, (Hero) ch);
+		}
 	}
 
 	@Override
@@ -132,6 +135,12 @@ public class MagesStaff extends MeleeWeapon {
 		} else {
 			return super.targetingPos(user, dst);
 		}
+	}
+
+	@Override
+	public boolean doEquip(Hero hero) {
+		updateWand(false, hero);
+		return super.doEquip(hero);
 	}
 
 	@Override

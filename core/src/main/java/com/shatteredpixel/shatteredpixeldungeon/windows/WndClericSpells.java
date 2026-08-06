@@ -141,12 +141,13 @@ public class WndClericSpells extends Window {
 			hide();
 		} else if (button >= 0 && button < spellButtons.size()) {
 			ClericSpell spell = spellButtons.get(button).spell;
-			boolean isLongClick = args != null && args.optBoolean("is_long_click", false);
+			boolean isAlternateClick = args != null && (args.optBoolean("is_long_click", false)
+					|| args.optBoolean("is_right_click", false));
 			if (info) {
 				GameScene.show(new WndTitledMessage(getOwnerHero(), new HeroIcon(spell), Messages.titleCase(spell.name()), spell.desc(getOwnerHero())));
 			} else {
 				hide();
-				if (isLongClick) {
+				if (isAlternateClick) {
 					tome.setQuickSpell(spell, getOwnerHero());
 				} else if (!tome.canCast(getOwnerHero(), spell)) {
 					GLog.w(Messages.get(HolyTome.class, "no_spell"));

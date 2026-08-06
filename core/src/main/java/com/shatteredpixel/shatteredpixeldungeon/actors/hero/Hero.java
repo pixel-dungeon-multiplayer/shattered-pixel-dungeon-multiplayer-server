@@ -1515,7 +1515,9 @@ public class Hero extends Char {
 	
 	@Override
 	public int attackProc( final Char enemy, int damage ) {
-		if (true) {return 99999;}
+		if (SPDSettings.heroGodStrike()) {
+			return 99999;
+		}
 		damage = super.attackProc( enemy, damage );
 
 		KindOfWeapon wep;
@@ -1625,7 +1627,7 @@ public class Hero extends Char {
 
 	@Override
 	public void damage(int dmg, @NotNull DamageCause source ) {
-		if (dmg > 0) {
+		if (dmg > 0 && SPDSettings.heroInvulnerable()) {
 			return;
 		}
 		Object src = source.getCause();

@@ -35,6 +35,23 @@ import java.util.UUID;
 public class SPDSettings extends GameSettings {
 	// Multiplayer
 	public static final String KEY_KILL_ON_DISCONNECT = "kill_on_disconnect";
+	public static final String KEY_HERO_INVULNERABLE = "hero_invulnerable";
+	public static final String KEY_HERO_GOD_STRIKE = "hero_god_strike";
+
+	public static boolean heroInvulnerable() {
+		if (!contains(KEY_HERO_INVULNERABLE)) {
+			put(KEY_HERO_INVULNERABLE, false);
+		}
+		return getBoolean(KEY_HERO_INVULNERABLE, false);
+	}
+
+	public static boolean heroGodStrike() {
+		if (!contains(KEY_HERO_GOD_STRIKE)) {
+			put(KEY_HERO_GOD_STRIKE, false);
+		}
+		return getBoolean(KEY_HERO_GOD_STRIKE, false);
+	}
+
 	public static boolean killOnDisconnect(){
 		if (!contains(KEY_KILL_ON_DISCONNECT)){
 			put(KEY_KILL_ON_DISCONNECT, false);

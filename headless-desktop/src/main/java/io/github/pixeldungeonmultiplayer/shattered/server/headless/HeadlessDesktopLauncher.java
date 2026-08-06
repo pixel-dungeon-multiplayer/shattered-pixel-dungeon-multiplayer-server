@@ -100,6 +100,8 @@ public final class HeadlessDesktopLauncher {
             putString("spd.serverName", SPDSettings.KEY_SERVER_NAME);
             putString("spd.serverUuid", "server_uuid");
             putString("spd.motd", "motd");
+			putBoolean("spd.heroInvulnerable", SPDSettings.KEY_HERO_INVULNERABLE);
+			putBoolean("spd.heroGodStrike", SPDSettings.KEY_HERO_GOD_STRIKE);
         }
 
         private static void putInt(String property, String setting) {

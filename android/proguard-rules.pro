@@ -18,6 +18,12 @@
 -dontwarn com.badlogic.gdx.physics.box2d.utils.Box2DBuild
 -dontwarn com.badlogic.gdx.jnigen.BuildTarget*
 
+# gdx-backend-headless references these JVM-only classes solely from HeadlessNet.openURI().
+# The Android headless server does not support opening desktop URIs.
+-dontwarn java.awt.Desktop
+-dontwarn java.awt.Desktop$Action
+-dontwarn java.awt.GraphicsEnvironment
+
 # needed for libGDX skin reflection used in text fields. Perhaps just don't use skin?
 -keep class com.badlogic.gdx.graphics.Color { *; }
 -keep class com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle { *; }

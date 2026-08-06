@@ -17,6 +17,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
+import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
+
 import static io.github.pixeldungeonmultiplayer.shattered.server.network.Server.clients;
 
 public class SendData {
@@ -237,12 +239,14 @@ public class SendData {
 
 
     private static final HashMap<Integer, Integer> attackIndicatorCache = new HashMap<>();
+    private static final HashMap<Integer, ActionIndicatorAction> actionIndicatorCache = new HashMap<>();
 
-    public static int getHeroAttackIndicatorTarget(int networkID) {
+
+    public synchronized static int getHeroAttackIndicatorTarget(int networkID) {
         return attackIndicatorCache.getOrDefault(networkID, -1);
     }
 
-    public static void sendHeroAttackIndicator(int target, int networkID) {
+    public synchronized static void sendHeroAttackIndicator(int target, int networkID) {
         if (networkID <0)
         {
             return;
@@ -258,6 +262,33 @@ public class SendData {
         attackIndicatorCache.put(networkID, target);
         clients[networkID].packet.addAction(new AttackIndicatorTargetAction(target));
         clients[networkID].flush();
+    }
+
+    public synchronized static ActionIndicatorAction getHeroActionIndicator(int networkID) {
+        return actionIndicatorCache.get(networkID);
+    }
+
+    public synchronized static void clearIndicatorCaches(int networkID) {
+        attackIndicatorCache.remove(networkID);
+        actionIndicatorCache.remove(networkID);
+    }
+
+    public synchronized static void sendActionIndicator(@Nullable Hero hero, @Nullable ActionIndicator.Action action) {
+        if (hero == null) return;
+        int networkId = hero.networkID;
+        if (networkId < 0) {
+            return;
+        }
+
+        ActionIndicatorAction newAction = new ActionIndicatorAction(action, hero);
+
+        ActionIndicatorAction cached = actionIndicatorCache.get(networkId);
+        if (newAction.equals(cached)) {
+            return;
+        }
+
+        actionIndicatorCache.put(networkId, newAction);
+        sendAction(hero, newAction);
     }
 
     //--------------------------- Traps

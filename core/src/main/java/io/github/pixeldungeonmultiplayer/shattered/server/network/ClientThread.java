@@ -2,6 +2,8 @@ package io.github.pixeldungeonmultiplayer.shattered.server.network;
 
 import com.badlogic.gdx.Gdx;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
+import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import io.github.pixeldungeonmultiplayer.shattered.server.utils.Log;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
@@ -227,6 +229,24 @@ public class ClientThread implements Callable<String> {
                                 resObj.getInt("button"),
                                 resObj.optJSONObject("result")
                         );
+                        break;
+                    }
+                    case "action_indicator": {
+                        JSONObject request = data.optJSONObject(token);
+                        ActionIndicator.Action current = clientHero == null ? null : clientHero.actionIndicator.action;
+                        LocalizedString currentName = current == null ? null : current.actionName();
+                        boolean sameName = request != null && (currentName == null
+                                ? request.isNull("displayName")
+                                : request.optJSONObject("displayName") != null
+                                        && request.optJSONObject("displayName").similar(currentName.toJsonObject()));
+                        boolean sameAction = current != null && request != null && sameName
+                                && current.getClass().getName().equals(request.optString("actionId", null));
+                        if (sameAction && clientHero.isReady()) {
+                            current.doAction(clientHero);
+                        } else if (clientHero != null) {
+                            // The click raced with a server-side indicator update. Re-send authoritative state.
+                            clientHero.actionIndicator.refresh();
+                        }
                         break;
                     }
                     case "chat": {
@@ -561,6 +581,7 @@ public class ClientThread implements Callable<String> {
             }
             Server.clients[threadID] = null;
             Server.used[threadID] = false;
+            SendData.clearIndicatorCaches(threadID);
             Server.refreshService();
             readStream = null;
             writeStream = null;
@@ -612,6 +633,8 @@ public class ClientThread implements Callable<String> {
         packet.addAction(new UpdateCounterAction(clientHero.getCounter()));
         packet.addAction(new CellListenerPromptAction(clientHero.cellSelector.getListener()));
         packet.addAction(new AttackIndicatorTargetAction(SendData.getHeroAttackIndicatorTarget(threadID)));
+        ActionIndicatorAction cachedAction = SendData.getHeroActionIndicator(threadID);
+        packet.addAction(cachedAction != null ? cachedAction : new ActionIndicatorAction(clientHero.actionIndicator.action, clientHero));
         packet.addAction(new ResumeButtonVisibleAction(clientHero.lastAction != null));
         packet.addLateLiveStateAction(new SpecialSlotsDefinitionAction(clientHero));
         packet.addLateLiveStateAction(new InventoryRebuildAction(clientHero));

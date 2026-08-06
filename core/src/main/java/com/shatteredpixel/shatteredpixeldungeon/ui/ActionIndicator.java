@@ -24,12 +24,13 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.watabou.noosa.Visual;
+import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
 
 public class ActionIndicator {
 
 	private final Hero owner;
 
-	public Action action;
+	public volatile Action action;
 
 	public ActionIndicator(Hero hero) {
 		this.owner = hero;
@@ -54,11 +55,12 @@ public class ActionIndicator {
 	public void clearAction(Action action) {
 		if (action == null || this.action == action) {
 			this.action = null;
+			refresh();
 		}
 	}
 
 	public void refresh(){
-		//todo send this
+		SendData.sendActionIndicator(owner, action);
 	}
 
 	public interface Action {

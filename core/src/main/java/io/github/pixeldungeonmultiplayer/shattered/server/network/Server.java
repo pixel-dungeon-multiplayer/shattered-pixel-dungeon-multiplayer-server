@@ -251,6 +251,7 @@ public class Server extends Thread {
         SERIALIZERS.register(UpdateWindowAction.class, new UpdateWindowActionSerializer());
         SERIALIZERS.register(HideWindowAction.class, new HideWindowActionSerializer());
         SERIALIZERS.register(RedirectServerAction.class, new RedirectServerActionSerializer());
+        SERIALIZERS.register(ActionIndicatorAction.class, new ActionIndicatorActionSerializer());
     }
 
     public static ArrayList<String> textures = new ArrayList<>();

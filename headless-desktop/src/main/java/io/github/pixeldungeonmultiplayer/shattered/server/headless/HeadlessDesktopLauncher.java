@@ -13,6 +13,7 @@ import com.watabou.noosa.Game;
 import com.watabou.utils.FileUtils;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.Server;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -62,13 +63,18 @@ public final class HeadlessDesktopLauncher {
 			System.out.println("Headless virtual resolution: " + Game.width + "x" + Game.height);
 			String dataDirectory = System.getProperty("spd.dataDir", "headless-data/");
 			String configFileName = System.getProperty("spd.configFile",
-					new FileHandle(dataDirectory).child("config.json").path());
-			FileHandle configFile = Gdx.files.local(configFileName);
+					new File(dataDirectory, "config.json").getPath());
+			FileHandle configFile = fileHandle(configFileName);
 			Preferences preferences = new JsonPreferences(configFile);
             SPDSettings.set(preferences);
 			System.out.println("Headless server configuration: " + configFile.file().getAbsolutePath());
             applySystemProperties();
-            FileUtils.setDefaultFileProperties(Files.FileType.Local, dataDirectory);
+			File dataDirectoryFile = new File(dataDirectory);
+			String dataPath = dataDirectoryFile.getPath();
+			if (!dataPath.endsWith(File.separator)) dataPath += File.separator;
+			FileUtils.setDefaultFileProperties(
+					dataDirectoryFile.isAbsolute() ? Files.FileType.Absolute : Files.FileType.Local,
+					dataPath);
             System.out.println("Starting headless SPDMP server on port " + SPDSettings.serverPort());
             super.create();
 			if (!Server.started) {
@@ -84,6 +90,10 @@ public final class HeadlessDesktopLauncher {
 				throw new IllegalArgumentException(name + " must be greater than zero, got " + value);
 			}
 			return value;
+		}
+
+		private static FileHandle fileHandle(String path) {
+			return new File(path).isAbsolute() ? Gdx.files.absolute(path) : Gdx.files.local(path);
 		}
 
         @Override

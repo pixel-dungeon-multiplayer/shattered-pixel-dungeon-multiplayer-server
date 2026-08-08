@@ -1168,7 +1168,7 @@ public class Dungeon {
             }
         }
 	}
-	public static Hero loadHero(String uuid) {
+	public static @Nullable Hero loadHero(String uuid) {
         try {
             Bundle bundle = FileUtils.bundleFromFile("save/heroes/"+ uuid);
 			Hero hero = new Hero();
@@ -1181,7 +1181,7 @@ public class Dungeon {
         }
     }
 	//Only reads data and returns it
-	public static Hero readHero(String uuid){
+	public static @Nullable Hero readHero(String uuid){
 		try {
 			Bundle bundle = FileUtils.bundleFromFile("save/heroes/"+ uuid);
 			Hero hero = new Hero();
@@ -1193,7 +1193,7 @@ public class Dungeon {
 			return null;
 		}
 	}
-	public static Hero getHeroByUUID(String uuid) {
+	public static @Nullable Hero getHeroByUUID(String uuid) {
 		for (Hero hero : heroes) {
 			if (hero != null && hero.uuid.equals(uuid)) {
 				return hero;

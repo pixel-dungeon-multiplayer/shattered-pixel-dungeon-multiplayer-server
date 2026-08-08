@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.texturepack.TexturePackManager;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Game;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -411,13 +412,15 @@ public class Server extends Thread {
         }
     }
 
-    private static boolean isCompatibleJoin(JSONObject joinPacket, int protocolVersion) {
+    @Contract(pure = true)
+    private static boolean isCompatibleJoin(@NotNull JSONObject joinPacket, int protocolVersion) {
         return Protocol.NAME.equals(joinPacket.optString(Protocol.FIELD_PROTOCOL, ""))
                 && protocolVersion >= Protocol.MIN_VERSION
                 && protocolVersion <= Protocol.VERSION;
     }
 
-    private static int joinProtocolVersion(JSONObject joinPacket) {
+    @Contract(pure = true)
+    private static int joinProtocolVersion(@NotNull JSONObject joinPacket) {
         return joinPacket.optInt(Protocol.FIELD_VERSION, -1);
     }
 
@@ -511,6 +514,7 @@ public class Server extends Thread {
         localPort = serverSocket.getLocalPort();
         return true;
     }
+    @Contract(pure = true)
     public static int onlinePlayers(){
         int onlineCount = 0;
         for (int i = 0; i < clients.length; i++) {
@@ -520,6 +524,8 @@ public class Server extends Thread {
         }
         return onlineCount;
     }
+
+    @Contract(pure = true)
     public static @Nullable Hero findHeroByUUID(String uuid){
         for (Hero hero: Dungeon.heroes) {
             if (hero != null && hero.uuid.equals(uuid)) {
@@ -528,7 +534,8 @@ public class Server extends Thread {
         }
         return null;
     }
-    public static Hero findAndLoadHeroByUUID(String  uuid){
+
+    public static @Nullable Hero findAndLoadHeroByUUID(String  uuid){
         for (Hero hero: Dungeon.heroes) {
             if (hero != null && hero.uuid.equals(uuid)) {
                 return hero;
@@ -536,7 +543,9 @@ public class Server extends Thread {
         }
         return Dungeon.readHero(uuid);
     }
-    public static JSONObject serverInfo(){
+
+    @Contract(pure = true)
+    public static @NotNull JSONObject serverInfo(){
             JSONObject serverInfo = new JSONObject();
             serverInfo.put("name", SPDSettings.serverName());
             serverInfo.put("server_id", SPDSettings.serverUUID());
@@ -550,7 +559,9 @@ public class Server extends Thread {
             serverInfo.put("server_protocol_version", 2);
             return serverInfo;
     }
-    private static Map<String, String> serverInfoProperties() {
+
+    @Contract(pure = true)
+    private static @NotNull Map<String, String> serverInfoProperties() {
         JSONObject info = serverInfo();
         Map<String, String> properties = new HashMap<>();
         Iterator<String> keys = info.keys();
@@ -563,7 +574,9 @@ public class Server extends Thread {
         }
         return properties;
     }
-    private static String dnsPropertyValue(String value) {
+
+    @Contract(pure = true)
+    private static @NotNull String dnsPropertyValue(@NotNull String value) {
         if (value.length() <= 200) {
             return value;
         }

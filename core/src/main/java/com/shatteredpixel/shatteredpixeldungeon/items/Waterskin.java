@@ -34,6 +34,8 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.GameMath;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -60,13 +62,13 @@ public class Waterskin extends Item {
 	private static final String VOLUME	= "volume";
 
 	@Override
-	public void storeInBundle( Bundle bundle ) {
+	public void storeInBundle(@NotNull Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( VOLUME, volume );
 	}
 
 	@Override
-	public void restoreFromBundle( Bundle bundle ) {
+	public void restoreFromBundle(@NotNull Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		volume	= bundle.getInt( VOLUME );
 	}
@@ -190,7 +192,7 @@ public class Waterskin extends Item {
 	}
 
 	@Override
-	public LocalizedString status() {
+	public @Nullable LocalizedString status() {
 		return Messages.format( TXT_STATUS, volume, MAX_VOLUME );
 	}
 

@@ -40,6 +40,7 @@ import com.watabou.noosa.Image;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -145,7 +146,7 @@ public class AlchemistsToolkit extends Artifact {
 	}
 
 	@Override
-	public LocalizedString status(Hero hero) {
+	public @Nullable LocalizedString status(Hero hero) {
 		if (isEquipped(hero) && warmUpDelay > 0 && !cursed){
 			return Messages.format( "%d%%", Math.max(0, 100 - (int)warmUpDelay) );
 		} else {
@@ -206,13 +207,13 @@ public class AlchemistsToolkit extends Artifact {
 	private static final String WARM_UP = "warm_up";
 	
 	@Override
-	public void storeInBundle(Bundle bundle) {
+	public void storeInBundle(@NotNull Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(WARM_UP, warmUpDelay);
 	}
 	
 	@Override
-	public void restoreFromBundle(Bundle bundle) {
+	public void restoreFromBundle(@NotNull Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		warmUpDelay = bundle.getFloat(WARM_UP);
 	}

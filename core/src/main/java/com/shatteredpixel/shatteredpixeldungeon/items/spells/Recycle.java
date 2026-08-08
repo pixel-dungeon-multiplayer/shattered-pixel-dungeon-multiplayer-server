@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Reflection;
+import org.jetbrains.annotations.Contract;
 
 public class Recycle extends InventorySpell {
 	
@@ -93,12 +94,14 @@ public class Recycle extends InventorySpell {
 		curUser.getSprite().emitter().start(Speck.factory(Speck.CHANGE), 0.2f, 10);
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return (int)(60 * (quantity() /(float)Recipe.OUT_QUANTITY));
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return (int)(12 * (quantity() /(float)Recipe.OUT_QUANTITY));
 	}

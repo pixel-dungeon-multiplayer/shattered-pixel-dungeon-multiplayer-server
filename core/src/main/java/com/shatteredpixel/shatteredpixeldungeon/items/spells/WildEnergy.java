@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Callback;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 
@@ -71,12 +72,14 @@ public class WildEnergy extends TargetedSpell {
 		onSpellused();
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return (int)(60 * (quantity() /(float)Recipe.OUT_QUANTITY));
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return (int)(12 * (quantity() /(float)Recipe.OUT_QUANTITY));
 	}

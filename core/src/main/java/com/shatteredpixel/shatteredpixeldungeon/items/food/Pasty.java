@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TargetHealthIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.Holiday;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
+import org.jetbrains.annotations.Contract;
 
 public class Pasty extends Food {
 
@@ -224,7 +225,8 @@ public class Pasty extends Food {
 		}
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 20 * quantity();
 	}
@@ -236,7 +238,8 @@ public class Pasty extends Food {
 			energy = Hunger.HUNGRY/2;
 		}
 
-		@Override
+		@Contract(pure = true)
+        @Override
 		public int value() {
 			return 10 * quantity();
 		}

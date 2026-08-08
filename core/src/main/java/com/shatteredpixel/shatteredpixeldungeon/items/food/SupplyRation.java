@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import org.jetbrains.annotations.Contract;
 
 public class SupplyRation extends Food {
 
@@ -67,7 +68,8 @@ public class SupplyRation extends Food {
 		}
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 10 * quantity();
 	}

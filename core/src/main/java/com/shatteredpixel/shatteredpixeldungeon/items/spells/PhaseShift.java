@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import org.jetbrains.annotations.Contract;
 
 public class PhaseShift extends TargetedSpell {
 	
@@ -66,12 +67,14 @@ public class PhaseShift extends TargetedSpell {
 		onSpellused();
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return (int)(60 * (quantity() /(float)Recipe.OUT_QUANTITY));
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return (int)(12 * (quantity() /(float)Recipe.OUT_QUANTITY));
 	}

@@ -42,6 +42,8 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -150,12 +152,14 @@ public class ReclaimTrap extends TargetedSpell {
 		return null;
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return (int)(60 * (quantity() /(float)Recipe.OUT_QUANTITY));
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return (int)(12 * (quantity() /(float)Recipe.OUT_QUANTITY));
 	}
@@ -163,13 +167,13 @@ public class ReclaimTrap extends TargetedSpell {
 	private static final String STORED_TRAP = "stored_trap";
 	
 	@Override
-	public void storeInBundle(Bundle bundle) {
+	public void storeInBundle(@NotNull Bundle bundle) {
 		super.storeInBundle(bundle);
 		if (storedTrap != null) bundle.put(STORED_TRAP, storedTrap);
 	}
 	
 	@Override
-	public void restoreFromBundle(Bundle bundle) {
+	public void restoreFromBundle(@NotNull Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		if (bundle.contains(STORED_TRAP)) storedTrap = bundle.getClass(STORED_TRAP);
 	}

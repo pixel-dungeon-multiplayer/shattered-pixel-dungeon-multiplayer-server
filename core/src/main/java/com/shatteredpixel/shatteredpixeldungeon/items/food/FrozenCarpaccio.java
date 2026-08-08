@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.Contract;
 
 public class FrozenCarpaccio extends Food {
 
@@ -47,7 +48,8 @@ public class FrozenCarpaccio extends Food {
 		effect(hero);
 	}
 	
-	public int value() {
+	@Contract(pure = true)
+    public int value() {
 		return 10 * quantity();
 	}
 

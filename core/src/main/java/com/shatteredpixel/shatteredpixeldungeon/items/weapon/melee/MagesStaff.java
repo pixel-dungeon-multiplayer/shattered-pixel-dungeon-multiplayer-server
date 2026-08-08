@@ -57,6 +57,9 @@ import com.shatteredpixel.shatteredpixeldungeon.particles.Emitter;
 import com.watabou.noosa.particles.PixelParticle;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -129,7 +132,7 @@ public class MagesStaff extends MeleeWeapon {
 	}
 
 	@Override
-	public int targetingPos(Hero user, int dst) {
+	public int targetingPos(@NotNull Hero user, int dst) {
 		if (wand != null) {
 			return wand.targetingPos(user, dst);
 		} else {
@@ -373,7 +376,7 @@ public class MagesStaff extends MeleeWeapon {
 	}
 
 	@Override
-	public LocalizedString status() {
+	public @Nullable LocalizedString status() {
 		if (wand == null) return super.status();
 		else return wand.status();
 	}
@@ -418,13 +421,13 @@ public class MagesStaff extends MeleeWeapon {
 	private static final String WAND = "wand";
 
 	@Override
-	public void storeInBundle(Bundle bundle) {
+	public void storeInBundle(@NotNull Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(WAND, wand);
 	}
 
 	@Override
-	public void restoreFromBundle(Bundle bundle) {
+	public void restoreFromBundle(@NotNull Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		wand = (Wand) bundle.get(WAND);
 		if (wand != null) {
@@ -432,7 +435,8 @@ public class MagesStaff extends MeleeWeapon {
 		}
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 0;
 	}

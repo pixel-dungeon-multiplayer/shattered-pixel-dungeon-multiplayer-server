@@ -54,6 +54,7 @@ import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -219,7 +220,7 @@ public class SpiritBow extends Weapon {
 	}
 
 	@Override
-	public int targetingPos(Hero user, int dst) {
+	public int targetingPos(@NotNull Hero user, int dst) {
 		return knockArrow().targetingPos(user, dst);
 	}
 	
@@ -408,7 +409,7 @@ public class SpiritBow extends Weapon {
 		Actor flurryActor = null;
 
 		@Override
-		public void cast(final Hero user, final int dst) {
+		public void cast(final @NotNull Hero user, final int dst) {
 			final int cell = throwPos( user, dst );
 			SpiritBow.this.targetPos = cell;
 			if (sniperSpecial && SpiritBow.this.augment == Augment.SPEED){

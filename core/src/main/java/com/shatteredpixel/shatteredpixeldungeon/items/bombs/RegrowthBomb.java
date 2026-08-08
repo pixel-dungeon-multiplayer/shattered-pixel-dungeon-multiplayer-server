@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.BArray;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 
@@ -128,7 +129,8 @@ public class RegrowthBomb extends Bomb {
 		}
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		//prices of ingredients
 		return quantity() * (20 + 30);

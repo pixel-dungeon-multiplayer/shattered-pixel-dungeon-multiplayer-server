@@ -55,6 +55,9 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.Visual;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -157,7 +160,7 @@ public class MeleeWeapon extends Weapon {
     }
 
     @Override
-    public int targetingPos(Hero user, int dst) {
+    public int targetingPos(@NotNull Hero user, int dst) {
         return dst; //weapon abilities do not use projectile logic, no autoaim
     }
 
@@ -386,7 +389,7 @@ public class MeleeWeapon extends Weapon {
     }
 
     @Override
-    public LocalizedString status(Hero hero) {
+    public @Nullable LocalizedString status(Hero hero) {
         if (isEquipped(hero)
                 && hero.buff(Charger.class) != null) {
             Charger buff = hero.buff(Charger.class);
@@ -396,6 +399,7 @@ public class MeleeWeapon extends Weapon {
         }
     }
 
+    @Contract(pure = true)
     @Override
     public int value() {
         int price = 20 * tier;

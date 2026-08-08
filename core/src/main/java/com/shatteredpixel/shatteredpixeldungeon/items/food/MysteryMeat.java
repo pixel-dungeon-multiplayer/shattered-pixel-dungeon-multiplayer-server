@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.Contract;
 
 public class MysteryMeat extends Food {
 
@@ -48,7 +49,8 @@ public class MysteryMeat extends Food {
 		effect(hero);
 	}
 
-	public int value() {
+	@Contract(pure = true)
+    public int value() {
 		return 5 * quantity();
 	}
 

@@ -40,6 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
+import org.jetbrains.annotations.Contract;
 
 public class ScrollOfRemoveCurse extends InventoryScroll {
 
@@ -158,7 +159,8 @@ public class ScrollOfRemoveCurse extends InventoryScroll {
 		return procced;
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return isKnown() ? 30 * quantity() : super.value();
 	}

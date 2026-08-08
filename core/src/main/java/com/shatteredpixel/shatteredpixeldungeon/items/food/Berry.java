@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import org.jetbrains.annotations.Contract;
 
 public class Berry extends Food {
 
@@ -63,7 +64,8 @@ public class Berry extends Food {
 		}
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 5 * quantity();
 	}

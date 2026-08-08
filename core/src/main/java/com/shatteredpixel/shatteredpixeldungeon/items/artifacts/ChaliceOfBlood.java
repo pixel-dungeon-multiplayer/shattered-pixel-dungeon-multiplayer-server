@@ -47,6 +47,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -177,7 +178,7 @@ public class ChaliceOfBlood extends Artifact {
 	}
 
 	@Override
-	public void restoreFromBundle(Bundle bundle) {
+	public void restoreFromBundle(@NotNull Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		if (level() >= 7) image = ItemSpriteSheet.ARTIFACT_CHALICE3;
 		else if (level() >= 3) image = ItemSpriteSheet.ARTIFACT_CHALICE2;

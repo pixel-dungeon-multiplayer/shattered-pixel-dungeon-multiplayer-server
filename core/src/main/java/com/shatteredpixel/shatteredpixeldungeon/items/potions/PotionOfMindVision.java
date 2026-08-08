@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import org.jetbrains.annotations.Contract;
 
 public class PotionOfMindVision extends Potion {
 
@@ -50,7 +51,8 @@ public class PotionOfMindVision extends Potion {
 		}
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return isKnown() ? 30 * quantity() : super.value();
 	}

@@ -54,7 +54,10 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.Random;import org.jetbrains.annotations.Nullable;
+import com.watabou.utils.Random;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -187,7 +190,7 @@ abstract public class MissileWeapon extends Weapon {
 	}
 	
 	@Override
-	public int throwPos(Hero user, int dst) {
+	public int throwPos(@NotNull Hero user, int dst) {
 
 		int projecting = 0;
 		if (hasEnchant(Projecting.class, user)){
@@ -341,7 +344,7 @@ abstract public class MissileWeapon extends Weapon {
 	}
 
 	@Override
-	public Item virtual() {
+	public @Nullable Item virtual() {
 		Item item = super.virtual();
 
 		((MissileWeapon)item).setID = setID;
@@ -389,7 +392,7 @@ abstract public class MissileWeapon extends Weapon {
 		return this;
 	}
 
-	public LocalizedString status() {
+	public @Nullable LocalizedString status() {
 		//show quantity even when it is 1
 		return LocalizedString.raw(Integer.toString(quantity()));
 	}
@@ -697,7 +700,8 @@ abstract public class MissileWeapon extends Weapon {
 		return Messages.get(this, "stats_desc");
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		int price = 5 * tier * quantity;
 		if (hasGoodEnchant()) {
@@ -722,7 +726,7 @@ abstract public class MissileWeapon extends Weapon {
 	private static final String EXTRA_LEFT = "extra_left";
 
 	@Override
-	public void storeInBundle(Bundle bundle) {
+	public void storeInBundle(@NotNull Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(SET_ID, setID);
 		bundle.put(SPAWNED, spawnedForEffect);
@@ -733,7 +737,7 @@ abstract public class MissileWeapon extends Weapon {
 	private static boolean bundleRestoring = false;
 	
 	@Override
-	public void restoreFromBundle(Bundle bundle) {
+	public void restoreFromBundle(@NotNull Bundle bundle) {
 		bundleRestoring = true;
 		super.restoreFromBundle(bundle);
 		bundleRestoring = false;
@@ -774,7 +778,7 @@ abstract public class MissileWeapon extends Weapon {
 		}
 
 		@Override
-		public LocalizedString status() {
+		public @Nullable LocalizedString status() {
 			return null;
 		}
 

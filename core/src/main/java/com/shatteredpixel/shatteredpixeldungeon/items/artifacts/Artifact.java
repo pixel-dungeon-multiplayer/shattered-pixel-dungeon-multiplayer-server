@@ -38,6 +38,9 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -189,7 +192,7 @@ public class Artifact extends KindofMisc {
 	}
 
 	@Override
-	public LocalizedString status() {
+	public @Nullable LocalizedString status() {
 		
 		//if the artifact isn't IDed, or is cursed, don't display anything
 		if (!isIdentified() || cursed){
@@ -228,7 +231,8 @@ public class Artifact extends KindofMisc {
 		return this;
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		int price = 100;
 		if (level() > 0)
@@ -299,7 +303,7 @@ public class Artifact extends KindofMisc {
 	private static final String PARTIALCHARGE = "partialcharge";
 
 	@Override
-	public void storeInBundle( Bundle bundle ) {
+	public void storeInBundle(@NotNull Bundle bundle ) {
 		super.storeInBundle(bundle);
 		bundle.put( EXP , exp );
 		bundle.put( CHARGE , getCharge());
@@ -307,7 +311,7 @@ public class Artifact extends KindofMisc {
 	}
 
 	@Override
-	public void restoreFromBundle( Bundle bundle ) {
+	public void restoreFromBundle(@NotNull Bundle bundle ) {
 		super.restoreFromBundle(bundle);
 		exp = bundle.getInt( EXP );
 		if (chargeCap > 0)  setCharge(Math.min( chargeCap, bundle.getInt( CHARGE )));

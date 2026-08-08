@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.potions.brews;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 
@@ -54,12 +55,14 @@ public abstract class Brew extends Potion {
 		return true;
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return quantity() * 60;
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return quantity() * 12;
 	}

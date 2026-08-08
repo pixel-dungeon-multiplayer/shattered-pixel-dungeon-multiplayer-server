@@ -327,14 +327,14 @@ public class WandOfRegrowth extends Wand {
 	private static final String OVER = "chargesOverLimit";
 	
 	@Override
-	public void storeInBundle(Bundle bundle) {
+	public void storeInBundle(@NotNull Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put( TOTAL, totChrgUsed );
 		bundle.put( OVER, chargesOverLimit);
 	}
 	
 	@Override
-	public void restoreFromBundle(Bundle bundle) {
+	public void restoreFromBundle(@NotNull Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		totChrgUsed = bundle.getInt(TOTAL);
 		chargesOverLimit = bundle.getInt(OVER);

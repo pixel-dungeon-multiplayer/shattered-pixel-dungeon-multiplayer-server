@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import org.jetbrains.annotations.Contract;
 
 public class Starflower extends Plant {
 
@@ -63,12 +64,14 @@ public class Starflower extends Plant {
 			plantClass = Starflower.class;
 		}
 		
-		@Override
+		@Contract(pure = true)
+        @Override
 		public int value() {
 			return 30 * quantity();
 		}
 
-		@Override
+		@Contract(pure = true)
+        @Override
 		public int energyVal() {
 			return 3 * quantity();
 		}

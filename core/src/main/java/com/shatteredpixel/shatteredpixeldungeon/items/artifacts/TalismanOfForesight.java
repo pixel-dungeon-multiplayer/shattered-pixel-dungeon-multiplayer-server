@@ -50,6 +50,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -257,13 +258,13 @@ public class TalismanOfForesight extends Artifact {
 	private static final String WARN = "warn";
 	
 	@Override
-	public void storeInBundle(Bundle bundle) {
+	public void storeInBundle(@NotNull Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(WARN, warn);
 	}
 	
 	@Override
-	public void restoreFromBundle(Bundle bundle) {
+	public void restoreFromBundle(@NotNull Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		warn = bundle.getBoolean(WARN);
 	}

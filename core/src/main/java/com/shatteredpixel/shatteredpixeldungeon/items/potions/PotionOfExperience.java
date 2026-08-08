@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import org.jetbrains.annotations.Contract;
 
 public class PotionOfExperience extends Potion {
 
@@ -45,12 +46,14 @@ public class PotionOfExperience extends Potion {
 		new Flare( 6, 32 ).color(0xFFFF00, true).show(curUser.getSprite(), 2f );
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return isKnown() ? 50 * quantity() : super.value();
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return isKnown() ? 10 * quantity() : super.energyVal();
 	}

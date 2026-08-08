@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndUpgrade;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.Contract;
 
 public class MagicalInfusion extends InventorySpell {
 	
@@ -116,12 +117,14 @@ public class MagicalInfusion extends InventorySpell {
 		return item;
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 60 * quantity();
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return 12 * quantity();
 	}

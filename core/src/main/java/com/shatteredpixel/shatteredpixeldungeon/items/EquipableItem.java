@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -101,7 +102,7 @@ public abstract class EquipableItem extends Item {
 	}
 
 	@Override
-	public void cast( final Hero user, int dst ) {
+	public void cast(final @NotNull Hero user, int dst ) {
 
 		if (isEquipped( user )) {
 			if (quantity() == 1 && !this.doUnequip( user, false, false )) {

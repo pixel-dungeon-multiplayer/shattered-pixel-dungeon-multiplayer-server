@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import org.jetbrains.annotations.Contract;
 
 public class PotionOfHealing extends Potion {
 
@@ -87,7 +88,8 @@ public class PotionOfHealing extends Potion {
 		Buff.detach( ch, Vertigo.class);
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return isKnown() ? 30 * quantity() : super.value();
 	}

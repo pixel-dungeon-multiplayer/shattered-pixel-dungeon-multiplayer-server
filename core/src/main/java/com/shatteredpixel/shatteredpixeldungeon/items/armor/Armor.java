@@ -83,6 +83,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -142,7 +143,7 @@ public class Armor extends EquipableItem {
 	private static final String AUGMENT			= "augment";
 
 	@Override
-	public void storeInBundle( Bundle bundle ) {
+	public void storeInBundle(@NotNull Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( USES_LEFT_TO_ID, usesLeftToID );
 		bundle.put( AVAILABLE_USES, availableUsesToID );
@@ -155,7 +156,7 @@ public class Armor extends EquipableItem {
 	}
 
 	@Override
-	public void restoreFromBundle( Bundle bundle ) {
+	public void restoreFromBundle(@NotNull Bundle bundle ) {
 		super.restoreFromBundle(bundle);
 		usesLeftToID = bundle.getInt( USES_LEFT_TO_ID );
 		availableUsesToID = bundle.getInt( AVAILABLE_USES );
@@ -715,7 +716,8 @@ public class Armor extends EquipableItem {
 		return (8 + Math.round(tier * 2)) - (int)(Math.sqrt(8 * lvl + 1) - 1)/2;
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		if (seal != null) return 0;
 

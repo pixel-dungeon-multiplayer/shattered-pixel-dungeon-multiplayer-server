@@ -47,6 +47,7 @@ import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -78,7 +79,7 @@ public class LloydsBeacon extends Artifact {
 	private static final String POS		= "pos";
 	
 	@Override
-	public void storeInBundle( Bundle bundle ) {
+	public void storeInBundle(@NotNull Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( DEPTH, returnDepth );
 		if (returnDepth != -1) {
@@ -87,7 +88,7 @@ public class LloydsBeacon extends Artifact {
 	}
 	
 	@Override
-	public void restoreFromBundle( Bundle bundle ) {
+	public void restoreFromBundle(@NotNull Bundle bundle ) {
 		super.restoreFromBundle(bundle);
 		returnDepth	= bundle.getInt( DEPTH );
 		returnPos	= bundle.getInt( POS );

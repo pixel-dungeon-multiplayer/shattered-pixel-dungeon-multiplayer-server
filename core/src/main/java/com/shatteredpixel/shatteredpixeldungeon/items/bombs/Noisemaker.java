@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
+import org.jetbrains.annotations.Contract;
 
 public class Noisemaker extends Bomb {
 	
@@ -156,7 +157,8 @@ public class Noisemaker extends Bomb {
 		}
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		//prices of ingredients
 		return quantity() * (20 + 40);

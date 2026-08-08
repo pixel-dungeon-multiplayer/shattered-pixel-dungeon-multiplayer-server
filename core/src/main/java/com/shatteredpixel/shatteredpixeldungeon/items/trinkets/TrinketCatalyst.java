@@ -93,7 +93,7 @@ public class TrinketCatalyst extends Item {
 	private static final String ROLLED_TRINKETS = "rolled_trinkets";
 
 	@Override
-	public void storeInBundle(Bundle bundle) {
+	public void storeInBundle(@NotNull Bundle bundle) {
 		super.storeInBundle(bundle);
 		if (!rolledTrinkets.isEmpty()){
 			bundle.put(ROLLED_TRINKETS, rolledTrinkets);
@@ -101,7 +101,7 @@ public class TrinketCatalyst extends Item {
 	}
 
 	@Override
-	public void restoreFromBundle(Bundle bundle) {
+	public void restoreFromBundle(@NotNull Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		rolledTrinkets.clear();
 		if (bundle.contains(ROLLED_TRINKETS)){

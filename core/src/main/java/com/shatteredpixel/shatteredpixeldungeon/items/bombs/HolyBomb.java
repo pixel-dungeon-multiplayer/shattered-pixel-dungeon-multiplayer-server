@@ -34,6 +34,7 @@ import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.BArray;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 
@@ -90,7 +91,8 @@ public class HolyBomb extends Bomb {
 
 	public static class HolyDamage{}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		//prices of ingredients
 		return quantity() * (20 + 30);

@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.shatteredpixel.shatteredpixeldungeon.particles.Emitter;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 
@@ -88,7 +89,8 @@ public class Torch extends Item {
 		return true;
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 8 * quantity();
 	}

@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.watabou.noosa.Game;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -159,13 +160,13 @@ public class EscapeCrystal extends Item {
 	public static String STORED_ITEMS = "stored_items";
 
 	@Override
-	public void storeInBundle(Bundle bundle) {
+	public void storeInBundle(@NotNull Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(STORED_ITEMS, storedItems);
 	}
 
 	@Override
-	public void restoreFromBundle(Bundle bundle) {
+	public void restoreFromBundle(@NotNull Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		storedItems = bundle.getBundle(STORED_ITEMS);
 	}

@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
+import org.jetbrains.annotations.Contract;
 
 public class ScrollOfLullaby extends Scroll {
 
@@ -61,7 +62,8 @@ public class ScrollOfLullaby extends Scroll {
 		readAnimation();
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return isKnown() ? 40 * quantity() : super.value();
 	}

@@ -677,16 +677,18 @@ public class Item implements Bundlable {
 	}
 
 	//item's value in gold coins
+	@Contract(pure = true)
 	public int value() {
 		return 0;
 	}
 
 	//item's value in energy crystals
+	@Contract(pure = true)
 	public int energyVal() {
 		return 0;
 	}
 	
-	public Item virtual(){
+	public @Nullable Item virtual(){
 		Item item = Reflection.newInstance(getClass());
 		if (item == null) return null;
 		
@@ -699,10 +701,10 @@ public class Item implements Bundlable {
 		return this;
 	}
 	
-	public LocalizedString status() {
+	public @Nullable LocalizedString status() {
 		return quantity() != 1 ? LocalizedString.raw(Integer.toString(quantity())) : null;
 	}
-	public LocalizedString status(Hero hero){
+	public @Nullable LocalizedString status(Hero hero){
 		return status();
 	};
 
@@ -714,7 +716,7 @@ public class Item implements Bundlable {
 		Item.updateQuickslot(hero, this);
 	}
 
-	public static final void updateQuickslot(Char hero, Item item) {
+	public static final void updateQuickslot(@Nullable Char hero, @Nullable Item item) {
 		if (hero != null) {
 			if (! (hero instanceof  Hero)) {
 				return;
@@ -745,7 +747,7 @@ public class Item implements Bundlable {
 		}
 	}
 
-	public static final void updateQuickslotForAllItems(Hero hero) {
+	public static final void updateQuickslotForAllItems(@NotNull Hero hero) {
 		for (Item item: hero.belongings) {
 			item.sendSelfUpdate(hero);
 		}
@@ -763,7 +765,7 @@ public class Item implements Bundlable {
 	private static final String BOUND_UUID = "bound_uuid";
 
 	@Override
-	public void storeInBundle( Bundle bundle ) {
+	public void storeInBundle( @NotNull Bundle bundle ) {
 		bundle.put( QUANTITY, quantity());
 		bundle.put( LEVEL, level );
 		bundle.put( LEVEL_KNOWN, levelKnown );
@@ -781,7 +783,7 @@ public class Item implements Bundlable {
 	}
 	
 	@Override
-	public void restoreFromBundle( Bundle bundle ) {
+	public void restoreFromBundle(@NotNull Bundle bundle ) {
 		quantity(bundle.getInt( QUANTITY ), false);
 		levelKnown	= bundle.getBoolean( LEVEL_KNOWN );
 		cursedKnown	= bundle.getBoolean( CURSED_KNOWN );
@@ -814,11 +816,11 @@ public class Item implements Bundlable {
 		}
 	}
 
-	public int targetingPos( Hero user, int dst ){
+	public int targetingPos( @NotNull Hero user, int dst ){
 		return throwPos( user, dst );
 	}
 
-	public int throwPos( Hero user, int dst){
+	public int throwPos(@NotNull Hero user, int dst){
 		return new Ballistica( user.pos, dst, Ballistica.PROJECTILE ).collisionPos;
 	}
 
@@ -829,7 +831,7 @@ public class Item implements Bundlable {
 		Sample.INSTANCE.play(Assets.Sounds.MISS, 0.6f, 0.6f, 1.5f);
 	}
 
-	public void cast( final Hero user, final int dst ) {
+	public void cast( final @NotNull Hero user, final int dst ) {
 		
 		final int cell = throwPos( user, dst );
 		user.getSprite().zap( cell );
@@ -919,6 +921,7 @@ public class Item implements Bundlable {
 		return owner.belongings.pathOfItem(this);
 	}	
 
+	@Contract("null->null")
 	private JSONObject lstrToJson(LocalizedString localizedString) {return localizedString == null? null:localizedString.toJsonObject();}
 	@NotNull
     public JSONObject itemUI(@NotNull Hero owner) throws JSONException {

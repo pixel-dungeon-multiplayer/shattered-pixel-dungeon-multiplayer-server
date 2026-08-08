@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import org.jetbrains.annotations.Contract;
 
 public class ThrowingStone extends MissileWeapon {
 	
@@ -38,7 +39,8 @@ public class ThrowingStone extends MissileWeapon {
 		sticky = false;
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return Math.round(super.value()/2f); //half normal value
 	}

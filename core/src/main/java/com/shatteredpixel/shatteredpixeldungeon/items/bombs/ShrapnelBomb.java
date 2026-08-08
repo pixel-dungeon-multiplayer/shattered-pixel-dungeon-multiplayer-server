@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 
@@ -88,7 +89,8 @@ public class ShrapnelBomb extends Bomb {
 		}
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		//prices of ingredients
 		return quantity() * (20 + 50);

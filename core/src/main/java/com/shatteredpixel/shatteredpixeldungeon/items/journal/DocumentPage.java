@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class DocumentPage extends Item {
 	
@@ -82,13 +83,13 @@ public abstract class DocumentPage extends Item {
 	private static final String PAGE = "page";
 	
 	@Override
-	public void storeInBundle(Bundle bundle) {
+	public void storeInBundle(@NotNull Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put( PAGE, page() );
 	}
 	
 	@Override
-	public void restoreFromBundle(Bundle bundle) {
+	public void restoreFromBundle(@NotNull Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		page = bundle.getString( PAGE );
 	}

@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.shatteredpixel.shatteredpixeldungeon.particles.Emitter;
+import org.jetbrains.annotations.Contract;
 
 public class ScrollOfRecharging extends Scroll {
 
@@ -64,7 +65,8 @@ public class ScrollOfRecharging extends Scroll {
 		}
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return isKnown() ? 30 * quantity() : super.value();
 	}

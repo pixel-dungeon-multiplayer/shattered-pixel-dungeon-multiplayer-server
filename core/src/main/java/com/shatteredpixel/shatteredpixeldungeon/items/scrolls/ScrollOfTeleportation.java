@@ -45,6 +45,7 @@ import io.github.pixeldungeonmultiplayer.shattered.server.noosa.tweeners.AlphaTw
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 
@@ -326,7 +327,8 @@ public class ScrollOfTeleportation extends Scroll {
 		}
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return isKnown() ? 30 * quantity() : super.value();
 	}

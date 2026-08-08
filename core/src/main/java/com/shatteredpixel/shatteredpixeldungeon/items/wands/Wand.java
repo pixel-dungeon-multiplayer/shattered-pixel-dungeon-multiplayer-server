@@ -71,6 +71,9 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,7 +132,7 @@ public abstract class Wand extends Item {
 	}
 
 	@Override
-	public int targetingPos(Hero user, int dst) {
+	public int targetingPos(@NotNull Hero user, int dst) {
 		if (cursed && cursedKnown){
 			return new Ballistica(user.pos, dst, Ballistica.MAGIC_BOLT).collisionPos;
 		} else {
@@ -354,7 +357,7 @@ public abstract class Wand extends Item {
 	}
 	
 	@Override
-	public LocalizedString status() {
+	public @Nullable LocalizedString status() {
 		if (levelKnown) {
 			return LocalizedString.raw((curChargeKnown ? getCurCharges() : "?") + "/" + maxCharges);
 		} else {
@@ -600,7 +603,8 @@ public abstract class Wand extends Item {
 		return new ItemSprite.Glowing(0xFFFFFF, 1f/(float)resinBonus);
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		int price = 75;
 		if (cursed && cursedKnown) {
@@ -628,7 +632,7 @@ public abstract class Wand extends Item {
 	private static final String RESIN_BONUS         = "resin_bonus";
 
 	@Override
-	public void storeInBundle( Bundle bundle ) {
+	public void storeInBundle(@NotNull Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( USES_LEFT_TO_ID, usesLeftToID );
 		bundle.put( AVAILABLE_USES, availableUsesToID );
@@ -640,7 +644,7 @@ public abstract class Wand extends Item {
 	}
 	
 	@Override
-	public void restoreFromBundle( Bundle bundle ) {
+	public void restoreFromBundle(@NotNull Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		usesLeftToID = bundle.getInt( USES_LEFT_TO_ID );
 		availableUsesToID = bundle.getInt( AVAILABLE_USES );

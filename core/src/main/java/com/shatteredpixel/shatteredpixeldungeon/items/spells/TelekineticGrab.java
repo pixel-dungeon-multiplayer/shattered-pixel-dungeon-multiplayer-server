@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Callback;
+import org.jetbrains.annotations.Contract;
 
 public class TelekineticGrab extends TargetedSpell {
 
@@ -137,12 +138,14 @@ public class TelekineticGrab extends TargetedSpell {
 		onSpellused();
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return (int)(50 * (quantity() /(float)Recipe.OUT_QUANTITY));
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return (int)(10 * (quantity() /(float)Recipe.OUT_QUANTITY));
 	}

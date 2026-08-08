@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -121,12 +122,14 @@ public class UnstableBrew extends Brew {
 	}
 
 	//lower values, as it's cheaper to make
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 40 * quantity();
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return 8 * quantity();
 	}

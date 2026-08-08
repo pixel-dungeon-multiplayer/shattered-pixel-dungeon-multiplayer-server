@@ -79,6 +79,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -227,7 +228,7 @@ abstract public class Weapon extends KindOfWeapon {
 	private static final String AUGMENT	        = "augment";
 
 	@Override
-	public void storeInBundle( Bundle bundle ) {
+	public void storeInBundle(@NotNull Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( USES_LEFT_TO_ID, usesLeftToID );
 		bundle.put( AVAILABLE_USES, availableUsesToID );
@@ -239,7 +240,7 @@ abstract public class Weapon extends KindOfWeapon {
 	}
 	
 	@Override
-	public void restoreFromBundle( Bundle bundle ) {
+	public void restoreFromBundle(@NotNull Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		usesLeftToID = bundle.getFloat( USES_LEFT_TO_ID );
 		availableUsesToID = bundle.getFloat( AVAILABLE_USES );

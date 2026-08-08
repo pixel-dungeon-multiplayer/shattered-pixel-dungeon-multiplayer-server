@@ -52,6 +52,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.utils.Reflection;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -215,7 +216,8 @@ public abstract class TippedDart extends Dart {
 		return (MAX_DURABILITY/usages) + 0.001f;
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		//value of regular dart plus half of the seed
 		return Math.round(7.5f * quantity);

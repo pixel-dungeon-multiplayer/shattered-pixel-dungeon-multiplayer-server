@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
+import org.jetbrains.annotations.Contract;
 
 public class PotionOfInvisibility extends Potion {
 
@@ -44,7 +45,8 @@ public class PotionOfInvisibility extends Potion {
 		Sample.INSTANCE.play( Assets.Sounds.MELD );
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return isKnown() ? 40 * quantity() : super.value();
 	}

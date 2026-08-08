@@ -29,6 +29,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.Bundle;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -70,12 +72,13 @@ public abstract class Trinket extends Item {
 
 	public abstract LocalizedString statsDesc();
 
-	public int energyVal() {
+	@Contract(pure = true)
+    public int energyVal() {
 		return 5;
 	}
 
 	@Override
-	public void restoreFromBundle(Bundle bundle) {
+	public void restoreFromBundle(@NotNull Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		levelKnown = cursedKnown = true; //for pre-2.5 saves
 	}

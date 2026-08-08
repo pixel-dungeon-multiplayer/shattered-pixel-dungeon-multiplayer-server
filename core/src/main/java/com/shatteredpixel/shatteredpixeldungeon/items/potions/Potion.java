@@ -75,6 +75,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -351,7 +352,7 @@ public class Potion extends Item {
 	}
 
 	@Override
-	public void cast( final Hero user, int dst ) {
+	public void cast(final @NotNull Hero user, int dst ) {
 			super.cast(user, dst);
 	}
 	
@@ -447,12 +448,14 @@ public class Potion extends Item {
 		}
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 30 * quantity();
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return 6 * quantity();
 	}

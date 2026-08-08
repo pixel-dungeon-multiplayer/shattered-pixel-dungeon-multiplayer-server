@@ -43,6 +43,8 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -295,7 +297,8 @@ public class Ring extends KindofMisc {
 		return handler != null && handler.known().size() == Generator.Category.RING.classes.length;
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		int price = 75;
 		if (cursed && cursedKnown) {
@@ -321,13 +324,13 @@ public class Ring extends KindofMisc {
 	private static final String LEVELS_TO_ID    = "levels_to_ID";
 
 	@Override
-	public void storeInBundle( Bundle bundle ) {
+	public void storeInBundle(@NotNull Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( LEVELS_TO_ID, levelsToID );
 	}
 
 	@Override
-	public void restoreFromBundle( Bundle bundle ) {
+	public void restoreFromBundle(@NotNull Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		levelsToID = bundle.getFloat( LEVELS_TO_ID );
 	}

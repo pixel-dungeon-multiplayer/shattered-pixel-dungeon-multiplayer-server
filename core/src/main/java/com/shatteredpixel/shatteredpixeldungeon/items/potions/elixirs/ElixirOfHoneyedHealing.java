@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Honeypot;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
+import org.jetbrains.annotations.Contract;
 
 public class ElixirOfHoneyedHealing extends Elixir {
 	
@@ -69,12 +70,14 @@ public class ElixirOfHoneyedHealing extends Elixir {
 	}
 
 	//lower values, as it's cheaper to make
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return quantity * 40;
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return 8;
 	}

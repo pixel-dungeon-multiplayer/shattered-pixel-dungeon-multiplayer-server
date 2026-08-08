@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WellFed;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 
@@ -43,7 +44,8 @@ public class MeatPie extends Food {
 		Buff.affect(hero, WellFed.class).reset();
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 40 * quantity();
 	}

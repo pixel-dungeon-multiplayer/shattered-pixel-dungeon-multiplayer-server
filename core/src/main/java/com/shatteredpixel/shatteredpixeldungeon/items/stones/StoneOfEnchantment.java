@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import org.jetbrains.annotations.Contract;
 
 public class StoneOfEnchantment extends InventoryStone {
 	
@@ -80,12 +81,14 @@ public class StoneOfEnchantment extends InventoryStone {
 		
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 30 * quantity();
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return 5 * quantity();
 	}

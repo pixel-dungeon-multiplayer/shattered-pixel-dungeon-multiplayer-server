@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfSto
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GeyserTrap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import org.jetbrains.annotations.Contract;
 
 public class AquaBrew extends Brew {
 
@@ -52,12 +53,14 @@ public class AquaBrew extends Brew {
 		}
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return (int)(60 * (quantity() /(float)Recipe.OUT_QUANTITY));
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return (int)(12 * (quantity() /(float)Recipe.OUT_QUANTITY));
 	}

@@ -35,9 +35,9 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -59,7 +59,7 @@ public class WandOfDisintegration extends DamageWand {
 	}
 	
 	@Override
-	public int targetingPos(Hero user, int dst) {
+	public int targetingPos(@NotNull Hero user, int dst) {
 		if (!cursed || !cursedKnown) {
 			return dst;
 		} else {

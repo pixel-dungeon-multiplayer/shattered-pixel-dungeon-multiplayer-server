@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
+import org.jetbrains.annotations.Contract;
 
 public class PotionOfParalyticGas extends Potion {
 
@@ -50,7 +51,8 @@ public class PotionOfParalyticGas extends Potion {
 		GameScene.add( Blob.seed( cell, 1000, ParalyticGas.class ) );
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return isKnown() ? 40 * quantity() : super.value();
 	}

@@ -51,6 +51,8 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndUseItem;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -155,7 +157,8 @@ public class Blandfruit extends Food {
 		}
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 20 * quantity();
 	}
@@ -219,13 +222,13 @@ public class Blandfruit extends Food {
 	}
 	
 	@Override
-	public void storeInBundle(Bundle bundle){
+	public void storeInBundle(@NotNull Bundle bundle){
 		super.storeInBundle(bundle);
 		bundle.put( POTIONATTRIB , potionAttrib);
 	}
 
 	@Override
-	public void restoreFromBundle(Bundle bundle) {
+	public void restoreFromBundle(@NotNull Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		if (bundle.contains(POTIONATTRIB)) {
 			imbuePotion((Potion) bundle.get(POTIONATTRIB));

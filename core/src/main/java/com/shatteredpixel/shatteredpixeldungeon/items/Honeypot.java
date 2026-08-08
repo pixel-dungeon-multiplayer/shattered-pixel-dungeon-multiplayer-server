@@ -36,6 +36,7 @@ import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.tweeners.AlphaTweener;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 
@@ -145,7 +146,8 @@ public class Honeypot extends Item {
 		return true;
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 30 * quantity();
 	}
@@ -249,7 +251,8 @@ public class Honeypot extends Item {
 			return true;
 		}
 		
-		@Override
+		@Contract(pure = true)
+        @Override
 		public int value() {
 			return 5 * quantity();
 		}

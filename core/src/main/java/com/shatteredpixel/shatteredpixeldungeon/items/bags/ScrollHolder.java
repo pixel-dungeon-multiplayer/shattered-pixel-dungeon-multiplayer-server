@@ -71,7 +71,8 @@ public class ScrollHolder extends Bag {
 		}
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 40;
 	}

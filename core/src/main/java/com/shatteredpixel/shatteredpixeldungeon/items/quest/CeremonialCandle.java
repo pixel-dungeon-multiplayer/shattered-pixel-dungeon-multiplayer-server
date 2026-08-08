@@ -41,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.particles.Emitter;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -97,13 +98,13 @@ public class CeremonialCandle extends Item {
 	public static String AFLAME = "aflame";
 
 	@Override
-	public void storeInBundle(Bundle bundle) {
+	public void storeInBundle(@NotNull Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(AFLAME, aflame);
 	}
 
 	@Override
-	public void restoreFromBundle(Bundle bundle) {
+	public void restoreFromBundle(@NotNull Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		aflame = bundle.getBoolean(AFLAME);
 	}

@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import org.jetbrains.annotations.Contract;
 
 public class PhantomMeat extends Food {
 
@@ -44,7 +45,8 @@ public class PhantomMeat extends Food {
 		effect(hero);
 	}
 
-	public int value() {
+	@Contract(pure = true)
+    public int value() {
 		return 30 * quantity();
 	}
 

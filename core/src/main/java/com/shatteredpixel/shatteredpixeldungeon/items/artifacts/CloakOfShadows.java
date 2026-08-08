@@ -44,6 +44,8 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Image;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -208,13 +210,13 @@ public class CloakOfShadows extends Artifact {
 	private static final String BUFF = "buff";
 
 	@Override
-	public void storeInBundle( Bundle bundle ) {
+	public void storeInBundle(@NotNull Bundle bundle ) {
 		super.storeInBundle(bundle);
 		if (activeBuff != null) bundle.put(BUFF, activeBuff);
 	}
 
 	@Override
-	public void restoreFromBundle( Bundle bundle ) {
+	public void restoreFromBundle(@NotNull Bundle bundle ) {
 		super.restoreFromBundle(bundle);
 		if (bundle.contains(BUFF)){
 			activeBuff = new cloakStealth();
@@ -222,7 +224,8 @@ public class CloakOfShadows extends Artifact {
 		}
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 0;
 	}

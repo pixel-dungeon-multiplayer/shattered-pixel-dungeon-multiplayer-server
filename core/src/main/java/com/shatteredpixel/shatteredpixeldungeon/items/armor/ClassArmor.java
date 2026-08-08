@@ -46,6 +46,9 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndChooseAbility;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -97,7 +100,7 @@ abstract public class ClassArmor extends Armor {
 	}
 
 	@Override
-	public int targetingPos(Hero user, int dst) {
+	public int targetingPos(@NotNull Hero user, int dst) {
 		return user.armorAbility.targetedPos(user, dst);
 	}
 
@@ -153,14 +156,14 @@ abstract public class ClassArmor extends Armor {
 	private static final String CHARGE	    = "charge";
 
 	@Override
-	public void storeInBundle( Bundle bundle ) {
+	public void storeInBundle(@NotNull Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( ARMOR_TIER, tier );
 		bundle.put( CHARGE, charge );
 	}
 
 	@Override
-	public void restoreFromBundle( Bundle bundle ) {
+	public void restoreFromBundle(@NotNull Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		tier = bundle.getInt( ARMOR_TIER );
 		charge = bundle.getFloat(CHARGE);
@@ -186,7 +189,7 @@ abstract public class ClassArmor extends Armor {
 	}
 
 	@Override
-	public LocalizedString status() {
+	public @Nullable LocalizedString status() {
 		return Messages.format( "%.0f%%", Math.floor(charge) );
 	}
 
@@ -320,7 +323,8 @@ abstract public class ClassArmor extends Armor {
 		return desc;
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 0;
 	}

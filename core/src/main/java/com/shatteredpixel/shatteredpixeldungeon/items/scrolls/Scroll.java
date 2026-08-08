@@ -278,12 +278,14 @@ public abstract class Scroll extends Item {
 		return handler != null && handler.known().size() == Generator.Category.SCROLL.classes.length;
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 30 * quantity();
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return 6 * quantity();
 	}

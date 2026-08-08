@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfPurity;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfToxicGas;
 import com.watabou.utils.Reflection;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -111,13 +112,15 @@ public class ExoticPotion extends Potion {
 		}
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	//20 gold more than its none-exotic equivalent
 	public int value() {
 		return (Reflection.newInstance(exoToReg.get(getClass())).value() + 20) * quantity();
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	//4 more energy than its none-exotic equivalent
 	public int energyVal() {
 		return (Reflection.newInstance(exoToReg.get(getClass())).energyVal() + 4) * quantity();

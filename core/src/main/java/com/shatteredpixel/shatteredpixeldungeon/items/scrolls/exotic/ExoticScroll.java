@@ -40,6 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTerror;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.watabou.utils.Reflection;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -109,13 +110,15 @@ public abstract class ExoticScroll extends Scroll {
 		}
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	//20 gold more than its none-exotic equivalent
 	public int value() {
 		return (Reflection.newInstance(exoToReg.get(getClass())).value() + 30) * quantity();
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	//6 more energy than its none-exotic equivalent
 	public int energyVal() {
 		return (Reflection.newInstance(exoToReg.get(getClass())).energyVal() + 6) * quantity();

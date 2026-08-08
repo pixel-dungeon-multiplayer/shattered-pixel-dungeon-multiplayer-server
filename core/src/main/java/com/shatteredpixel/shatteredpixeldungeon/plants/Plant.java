@@ -48,6 +48,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 
@@ -219,12 +220,14 @@ public abstract class Plant implements Bundlable {
 			return true;
 		}
 		
-		@Override
+		@Contract(pure = true)
+        @Override
 		public int value() {
 			return 10 * quantity();
 		}
 
-		@Override
+		@Contract(pure = true)
+        @Override
 		public int energyVal() {
 			return 2 * quantity();
 		}

@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.quest;
 
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import org.jetbrains.annotations.Contract;
 
 public class GooBlob extends Item {
 	
@@ -41,12 +42,14 @@ public class GooBlob extends Item {
 		return true;
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return quantity() * 30;
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return quantity() * 3;
 	}

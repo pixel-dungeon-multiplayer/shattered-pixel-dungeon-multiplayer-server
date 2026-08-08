@@ -88,7 +88,8 @@ public class MagicalHolster extends Bag {
 		}
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 60;
 	}

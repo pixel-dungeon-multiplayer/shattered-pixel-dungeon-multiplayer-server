@@ -47,6 +47,8 @@ import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -249,7 +251,7 @@ public class BeaconOfReturning extends Spell {
 	private static final String POS		= "pos";
 	
 	@Override
-	public void storeInBundle( Bundle bundle ) {
+	public void storeInBundle(@NotNull Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( DEPTH, returnDepth );
 		bundle.put( BRANCH, returnBranch );
@@ -259,19 +261,21 @@ public class BeaconOfReturning extends Spell {
 	}
 	
 	@Override
-	public void restoreFromBundle( Bundle bundle ) {
+	public void restoreFromBundle(@NotNull Bundle bundle ) {
 		super.restoreFromBundle(bundle);
 		returnDepth	= bundle.getInt( DEPTH );
 		returnBranch = bundle.getInt( BRANCH );
 		returnPos	= bundle.getInt( POS );
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return (int)(60 * (quantity() /(float)Recipe.OUT_QUANTITY));
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return (int)(12 * (quantity() /(float)Recipe.OUT_QUANTITY));
 	}

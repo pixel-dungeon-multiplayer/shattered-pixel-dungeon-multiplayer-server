@@ -64,6 +64,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -247,14 +248,14 @@ public class SandalsOfNature extends Artifact {
 	private static final String CUR_SEED_EFFECT = "cur_seed_effect";
 
 	@Override
-	public void storeInBundle( Bundle bundle ) {
+	public void storeInBundle(@NotNull Bundle bundle ) {
 		super.storeInBundle(bundle);
 		bundle.put(SEEDS, seeds.toArray(new Class[0]));
 		bundle.put(CUR_SEED_EFFECT, curSeedEffect);
 	}
 
 	@Override
-	public void restoreFromBundle( Bundle bundle ) {
+	public void restoreFromBundle(@NotNull Bundle bundle ) {
 		super.restoreFromBundle(bundle);
 		seeds.clear();
 		if (bundle.contains(SEEDS) && bundle.getClassArray(SEEDS) != null) {

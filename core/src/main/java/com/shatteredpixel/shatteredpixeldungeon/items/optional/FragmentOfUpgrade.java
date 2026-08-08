@@ -23,6 +23,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndUpgrade;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -190,6 +191,7 @@ public class FragmentOfUpgrade extends Item {
         Badges.validateClericUnlock();
     }
 
+    @Contract(pure = true)
     @Override
     public int energyVal() {
         return 10 * quantity;

@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.food;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import org.jetbrains.annotations.Contract;
 
 public class ChargrilledMeat extends Food {
 
@@ -31,7 +32,8 @@ public class ChargrilledMeat extends Food {
 		energy = Hunger.HUNGRY/2f;
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 8 * quantity();
 	}

@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 
@@ -85,7 +86,8 @@ public class ArcaneResin extends Item {
 		return true;
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 30*quantity();
 	}

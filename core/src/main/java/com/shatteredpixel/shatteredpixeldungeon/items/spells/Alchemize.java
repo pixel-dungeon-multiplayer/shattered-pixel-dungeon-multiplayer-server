@@ -48,6 +48,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndTradeItem;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndUpgrade;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 
@@ -66,13 +67,15 @@ public class Alchemize extends Spell {
 		parentWnd = GameScene.selectItem( itemSelector, hero );
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		//lower value, as it's very cheap to make (and also sold at shops)
 		return (int)(20 * (quantity() /(float)Recipe.OUT_QUANTITY));
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return (int)(4 * (quantity() /(float)Recipe.OUT_QUANTITY));
 	}

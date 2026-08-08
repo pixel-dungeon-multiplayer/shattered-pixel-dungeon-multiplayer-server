@@ -57,7 +57,8 @@ public class VelvetPouch extends Bag {
 		return 19;
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 30;
 	}

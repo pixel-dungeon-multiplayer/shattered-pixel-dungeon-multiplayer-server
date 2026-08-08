@@ -23,7 +23,6 @@ package com.shatteredpixel.shatteredpixeldungeon.items.bags;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -104,7 +103,7 @@ public abstract class Bag extends Item implements Iterable<Item> {
 	public Item quickUseItem;
 
 	@Override
-	public int targetingPos(Hero user, int dst) {
+	public int targetingPos(@NotNull Hero user, int dst) {
 		if (quickUseItem != null){
 			return quickUseItem.targetingPos(user, dst);
 		} else {
@@ -206,7 +205,7 @@ public abstract class Bag extends Item implements Iterable<Item> {
 	private static final String ITEMS	= "inventory";
 	
 	@Override
-	public void storeInBundle( Bundle bundle ) {
+	public void storeInBundle(@NotNull Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( ITEMS, items );
 	}
@@ -215,7 +214,7 @@ public abstract class Bag extends Item implements Iterable<Item> {
 	private boolean loading;
 
 	@Override
-	public void restoreFromBundle( Bundle bundle ) {
+	public void restoreFromBundle(@NotNull Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 
 		loading = true;

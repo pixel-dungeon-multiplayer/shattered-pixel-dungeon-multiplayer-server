@@ -55,7 +55,8 @@ public class PotionBandolier extends Bag {
 		return 19;
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 40;
 	}

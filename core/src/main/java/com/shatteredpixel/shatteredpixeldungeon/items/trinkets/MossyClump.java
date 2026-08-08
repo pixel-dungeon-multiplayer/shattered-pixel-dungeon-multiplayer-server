@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -112,7 +113,7 @@ public class MossyClump extends Trinket {
 	private static final String SHUFFLES = "shuffles";
 
 	@Override
-	public void storeInBundle(Bundle bundle) {
+	public void storeInBundle(@NotNull Bundle bundle) {
 		super.storeInBundle(bundle);
 		if (!levelFeels.isEmpty()){
 			boolean[] storeFeels = new boolean[levelFeels.size()];
@@ -125,7 +126,7 @@ public class MossyClump extends Trinket {
 	}
 
 	@Override
-	public void restoreFromBundle(Bundle bundle) {
+	public void restoreFromBundle(@NotNull Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		levelFeels.clear();
 		if (bundle.contains(FEELS)){

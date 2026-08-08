@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.HeroIcon;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndClericSpells;
 import com.watabou.utils.Bundle;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -100,7 +101,7 @@ public class HolyTome extends Artifact {
 	public ClericSpell targetingSpell = null;
 
 	@Override
-	public int targetingPos(Hero user, int dst) {
+	public int targetingPos(@NotNull Hero user, int dst) {
 		if (targetingSpell == null || targetingSpell.targetingFlags() == -1) {
 			return super.targetingPos(user, dst);
 		} else {
@@ -251,7 +252,7 @@ public class HolyTome extends Artifact {
 	private static final String QUICK_CLS = "quick_cls";
 
 	@Override
-	public void storeInBundle(Bundle bundle) {
+	public void storeInBundle(@NotNull Bundle bundle) {
 		super.storeInBundle(bundle);
 		if (quickSpell != null) {
 			bundle.put(QUICK_CLS, quickSpell.getClass());
@@ -259,7 +260,7 @@ public class HolyTome extends Artifact {
 	}
 
 	@Override
-	public void restoreFromBundle(Bundle bundle) {
+	public void restoreFromBundle(@NotNull Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		if (bundle.contains(QUICK_CLS)){
 			Class quickCls = bundle.getClass(QUICK_CLS);

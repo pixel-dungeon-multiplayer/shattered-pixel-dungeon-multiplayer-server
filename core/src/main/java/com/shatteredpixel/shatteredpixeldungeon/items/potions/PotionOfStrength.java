@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import org.jetbrains.annotations.Contract;
 
 public class PotionOfStrength extends Potion {
 
@@ -68,12 +69,14 @@ public class PotionOfStrength extends Potion {
 				: super.desc();
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return isKnown() ? 50 * quantity() : super.value();
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return isKnown() ? 10 * quantity() : super.energyVal();
 	}

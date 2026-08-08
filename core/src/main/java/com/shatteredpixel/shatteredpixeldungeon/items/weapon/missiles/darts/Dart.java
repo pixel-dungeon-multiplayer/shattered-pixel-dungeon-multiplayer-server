@@ -43,6 +43,8 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -165,7 +167,7 @@ public class Dart extends MissileWeapon {
 	}
 
 	@Override
-	public int throwPos(Hero user, int dst) {
+	public int throwPos(@NotNull Hero user, int dst) {
 		updateCrossbow(user);
 		return super.throwPos(user, dst);
 	}
@@ -257,7 +259,8 @@ public class Dart extends MissileWeapon {
 		return 2;
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return Math.round(super.value()/2f); //half normal value
 	}

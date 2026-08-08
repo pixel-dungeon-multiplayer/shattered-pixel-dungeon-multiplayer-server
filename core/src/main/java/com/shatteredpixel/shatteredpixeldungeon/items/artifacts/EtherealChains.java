@@ -52,6 +52,7 @@ import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -80,7 +81,7 @@ public class EtherealChains extends Artifact {
 		return actions;
 	}
 
-	public int targetingPos( Hero user, int dst ){
+	public int targetingPos(@NotNull Hero user, int dst ){
 		return dst;
 	}
 

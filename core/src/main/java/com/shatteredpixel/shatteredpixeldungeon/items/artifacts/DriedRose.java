@@ -78,6 +78,7 @@ import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -274,7 +275,8 @@ public class DriedRose extends Artifact {
 		return desc;
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		if (weapon != null){
 			return -1;
@@ -286,7 +288,7 @@ public class DriedRose extends Artifact {
 	}
 
 	@Override
-	public LocalizedString status(Hero hero) {
+	public @Nullable LocalizedString status(Hero hero) {
 		if (ghost == null && ghostID != 0){
 			try {
 				findGhost(hero);
@@ -370,7 +372,7 @@ public class DriedRose extends Artifact {
 	private static final String ARMOR =         "armor";
 
 	@Override
-	public void storeInBundle( Bundle bundle ) {
+	public void storeInBundle(@NotNull Bundle bundle ) {
 		super.storeInBundle(bundle);
 
 		bundle.put( TALKEDTO, talkedTo );
@@ -383,7 +385,7 @@ public class DriedRose extends Artifact {
 	}
 
 	@Override
-	public void restoreFromBundle( Bundle bundle ) {
+	public void restoreFromBundle(@NotNull Bundle bundle ) {
 		super.restoreFromBundle(bundle);
 
 		talkedTo = bundle.getBoolean( TALKEDTO );

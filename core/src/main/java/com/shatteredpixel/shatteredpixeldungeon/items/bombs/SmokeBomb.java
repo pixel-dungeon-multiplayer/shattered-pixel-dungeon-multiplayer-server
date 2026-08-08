@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.BArray;
 import com.watabou.utils.PathFinder;
+import org.jetbrains.annotations.Contract;
 
 public class SmokeBomb extends Bomb {
 	
@@ -70,7 +71,8 @@ public class SmokeBomb extends Bomb {
 		
 	}
 	
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		//prices of ingredients
 		return quantity() * (20 + 40);

@@ -43,6 +43,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndUpgrade;
+import org.jetbrains.annotations.Contract;
 
 public class ScrollOfUpgrade extends InventoryScroll {
 
@@ -168,12 +169,14 @@ public class ScrollOfUpgrade extends InventoryScroll {
 		return Dungeon.balance.useFragments && isKnown() ? Messages.get(this, "fragment") : super.desc();
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return isKnown() ? 50 * quantity() : super.value();
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int energyVal() {
 		return isKnown() ? 10 * quantity() : super.energyVal();
 	}

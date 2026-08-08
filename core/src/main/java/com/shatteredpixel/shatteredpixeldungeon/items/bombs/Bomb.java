@@ -60,6 +60,8 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -244,7 +246,8 @@ public class Bomb extends Item {
 		return fuse != null ? new ItemSprite.Glowing( 0xFF0000, 0.6f) : null;
 	}
 
-	@Override
+	@Contract(pure = true)
+    @Override
 	public int value() {
 		return 15 * quantity();
 	}
@@ -263,13 +266,13 @@ public class Bomb extends Item {
 	private static final String FUSE = "fuse";
 
 	@Override
-	public void storeInBundle(Bundle bundle) {
+	public void storeInBundle(@NotNull Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put( FUSE, fuse );
 	}
 
 	@Override
-	public void restoreFromBundle(Bundle bundle) {
+	public void restoreFromBundle(@NotNull Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		if (bundle.contains( FUSE ))
 			Actor.add( fuse = ((Fuse)bundle.get(FUSE)).ignite(this) );

@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import org.jetbrains.annotations.Contract;
 
 public class Rotberry extends Plant {
 
@@ -71,12 +72,14 @@ public class Rotberry extends Plant {
 			unique = true;
 		}
 		
-		@Override
+		@Contract(pure = true)
+        @Override
 		public int value() {
 			return 30 * quantity();
 		}
 
-		@Override
+		@Contract(pure = true)
+        @Override
 		public int energyVal() {
 			return 3 * quantity();
 		}

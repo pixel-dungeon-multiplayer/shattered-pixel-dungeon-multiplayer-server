@@ -100,6 +100,7 @@ import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -281,7 +282,7 @@ public abstract class Mob extends Char {
 	//FIXME this is sort of a band-aid correction for allies needing more intelligent behaviour
 	protected boolean intelligentAlly = false;
 
-	protected Char chooseEnemy() {
+	protected @Nullable Char chooseEnemy() {
 
 		Dread dread = buff(Dread.class);
 		if (dread != null) {
@@ -1673,4 +1674,3 @@ public abstract class Mob extends Char {
 		heldAllies.clear();
 	}
 }
-

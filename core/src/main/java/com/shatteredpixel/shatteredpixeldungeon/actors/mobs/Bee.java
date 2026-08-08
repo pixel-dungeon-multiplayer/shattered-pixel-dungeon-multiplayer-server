@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.BeeSprite;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 
@@ -157,7 +158,7 @@ public class Bee extends Mob {
 	}
 
 	@Override
-	protected Char chooseEnemy() {
+	protected @Nullable Char chooseEnemy() {
 		//if the pot is no longer present, default to regular AI behaviour
 		if (alignment == Alignment.ALLY || (potHolder == -1 && potPos == -1)){
 			return super.chooseEnemy();

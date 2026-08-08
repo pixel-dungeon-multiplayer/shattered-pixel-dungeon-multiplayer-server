@@ -71,6 +71,7 @@ import com.watabou.utils.Random;
 import com.watabou.utils.Rect;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -312,7 +313,7 @@ public class DM300 extends Mob {
 	}
 
 	@Override
-	protected Char chooseEnemy() {
+	protected @Nullable Char chooseEnemy() {
 		Char enemy = super.chooseEnemy();
 		if (supercharged && enemy == null){
 			ArrayList<Char> candidates = new ArrayList<>();

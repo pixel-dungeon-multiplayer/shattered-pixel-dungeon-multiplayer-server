@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class RatKing extends NPC {
 
@@ -59,7 +60,7 @@ public class RatKing extends NPC {
 	}
 	
 	@Override
-	protected Char chooseEnemy() {
+	protected @Nullable Char chooseEnemy() {
 		return null;
 	}
 

@@ -1,12 +1,20 @@
 package io.github.pixeldungeonmultiplayer.shattered.server.desktop;
 
+import io.github.pixeldungeonmultiplayer.shattered.server.network.ClientThread;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.Protocol;
 import io.github.pixeldungeonmultiplayer.shattered.headlessclient.ClientState;
 import io.github.pixeldungeonmultiplayer.shattered.headlessclient.HeadlessClient;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
+import java.nio.charset.Charset;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class DesktopGameLoopSmoke {
@@ -29,8 +37,46 @@ public final class DesktopGameLoopSmoke {
 
         @Override protected void runTest() throws Exception {
             waitForServer();
+            runQueryProtocolSmoke();
             runHandshakeSmoke();
             runJoinInventorySmoke();
+        }
+
+        private void runQueryProtocolSmoke() throws IOException {
+            try (Socket socket = new Socket("127.0.0.1", port)) {
+                socket.setSoTimeout(500);
+                Charset charset = Charset.forName(ClientThread.CHARSET);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(
+                        socket.getInputStream(), charset.newDecoder()
+                ));
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+                        socket.getOutputStream(), charset.newEncoder()
+                ));
+
+                JSONObject hello = new JSONObject(reader.readLine());
+                require(Protocol.PACKET_HANDSHAKE.equals(hello.getString(Protocol.FIELD_PACKET_TYPE)),
+                        "query connection did not receive handshake");
+
+                writePacket(writer, new JSONObject().put(Protocol.FIELD_PACKET_TYPE, "unexpected"));
+                writePacket(writer, new JSONObject().put(
+                        Protocol.FIELD_PACKET_TYPE, Protocol.PACKET_STATUS_REQUEST
+                ));
+
+                JSONObject response = new JSONObject(reader.readLine());
+                require(Protocol.PACKET_SERVER_STATUS.equals(response.getString(Protocol.FIELD_PACKET_TYPE)),
+                        "query connection did not receive server status");
+                JSONObject serverInfo = response.getJSONObject("server_info");
+                require("desktop-gameLoopSmoke-server".equals(serverInfo.getString("server_id")),
+                        "server status contained unexpected server id");
+                require(serverInfo.getInt("max_players") == 2,
+                        "server status contained unexpected player limit");
+            }
+        }
+
+        private void writePacket(BufferedWriter writer, JSONObject packet) throws IOException {
+            writer.write(packet.toString());
+            writer.write('\n');
+            writer.flush();
         }
 
         private void runHandshakeSmoke() throws IOException {

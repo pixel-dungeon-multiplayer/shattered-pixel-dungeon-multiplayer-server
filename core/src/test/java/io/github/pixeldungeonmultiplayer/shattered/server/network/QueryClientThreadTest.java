@@ -8,11 +8,17 @@ import io.github.pixeldungeonmultiplayer.shattered.headlessclient.HeadlessClient
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class QueryClientThreadTest {
 
@@ -45,6 +51,31 @@ class QueryClientThreadTest {
         client.close();
         server.join(1000);
         assertFalse(server.isAlive());
+    }
+
+    @Test
+    void closesConnectionAfterMalformedJson() throws Exception {
+        InMemorySocketPair sockets = InMemorySocketPair.create();
+        QueryClientThread server = new QueryClientThread(sockets.server());
+        server.setDaemon(true);
+        server.start();
+
+        Charset charset = Charset.forName(ClientThread.CHARSET);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(
+                sockets.client().getInputStream(), charset.newDecoder()
+        ));
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+                sockets.client().getOutputStream(), charset.newEncoder()
+        ));
+        reader.readLine();
+
+        writer.write("not-json\n");
+        writer.flush();
+
+        assertNull(reader.readLine());
+        server.join(1000);
+        assertFalse(server.isAlive());
+        sockets.client().close();
     }
 
     private static final class InMemoryPreferences implements Preferences {

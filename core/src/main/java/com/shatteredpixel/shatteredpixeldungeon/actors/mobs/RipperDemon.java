@@ -121,11 +121,14 @@ public class RipperDemon extends Mob {
 
 		//if state changed from wandering to hunting, we haven't acted yet, don't update.
 		if (!(lastState == WANDERING && state == HUNTING)) {
-            if (enemy == null) {
-                enemy = chooseEnemy();
-            }
-            lastEnemyPos = enemy.pos;
-        }
+			if (enemy == null) {
+				//we can't use Dungeon.hero
+				enemy = chooseEnemy();
+			}
+			if (enemy != null) {
+				lastEnemyPos = enemy.pos;
+			}
+		}
 
 		return result;
 	}

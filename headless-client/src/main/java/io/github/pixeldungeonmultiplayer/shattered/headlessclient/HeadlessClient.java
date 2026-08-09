@@ -2,6 +2,7 @@ package io.github.pixeldungeonmultiplayer.shattered.headlessclient;
 
 import io.github.pixeldungeonmultiplayer.shattered.server.network.ClientThread;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.Protocol;
+import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -16,11 +17,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class HeadlessClient implements Closeable {
 
@@ -30,12 +27,12 @@ public final class HeadlessClient implements Closeable {
     private BufferedWriter writer;
     private JSONObject helloPacket;
     private ClientInventory inventory;
-    private final Map<Integer, ClientWindow> windows = new HashMap<>();
-    private final List<JSONObject> unhandledActions = new ArrayList<>();
-    private final Map<String, List<ActionHook>> beforeActionHooks = new HashMap<>();
-    private final Map<String, List<ActionHook>> afterActionHooks = new HashMap<>();
-    private final Map<String, List<ActionHook>> insteadActionHooks = new HashMap<>();
-    private final List<PacketHook> beforePacketHooks = new ArrayList<>();
+    private final @NotNull Map<@NotNull Integer, @NotNull ClientWindow> windows = new HashMap<>();
+    private final @NotNull List<JSONObject> unhandledActions = new ArrayList<>();
+    private final @NotNull Map<@NotNull String, @NotNull List<@NotNull ActionHook>> beforeActionHooks = new HashMap<>();
+    private final @NotNull Map<@NotNull String, @NotNull List<@NotNull ActionHook>> afterActionHooks = new HashMap<>();
+    private final @NotNull Map<@NotNull String, @NotNull List<@NotNull ActionHook>> insteadActionHooks = new HashMap<>();
+    private final @NotNull List<@NotNull PacketHook> beforePacketHooks = new ArrayList<>();
 
     @Contract(pure = true)
     public ClientState state() {
@@ -43,8 +40,9 @@ public final class HeadlessClient implements Closeable {
     }
 
     @Contract(pure = true)
-    public JSONObject helloPacket() {
+    public @NotNull JSONObject helloPacket() {
         requireState(ClientState.HELLO_RECEIVED);
+        Objects.requireNonNull(helloPacket);
         return helloPacket;
     }
 
@@ -117,7 +115,7 @@ public final class HeadlessClient implements Closeable {
         }
     }
 
-    private void parseAction(JSONObject action) {
+    private void parseAction(@NotNull JSONObject action) {
         String actionName = action.optString("action_name", "");
         runHooks(beforeActionHooks, actionName, action);
         if (!runHooks(insteadActionHooks, actionName, action)) {
@@ -126,7 +124,7 @@ public final class HeadlessClient implements Closeable {
         runHooks(afterActionHooks, actionName, action);
     }
 
-    private void parseActionDefault(String actionName, JSONObject action) {
+    private void parseActionDefault(@NotNull String actionName, @NotNull JSONObject action) {
         switch (actionName) {
             case "inventory_rebuild":
                 inventory = ClientInventory.fromJson(action);
@@ -165,7 +163,7 @@ public final class HeadlessClient implements Closeable {
         }
     }
 
-    public void send(JSONObject packet) throws IOException {
+    public void send(@NotNull JSONObject packet) throws IOException {
         if (state == ClientState.NEW || state == ClientState.DISCONNECTED || state == ClientState.FAILED) {
             throw new IllegalStateException("Client is not connected: " + state);
         }
@@ -213,21 +211,25 @@ public final class HeadlessClient implements Closeable {
         send(packet);
     }
 
+    @Contract("_, _ -> this")
     public HeadlessClient beforeAction(String actionName, ActionHook hook) {
         addHook(beforeActionHooks, actionName, hook);
         return this;
     }
 
+    @Contract("_, _ -> this")
     public HeadlessClient afterAction(String actionName, ActionHook hook) {
         addHook(afterActionHooks, actionName, hook);
         return this;
     }
 
+    @Contract("_, _ -> this")
     public HeadlessClient insteadAction(String actionName, ActionHook hook) {
         addHook(insteadActionHooks, actionName, hook);
         return this;
     }
 
+    @Contract("_ -> this")
     public HeadlessClient beforePacket(PacketHook hook) {
         beforePacketHooks.add(hook);
         return this;
@@ -253,7 +255,7 @@ public final class HeadlessClient implements Closeable {
         state = ClientState.DISCONNECTED;
     }
 
-    private void parseHandshake(JSONObject packet) {
+    private void parseHandshake(@NotNull JSONObject packet) {
         requireState(ClientState.CONNECTED);
         if (!Protocol.NAME.equals(packet.optString(Protocol.FIELD_PROTOCOL, ""))) {
             throw new IllegalStateException("Unexpected protocol: "
@@ -270,14 +272,16 @@ public final class HeadlessClient implements Closeable {
         state = ClientState.HELLO_RECEIVED;
     }
 
+    @EnsuresNonNull("reader")
+    @Contract(pure = true)
     private void requireConnected() {
         if (state == ClientState.NEW || state == ClientState.DISCONNECTED || state == ClientState.FAILED) {
             throw new IllegalStateException("Client is not connected: " + state);
         }
     }
 
-    private static List<Integer> intList(JSONArray array) {
-        ArrayList<Integer> result = new ArrayList<>();
+    private static @NotNull List<@NotNull Integer> intList(@NotNull JSONArray array) {
+        ArrayList<@NotNull Integer> result = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {
             result.add(array.getInt(i));
         }
@@ -290,11 +294,11 @@ public final class HeadlessClient implements Closeable {
         }
     }
 
-    private void addHook(Map<String, List<ActionHook>> hooks, String actionName, ActionHook hook) {
+    private void addHook(@NotNull Map<String, List<ActionHook>> hooks, @NotNull String actionName, @NotNull ActionHook hook) {
         hooks.computeIfAbsent(actionName, ignored -> new ArrayList<>()).add(hook);
     }
 
-    private boolean runHooks(Map<String, List<ActionHook>> hooks, String actionName, JSONObject action) {
+    private boolean runHooks(@NotNull Map<String, List<ActionHook>> hooks, @NotNull String actionName, JSONObject action) {
         boolean ran = false;
         List<ActionHook> exactHooks = hooks.get(actionName);
         if (exactHooks != null) {

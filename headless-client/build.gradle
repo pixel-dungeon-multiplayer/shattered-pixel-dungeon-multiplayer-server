@@ -9,6 +9,7 @@ dependencies {
     // Keep this aligned with core/SPD-classes for Android-compatible JSON behavior.
     implementation "org.json:json:20170516"
     api "org.jetbrains:annotations:24.1.0"
+    compileOnlyApi "org.checkerframework:checker-qual:3.49.3"
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'

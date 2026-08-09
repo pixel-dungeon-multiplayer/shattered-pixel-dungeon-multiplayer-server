@@ -1,5 +1,7 @@
 package io.github.pixeldungeonmultiplayer.shattered.headlessclient;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -9,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ClientItem {
-    public final JSONObject raw;
+    public final @NotNull JSONObject raw;
     public final int spriteSheet;
     public final int image;
     public final int icon;
@@ -24,13 +26,13 @@ public class ClientItem {
     public final int energyValue;
     public final List<String> actions;
     public final JSONObject actionNames;
-    public final String defaultAction;
+    public final @Nullable String defaultAction;
     public final Object info;
     public final Object ui;
     public final Object glowing;
     public final Object emitter;
 
-    protected ClientItem(JSONObject json) {
+    protected ClientItem(@NotNull JSONObject json) {
         raw = new JSONObject(json.toString());
         spriteSheet = json.optInt("sprite_sheet", -1);
         image = json.optInt("image", -1);
@@ -53,18 +55,18 @@ public class ClientItem {
         emitter = json.opt("emitter");
     }
 
-    public static ClientItem fromJson(JSONObject json) {
+    public static @NotNull ClientItem fromJson(@NotNull JSONObject json) {
         if (json.has("items") || json.has("bag_icon") || json.has("size")) {
             return ClientBag.fromJson(json);
         }
         return new ClientItem(json);
     }
 
-    public ClientItem update(JSONObject patch) {
+    public ClientItem update(@NotNull JSONObject patch) {
         return fromJson(merge(raw, patch));
     }
 
-    private static JSONObject merge(JSONObject base, JSONObject patch) {
+    private static @NotNull JSONObject merge(@NotNull JSONObject base, @NotNull JSONObject patch) {
         JSONObject merged = new JSONObject(base.toString());
         for (Iterator<String> it = patch.keys(); it.hasNext(); ) {
             String key = it.next();

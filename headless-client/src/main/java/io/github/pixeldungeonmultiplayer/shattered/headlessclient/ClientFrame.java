@@ -1,5 +1,7 @@
 package io.github.pixeldungeonmultiplayer.shattered.headlessclient;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 public final class ClientFrame {
@@ -12,7 +14,7 @@ public final class ClientFrame {
     public final float width;
     public final float height;
 
-    private ClientFrame(JSONObject json) {
+    private ClientFrame(@NotNull JSONObject json) {
         left = (float) json.optDouble("left", 0);
         top = (float) json.optDouble("top", 0);
         right = (float) json.optDouble("right", 0);
@@ -23,7 +25,8 @@ public final class ClientFrame {
         height = (float) json.optDouble("height", bottom - top);
     }
 
-    public static ClientFrame fromJson(JSONObject json) {
+    @Contract("_ -> new")
+    public static @NotNull ClientFrame fromJson(@NotNull JSONObject json) {
         return new ClientFrame(json);
     }
 }

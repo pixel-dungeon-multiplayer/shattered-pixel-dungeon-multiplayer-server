@@ -1,24 +1,24 @@
 package io.github.pixeldungeonmultiplayer.shattered.headlessclient;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class ClientInventory {
-    public final ClientBag backpack;
-    public final List<SpecialSlot> specialSlots;
+    public final @NotNull ClientBag backpack;
+    public final @UnmodifiableView @NotNull List<@NotNull SpecialSlot> specialSlots;
 
-    private ClientInventory(ClientBag backpack, List<SpecialSlot> specialSlots) {
-        this.backpack = backpack;
-        this.specialSlots = Collections.unmodifiableList(new ArrayList<>(specialSlots));
+    private ClientInventory(@NotNull ClientBag backpack, @NotNull List<@NotNull SpecialSlot> specialSlots) {
+        this.backpack = Objects.requireNonNull(backpack);
+        this.specialSlots = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(specialSlots)));
     }
 
-    public static ClientInventory fromJson(JSONObject json) {
+    @Contract("_ -> new")
+    public static @NotNull ClientInventory fromJson(@NotNull JSONObject json) {
         ClientBag backpack = ClientBag.fromJson(json.getJSONObject("backpack"));
         ArrayList<SpecialSlot> slots = new ArrayList<>();
         JSONArray specialSlots = json.optJSONArray("special_slots");
@@ -51,7 +51,7 @@ public final class ClientInventory {
         return Collections.unmodifiableMap(itemsByPath);
     }
 
-    public void addItem(List<Integer> path, ClientItem item) {
+    public void addItem(@NotNull List<@NotNull Integer> path, ClientItem item) {
         List<ClientItem> items = parentBag(path).items;
         int index = lastIndex(path);
         if (index < 0 || index > items.size()) {
@@ -60,7 +60,7 @@ public final class ClientInventory {
         items.add(index, item);
     }
 
-    public void updateItem(List<Integer> path, JSONObject patch) {
+    public void updateItem(@NotNull List<@NotNull Integer> path, JSONObject patch) {
         replaceExisting(path, requireExisting(path).update(patch));
     }
 
@@ -93,7 +93,7 @@ public final class ClientInventory {
         return itemInBag(backpack, path, 0);
     }
 
-    private ClientItem requireExisting(List<Integer> path) {
+    private @NotNull ClientItem requireExisting(@NotNull List<@NotNull Integer> path) {
         ClientItem item = itemAtPath(path);
         if (item == null) {
             throw new IllegalArgumentException("Cannot update missing item at path " + path);
@@ -101,7 +101,7 @@ public final class ClientInventory {
         return item;
     }
 
-    private ClientItem itemInBag(ClientBag bag, List<Integer> path, int offset) {
+    private ClientItem itemInBag(@NotNull ClientBag bag, @NotNull List<@NotNull Integer> path, int offset) {
         List<ClientItem> items = bag.items;
         ClientItem item = null;
         for (int i = offset; i < path.size(); i++) {
@@ -116,7 +116,7 @@ public final class ClientInventory {
         return item;
     }
 
-    private ClientBag parentBag(List<Integer> path) {
+    private @NotNull ClientBag parentBag(@NotNull List<@NotNull Integer> path) {
         if (path.isEmpty()) {
             throw new IllegalArgumentException("Item path must not be empty");
         }
@@ -141,7 +141,7 @@ public final class ClientInventory {
         }
     }
 
-    private boolean isSpecialSlotRoot(List<Integer> path) {
+    private boolean isSpecialSlotRoot(@NotNull List<@NotNull Integer> path) {
         return path.size() == 1 && path.get(0) < 0;
     }
 

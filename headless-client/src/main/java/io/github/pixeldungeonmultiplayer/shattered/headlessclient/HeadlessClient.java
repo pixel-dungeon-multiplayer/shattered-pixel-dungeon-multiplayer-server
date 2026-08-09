@@ -1,8 +1,11 @@
 package io.github.pixeldungeonmultiplayer.shattered.headlessclient;
 
+
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.ClientThread;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.Protocol;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
+import org.checkerframework.checker.nullness.qual.RequiresNonNull;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -21,12 +24,12 @@ import java.util.*;
 
 public final class HeadlessClient implements Closeable {
 
-    private ClientState state = ClientState.NEW;
+    private @NotNull ClientState state = ClientState.NEW;
     private Socket socket;
-    private BufferedReader reader;
-    private BufferedWriter writer;
-    private JSONObject helloPacket;
-    private ClientInventory inventory;
+    private @MonotonicNonNull BufferedReader reader;
+    private @MonotonicNonNull BufferedWriter writer;
+    private @MonotonicNonNull JSONObject helloPacket;
+    private @MonotonicNonNull ClientInventory inventory;
     private final @NotNull Map<@NotNull Integer, @NotNull ClientWindow> windows = new HashMap<>();
     private final @NotNull List<JSONObject> unhandledActions = new ArrayList<>();
     private final @NotNull Map<@NotNull String, @NotNull List<@NotNull ActionHook>> beforeActionHooks = new HashMap<>();
@@ -39,6 +42,7 @@ public final class HeadlessClient implements Closeable {
         return state;
     }
 
+    @EnsuresNonNull("this.helloPacket")
     @Contract(pure = true)
     public @NotNull JSONObject helloPacket() {
         requireState(ClientState.HELLO_RECEIVED);
@@ -56,11 +60,13 @@ public final class HeadlessClient implements Closeable {
         return Collections.unmodifiableMap(windows);
     }
 
+    @Contract(pure = true)
     public List<JSONObject> unhandledActions() {
         return Collections.unmodifiableList(unhandledActions);
     }
 
-    public HeadlessClient connect(Socket socket) throws IOException {
+    @Contract("_ -> this")
+    public @NotNull HeadlessClient connect(Socket socket) throws IOException {
         requireState(ClientState.NEW);
         this.socket = socket;
         Charset charset = Charset.forName(ClientThread.CHARSET);
@@ -70,8 +76,9 @@ public final class HeadlessClient implements Closeable {
         return this;
     }
 
+    @EnsuresNonNull("this.reader")
     @Contract("->this")
-    public HeadlessClient parseNext() throws IOException {
+    public @NotNull HeadlessClient parseNext() throws IOException {
         requireConnected();
         String line = reader.readLine();
         if (line == null) {
@@ -104,7 +111,7 @@ public final class HeadlessClient implements Closeable {
         }
     }
 
-    private void parseActionsBatch(JSONObject packet) {
+    private void parseActionsBatch(@NotNull JSONObject packet) {
         requireState(ClientState.HELLO_RECEIVED);
         JSONArray actions = packet.optJSONArray("actions");
         if (actions == null) {
@@ -163,6 +170,7 @@ public final class HeadlessClient implements Closeable {
         }
     }
 
+    @RequiresNonNull("this.writer")
     public void send(@NotNull JSONObject packet) throws IOException {
         if (state == ClientState.NEW || state == ClientState.DISCONNECTED || state == ClientState.FAILED) {
             throw new IllegalStateException("Client is not connected: " + state);
@@ -288,6 +296,7 @@ public final class HeadlessClient implements Closeable {
         return result;
     }
 
+    @Contract(pure = true)
     private void requireState(ClientState expected) {
         if (state != expected) {
             throw new IllegalStateException("Expected state " + expected + ", got " + state);

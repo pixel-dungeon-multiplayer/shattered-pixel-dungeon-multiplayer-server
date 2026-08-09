@@ -1,5 +1,6 @@
 package io.github.pixeldungeonmultiplayer.shattered.headlessclient;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -36,7 +37,7 @@ public final class ClientInventory {
         return itemAtPath(path);
     }
 
-    public Map<List<Integer>, ClientItem> itemsByPath() {
+    public @NotNull Map<List<Integer>, @NotNull ClientItem> itemsByPath() {
         Map<List<Integer>, ClientItem> itemsByPath = new LinkedHashMap<>();
         indexBag(itemsByPath, Collections.emptyList(), backpack);
         for (SpecialSlot slot : specialSlots) {
@@ -133,7 +134,7 @@ public final class ClientInventory {
         return (ClientBag) parent;
     }
 
-    private void replaceExisting(List<Integer> path, ClientItem item) {
+    private void replaceExisting(@NotNull List<Integer> path, @NotNull ClientItem item) {
         if (isSpecialSlotRoot(path)) {
             specialSlot(path).item = item;
         } else {
@@ -145,7 +146,7 @@ public final class ClientInventory {
         return path.size() == 1 && path.get(0) < 0;
     }
 
-    private SpecialSlot specialSlot(List<Integer> path) {
+    private @NotNull SpecialSlot specialSlot(@NotNull List<Integer> path) {
         if (path.isEmpty() || path.get(0) >= 0) {
             throw new IllegalArgumentException("Path is not a special slot path: " + path);
         }
@@ -156,14 +157,14 @@ public final class ClientInventory {
         return specialSlots.get(slotIndex);
     }
 
-    private int lastIndex(List<Integer> path) {
+    private int lastIndex(@NotNull List<Integer> path) {
         if (path.isEmpty()) {
             throw new IllegalArgumentException("Item path must not be empty");
         }
         return path.get(path.size() - 1);
     }
 
-    private void indexBag(Map<List<Integer>, ClientItem> itemsByPath, List<Integer> prefix, ClientBag bag) {
+    private void indexBag(@NotNull Map<List<Integer>, ClientItem> itemsByPath, @NotNull List<Integer> prefix, @NotNull ClientBag bag) {
         for (int i = 0; i < bag.items.size(); i++) {
             ClientItem item = bag.items.get(i);
             ArrayList<Integer> path = new ArrayList<>(prefix);
@@ -179,11 +180,14 @@ public final class ClientInventory {
         public final int id;
         public ClientItem item;
 
+        @Contract(pure = true)
         private SpecialSlot(int id, ClientItem item) {
             this.id = id;
             this.item = item;
         }
 
+        @Contract(pure = true)
+        @SideEffectFree
         public int path() {
             return -id - 1;
         }

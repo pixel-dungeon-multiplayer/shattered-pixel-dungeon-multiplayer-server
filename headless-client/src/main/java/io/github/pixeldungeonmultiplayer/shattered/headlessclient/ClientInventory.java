@@ -41,11 +41,12 @@ public final class ClientInventory {
         Map<List<Integer>, ClientItem> itemsByPath = new LinkedHashMap<>();
         indexBag(itemsByPath, Collections.emptyList(), backpack);
         for (SpecialSlot slot : specialSlots) {
-            if (slot.item != null) {
+            ClientItem item = slot.item;
+            if (item != null) {
                 List<Integer> path = Collections.singletonList(slot.path());
-                itemsByPath.put(path, slot.item);
-                if (slot.item instanceof ClientBag) {
-                    indexBag(itemsByPath, path, (ClientBag) slot.item);
+                itemsByPath.put(path, item);
+                if (item instanceof ClientBag) {
+                    indexBag(itemsByPath, path, (ClientBag) item);
                 }
             }
         }

@@ -3,6 +3,7 @@ package io.github.pixeldungeonmultiplayer.shattered.headlessclient;
 import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,7 +34,7 @@ public final class ClientInventory {
         return new ClientInventory(backpack, slots);
     }
 
-    public ClientItem itemAt(List<Integer> path) {
+    public @Nullable ClientItem itemAt(List<Integer> path) {
         return itemAtPath(path);
     }
 
@@ -78,12 +79,12 @@ public final class ClientInventory {
         }
     }
 
-    private ClientItem itemAtPath(List<Integer> path) {
+    private @Nullable ClientItem itemAtPath(List<Integer> path) {
         if (path.isEmpty()) {
             return backpack;
         }
         if (path.get(0) < 0) {
-            ClientItem item = specialSlot(path).item;
+            @Nullable ClientItem item = specialSlot(path).item;
             if (path.size() == 1) {
                 return item;
             }
@@ -103,7 +104,7 @@ public final class ClientInventory {
         return item;
     }
 
-    private ClientItem itemInBag(@NotNull ClientBag bag, @NotNull List<@NotNull Integer> path, int offset) {
+    private @Nullable ClientItem itemInBag(@NotNull ClientBag bag, @NotNull List<@NotNull Integer> path, int offset) {
         List<ClientItem> items = bag.items;
         ClientItem item = null;
         for (int i = offset; i < path.size(); i++) {
@@ -179,10 +180,10 @@ public final class ClientInventory {
 
     public static final class SpecialSlot {
         public final int id;
-        public ClientItem item;
+        public @Nullable ClientItem item;
 
         @Contract(pure = true)
-        private SpecialSlot(int id, ClientItem item) {
+        private SpecialSlot(int id, @Nullable ClientItem item) {
             this.id = id;
             this.item = item;
         }

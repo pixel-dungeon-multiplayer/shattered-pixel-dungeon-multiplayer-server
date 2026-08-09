@@ -25,7 +25,7 @@ import java.util.*;
 public final class HeadlessClient implements Closeable {
 
     private @NotNull ClientState state = ClientState.NEW;
-    private Socket socket;
+    private @MonotonicNonNull Socket socket;
     private @MonotonicNonNull BufferedReader reader;
     private @MonotonicNonNull BufferedWriter writer;
     private @MonotonicNonNull JSONObject helloPacket;
@@ -52,7 +52,7 @@ public final class HeadlessClient implements Closeable {
 
     @Contract(pure = true)
     public ClientInventory inventory() {
-        return inventory;
+        return Objects.requireNonNull(inventory);
     }
 
     @Contract(pure = true)
@@ -181,6 +181,7 @@ public final class HeadlessClient implements Closeable {
     }
 
     public void join(String heroClass, String uuid) throws IOException {
+        requireConnected();
         JSONObject packet = new JSONObject();
         packet.put(Protocol.FIELD_PACKET_TYPE, Protocol.PACKET_JOIN);
         packet.put(Protocol.FIELD_PROTOCOL, Protocol.NAME);
@@ -191,6 +192,7 @@ public final class HeadlessClient implements Closeable {
     }
 
     public void itemAction(List<Integer> slot, String actionName) throws IOException {
+        requireConnected();
         JSONObject action = new JSONObject();
         action.put("slot", new JSONArray(slot));
         action.put("action_name", actionName);
@@ -202,6 +204,7 @@ public final class HeadlessClient implements Closeable {
     }
 
     public void selectWindow(int id, int button) throws IOException {
+        requireConnected();
         JSONObject selection = new JSONObject();
         selection.put("id", id);
         selection.put("button", button);
@@ -213,6 +216,7 @@ public final class HeadlessClient implements Closeable {
     }
 
     public void selectCell(int cell) throws IOException {
+        requireConnected();
         JSONObject packet = new JSONObject();
         packet.put(Protocol.FIELD_PACKET_TYPE, Protocol.PACKET_CLIENT_COMMAND);
         packet.put("cell_listener", cell);
@@ -280,12 +284,14 @@ public final class HeadlessClient implements Closeable {
         state = ClientState.HELLO_RECEIVED;
     }
 
-    @EnsuresNonNull("reader")
+    @EnsuresNonNull({"reader","writer"})
     @Contract(pure = true)
     private void requireConnected() {
         if (state == ClientState.NEW || state == ClientState.DISCONNECTED || state == ClientState.FAILED) {
             throw new IllegalStateException("Client is not connected: " + state);
         }
+        Objects.requireNonNull(reader, "Reader must be present");
+        Objects.requireNonNull(writer, "Writer must be present");
     }
 
     private static @NotNull List<@NotNull Integer> intList(@NotNull JSONArray array) {

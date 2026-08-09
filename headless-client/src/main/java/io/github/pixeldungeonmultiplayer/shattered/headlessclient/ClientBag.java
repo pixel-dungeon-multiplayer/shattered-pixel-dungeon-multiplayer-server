@@ -12,7 +12,7 @@ import java.util.List;
 public final class ClientBag extends ClientItem {
     public final int bagIcon;
     public final int size;
-    public final Integer owner;
+    public final @Nullable Integer owner;
     public final @NotNull List<@NotNull ClientItem> items;
 
     private ClientBag(@NotNull JSONObject json) {

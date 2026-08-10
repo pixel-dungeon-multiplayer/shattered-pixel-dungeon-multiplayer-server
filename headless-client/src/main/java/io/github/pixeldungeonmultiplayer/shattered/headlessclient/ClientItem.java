@@ -81,7 +81,7 @@ public class ClientItem {
         return merged;
     }
 
-    private static List<String> strings(JSONArray array) {
+    private static @NotNull List<@Nullable String> strings(@Nullable JSONArray array) {
         if (array == null) {
             return Collections.emptyList();
         }

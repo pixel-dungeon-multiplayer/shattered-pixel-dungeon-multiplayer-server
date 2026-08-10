@@ -7,6 +7,9 @@
 # Java class files
 *.class
 
+# JVM crash / out-of-memory heap dumps
+java_pid*.hprof
+
 # Gradle build files
 .gradle/
 build/

@@ -160,7 +160,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 
 	public static Item changeItem( Item item, Hero hero ){
 		if (item instanceof MagesStaff) {
-			return changeStaff((MagesStaff) item);
+			return changeStaff((MagesStaff) item, hero);
 		}else if (item instanceof TippedDart){
 			return changeTippedDart( (TippedDart)item );
 		} else if (item instanceof MeleeWeapon || item instanceof MissileWeapon) {
@@ -203,8 +203,8 @@ public class ScrollOfTransmutation extends InventoryScroll {
 			return null;
 		}
 	}
-	
-	private static MagesStaff changeStaff( MagesStaff staff ){
+
+	private static MagesStaff changeStaff( MagesStaff staff, Hero owner ){
 		Class<?extends Wand> wandClass = staff.wandClass();
 		
 		if (wandClass == null){
@@ -218,8 +218,8 @@ public class ScrollOfTransmutation extends InventoryScroll {
 			n.level(0);
 			n.fragmentUpgrades = (ArrayList<com.shatteredpixel.shatteredpixeldungeon.items.optional.FragmentOfUpgrade.Upgrade>) staff.fragmentUpgrades.clone();
 			//TODO: check this
-			n.identify(staff.findOwner());
-			staff.imbueWand(n, null);
+			n.identify(owner);
+			staff.imbueWand(n, owner);
 		}
 		
 		return staff;

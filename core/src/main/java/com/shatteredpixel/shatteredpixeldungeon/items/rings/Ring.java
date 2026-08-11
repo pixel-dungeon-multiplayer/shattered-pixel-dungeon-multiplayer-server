@@ -356,7 +356,7 @@ public class Ring extends KindofMisc {
 
 	//@Override
 	public int buffedLvl(Hero hero) {
-		int lvl = super.buffedLvl();
+		int lvl = super.buffedLvl(hero);
 		if (hero == null) {
 			return lvl;
 		}
@@ -398,7 +398,7 @@ public class Ring extends KindofMisc {
 				&& target.buff(SpiritForm.SpiritFormBuff.class) != null
 				&& target.buff(SpiritForm.SpiritFormBuff.class).ring() != null
 				&& target.buff(SpiritForm.SpiritFormBuff.class).ring().buffClass == type){
-			bonus += target.buff(SpiritForm.SpiritFormBuff.class).ring().soloBuffedBonus();
+			bonus += target.buff(SpiritForm.SpiritFormBuff.class).ring().soloBuffedBonus((Hero) target);
 		}
 		return bonus;
 	}
@@ -411,6 +411,13 @@ public class Ring extends KindofMisc {
 			return Ring.this.level()+1;
 		}
 	}
+	public int soloBonus(Hero hero){
+		if (cursed){
+			return Math.min( 0, Ring.this.level(hero)-2 );
+		} else {
+			return Ring.this.level(hero)+1;
+		}
+	}
 
 	//just used for ring descriptions
 	public int soloBuffedBonus(){
@@ -420,15 +427,22 @@ public class Ring extends KindofMisc {
 			return Ring.this.buffedLvl()+1;
 		}
 	}
+	public int soloBuffedBonus(Hero hero){
+		if (cursed){
+			return Math.min( 0, Ring.this.buffedLvl(hero)-2 );
+		} else {
+			return Ring.this.buffedLvl(hero)+1;
+		}
+	}
 
 	//just used for ring descriptions
 	public int combinedBonus(Hero hero){
 		int bonus = 0;
 		if (hero.belongings.ring() != null && hero.belongings.ring().getClass() == getClass()){
-			bonus += hero.belongings.ring().soloBonus();
+			bonus += hero.belongings.ring().soloBonus(hero);
 		}
 		if (hero.belongings.misc() != null && hero.belongings.misc().getClass() == getClass()){
-			bonus += ((Ring)hero.belongings.misc()).soloBonus();
+			bonus += ((Ring)hero.belongings.misc()).soloBonus(hero);
 		}
 		return bonus;
 	}
@@ -437,10 +451,10 @@ public class Ring extends KindofMisc {
 	public int combinedBuffedBonus(Hero hero){
 		int bonus = 0;
 		if (hero.belongings.ring() != null && hero.belongings.ring().getClass() == getClass()){
-			bonus += hero.belongings.ring().soloBuffedBonus();
+			bonus += hero.belongings.ring().soloBuffedBonus(hero);
 		}
 		if (hero.belongings.misc() != null && hero.belongings.misc().getClass() == getClass()){
-			bonus += ((Ring)hero.belongings.misc()).soloBuffedBonus();
+			bonus += ((Ring)hero.belongings.misc()).soloBuffedBonus(hero);
 		}
 		return bonus;
 	}
@@ -470,7 +484,7 @@ public class Ring extends KindofMisc {
 		}
 
 		public int buffedLvl(){
-			return Ring.this.soloBuffedBonus();
+			return Ring.this.soloBuffedBonus((Hero) target);
 		}
 
 	}

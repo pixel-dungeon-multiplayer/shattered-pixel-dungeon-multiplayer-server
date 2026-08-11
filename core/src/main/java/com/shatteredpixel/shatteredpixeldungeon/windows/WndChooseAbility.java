@@ -206,7 +206,7 @@ public class WndChooseAbility extends Window {
 			@Override
 			protected void onSelect(int index) {
 				hide();
-				if (index == 0 && WndChooseAbility.this.parent != null){
+				if (index == 0){
 					WndChooseAbility.this.hide();
 					if (crown != null) {
 						crown.upgradeArmor(hero, armor, ability);

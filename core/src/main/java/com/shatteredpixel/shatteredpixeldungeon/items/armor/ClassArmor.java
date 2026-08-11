@@ -345,7 +345,6 @@ abstract public class ClassArmor extends Armor {
 		@Override
 		public void detach() {
 			super.detach();
-			ClassArmor.this.stopCharging();
 		}
 
 		@Override

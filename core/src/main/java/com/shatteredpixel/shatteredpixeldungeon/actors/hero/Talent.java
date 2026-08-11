@@ -1136,6 +1136,8 @@ public enum Talent {
 
 	public static void initArmorTalents( Hero hero ){
 		initArmorTalents( hero.armorAbility, hero.talents);
+		SendData.sendAction(hero, new HeroTalentsAction(hero.talents) );
+
 	}
 
 	public static void initArmorTalents(ArmorAbility abil, ArrayList<LinkedHashMap<Talent, Integer>> talents ){

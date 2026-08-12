@@ -21,29 +21,38 @@
 
 package io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.SendData;
 import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.MusicAction;
 @SuppressWarnings("NewApi")
 //TODO: add possibility to play music for a specific hero
 public enum Music {
-	
+
 	INSTANCE;
+	MusicAction currentAction;
 
 	public synchronized void play( String assetName, boolean looping ) {
-		SendData.sendActionForAll( new MusicAction.PlayAction(assetName, looping));
+		currentAction = new MusicAction.PlayAction(assetName, looping);
+		SendData.sendActionForAll( currentAction );
 	}
 
 	public synchronized void playTracks( String[] tracks, float[] chances, boolean shuffle){
-		SendData.sendActionForAll(new MusicAction.PlayTracksAction(tracks, chances, shuffle));
+		currentAction = new MusicAction.PlayTracksAction(tracks, chances, shuffle);
+		SendData.sendActionForAll( currentAction );
 	}
 
 	public synchronized void fadeOut(float duration, MusicAction onComplete){
-		SendData.sendActionForAll( new MusicAction.FadeOutAction(duration, onComplete));
+		currentAction = new MusicAction.FadeOutAction(duration, onComplete);
+		SendData.sendActionForAll( currentAction );
 	}
 
-	
+
 	public synchronized void end() {
-		SendData.sendActionForAll(new MusicAction.EndAction());
+		currentAction = new MusicAction.EndAction();
+		SendData.sendActionForAll( currentAction );
+	}
+	public synchronized void sendLastAction(Hero hero) {
+		SendData.sendAction(hero, currentAction );
 	}
 
 }

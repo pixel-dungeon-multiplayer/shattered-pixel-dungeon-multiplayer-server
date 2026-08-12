@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
 import io.github.pixeldungeonmultiplayer.common.localizedstring.LocalizedString;
+import io.github.pixeldungeonmultiplayer.shattered.server.noosa.audio.Music;
 import io.github.pixeldungeonmultiplayer.shattered.server.utils.Log;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
@@ -476,6 +477,7 @@ public class ClientThread implements Callable<String> {
         newHero.resendReady();
         sendInitData();
         GameScene.shouldProcess = true;
+        Music.INSTANCE.sendLastAction(newHero);
     }
 
     protected void addCharToSend(@NotNull Char ch) {

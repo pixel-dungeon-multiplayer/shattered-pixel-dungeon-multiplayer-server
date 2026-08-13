@@ -29,7 +29,7 @@ import io.github.pixeldungeonmultiplayer.shattered.server.network.actions.MusicA
 public enum Music {
 
 	INSTANCE;
-	MusicAction currentAction;
+	public MusicAction currentAction;
 
 	public synchronized void play( String assetName, boolean looping ) {
 		currentAction = new MusicAction.PlayAction(assetName, looping);
@@ -52,7 +52,9 @@ public enum Music {
 		SendData.sendActionForAll( currentAction );
 	}
 	public synchronized void sendLastAction(Hero hero) {
-		SendData.sendAction(hero, currentAction );
+		if (currentAction != null) {
+			SendData.sendAction(hero, currentAction);
+		}
 	}
 
 }
